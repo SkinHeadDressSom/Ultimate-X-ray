@@ -1,7 +1,12 @@
-export default function App() {
+import React from 'react';
+import Search from './searchpage/search';
+
+function App() {
   return (
-    <h1 className="text-3xl font-bold underline text-red-500">
-      Hello world!
-    </h1>
-  )
+    <div className="App">
+      <Search />
+    </div>
+  );
 }
+
+export default App;
