@@ -1,7 +1,14 @@
-export default function App() {
+import React from 'react';
+import Login from './loginpage/login';
+
+
+function App() {
   return (
-    <h1 className="text-3xl font-bold underline text-red-500">
-      Hello world!
-    </h1>
-  )
+    <div className="App">
+      <Login />
+
+    </div>
+  );
 }
+
+export default App;
