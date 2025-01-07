@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Logo from "./logo.png";
 import eyeLine from "./eye-line.svg";
 import eyeOffLine from "./eye-off-line.svg";
+import Loginicon from "./login-box-line.svg";
 
 function Login() {
     const [username, setUsername] = useState('');
@@ -65,7 +66,13 @@ function Login() {
                             </button>
                         </div>
                     </div>
-                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">Login</button>
+                    
+                    {/* ปุ่ม login */}
+                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md flex items-center justify-center">
+                        <img src={Loginicon} alt="Login Icon" className="h-5 w-5 mr-2" />
+                        Login
+                    </button>
+                    
                 </form>
             </div>
         </div>
