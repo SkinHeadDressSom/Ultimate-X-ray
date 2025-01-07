@@ -1,12 +1,13 @@
 import React, { useState } from "react";
+import Logo from "./logo.png";
+import eyeLine from "./eye-line.svg";
+import eyeOffLine from "./eye-off-line.svg";
 
 function Login() {
-    // สร้างสถานะสำหรับ username และ password
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    // ฟังก์ชันจัดการเมื่อ submit ฟอร์ม
     const handleSubmit = (e) => {
         e.preventDefault();
         if (username && password) {
@@ -21,12 +22,17 @@ function Login() {
     };
 
     return (
-        <div className="flex justify-center items-center h-screen bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-80">
-                <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+        
+        <div className="flex justify-center items-center h-screen bg-gray-300"> {/* BIG background  */}
+
+            <div className="bg-white p-10 rounded-lg shadow-lg" style={{ width: '450px', height: '550px' }}> {/*  background  */}
+
+                <img src={Logo} alt="Ultimate X-ray" className=" h-60 mx-auto" />
+                <h2 className="text-2xl font-bold mb-5 text-center">Welcome to Ultimate X-ray</h2>
                 <form onSubmit={handleSubmit}>
+
+                    {/* ฟังก์ชั้น username  */}
                     <div className="mb-4">
-                        <label htmlFor="username" className="block text-sm font-semibold text-gray-700">Username</label>
                         <input
                             type="text"
                             id="username"
@@ -37,8 +43,9 @@ function Login() {
                             required
                         />
                     </div>
+
+                    {/* ฟังก์ชั้น password  */}
                     <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-semibold text-gray-700">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
@@ -54,7 +61,7 @@ function Login() {
                                 onClick={togglePasswordVisibility}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                             >
-                                {showPassword ? 'fa-eye-slash' : 'fa-eye'}
+                                <img src={showPassword ? eyeOffLine : eyeLine} alt="Toggle Password Visibility" className="h-5 w-5" />
                             </button>
                         </div>
                     </div>
