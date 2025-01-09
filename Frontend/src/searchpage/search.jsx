@@ -4,21 +4,24 @@ import { ReactComponent as SearchIcon } from "./search-2-line.svg";
 const FindPatient = () => {
     const [patientID, setPatientID] = useState("");
 
+    // ฟังก์ชั่นแจ้งเตือนการค้นหาข้อมูลผู้ป่วย
     const handleSearch = () => {
         if (patientID) {
             
         } else {
-            alert("Please enter a patient ID.");
+            alert("Please cheack patient ID again.");
         }
     };
 
+    // ฟังก์ชั่นจำกัด input ID จำกัดแค่ตัวเลข
     const handleChange = (e) => {
         const value = e.target.value;
         if (/^\d*$/.test(value)) {
-            setPatientID(value); // อนุญาตเฉพาะตัวเลขเท่านั้น
+            setPatientID(value); 
         }
     };
 
+    // ช่อง input ID จำกัดแค่ตัวเลข
     return (
         <div style={styles.outerContainer}>
             <div style={styles.container}>
@@ -27,7 +30,7 @@ const FindPatient = () => {
                     <input
                         type="text"
                         placeholder="Enter patient ID"
-                        value={patientID}
+                        value={patientID}  
                         onChange={handleChange}
                         style={styles.input}
                     />
@@ -42,6 +45,8 @@ const FindPatient = () => {
 };
 
 const styles = {
+    
+    //กรอบนอก
     outerContainer: {
         display: "flex",
         alignItems: "center",
@@ -49,6 +54,8 @@ const styles = {
         height: "100vh",
         backgroundColor: "#e0e0e0",
     },
+
+    //กรอบใน
     container: {
         display: "flex",
         flexDirection: "column",
@@ -59,19 +66,25 @@ const styles = {
         borderRadius: "10px",
         boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
     },
+
+    // text Find patient
     heading: {
         fontSize: "24px",
         marginBottom: "20px",
         color: "#333",
     },
+
+    //ช่องกรอก
     searchBox: {
         display: "flex",
         alignItems: "center",
         border: "1px solid #ccc",
-        borderRadius: "25px",
+        borderRadius: "30px",
         padding: "5px 10px",
         backgroundColor: "#fff",
     },
+
+    //ข้อความในช่องกรอก
     input: {
         border: "none",
         outline: "none",
@@ -79,6 +92,8 @@ const styles = {
         fontSize: "16px",
         flex: 1,
     },
+
+    //ปุ่มค้นหา
     button: {
         backgroundColor: "#d4e5ff",
         color: "#fff",
@@ -92,35 +107,7 @@ const styles = {
         cursor: "pointer",
         marginLeft: "10px",
     },
-    popupButton: {
-        marginTop: "20px",
-        padding: "10px 20px",
-        backgroundColor: "#007bff",
-        color: "#fff",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-    },
-    popup: {
-        position: "fixed",
-        top: "50%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        backgroundColor: "#fff",
-        padding: "20px",
-        borderRadius: "10px",
-        boxShadow: "0 0 10px rgba(0, 0, 0, 0.1)",
-        zIndex: 1000,
-    },
-    closeButton: {
-        marginTop: "10px",
-        padding: "10px 20px",
-        backgroundColor: "#ff4d4d",
-        color: "#fff",
-        border: "none",
-        borderRadius: "5px",
-        cursor: "pointer",
-    },
+
 };
 
 export default FindPatient;
