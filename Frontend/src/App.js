@@ -1,11 +1,25 @@
-import React from 'react';
-import Search from './searchpage/search';
+import React from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import FindPatient from "./pages/search";
+import './App.css';
 
 function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/find-patient",
+      element: (
+        <>
+          <FindPatient />
+        </>
+      ),
+    },
+
+  ]);
+
   return (
-    <div className="App">
-      <Search />
-    </div>
+    <>
+      <RouterProvider router={router} />
+    </>
   );
 }
 
