@@ -1,20 +1,21 @@
 import React, { useState } from "react";
 import Logo from "./logo.png";
-import eyeLine from "./eye-line.svg";
-import eyeOffLine from "./eye-off-line.svg";
-import Loginicon from "./login-box-line.svg";
+import { ReactComponent as EyeIcon } from "./eye-line.svg";
+import { ReactComponent as EyeOffIcon } from "./eye-off-line.svg";
+import { ReactComponent as LoginIcon } from "./login-box-line.svg";
 
 function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState('');
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        if (username && password) {
-            alert('Login successful');
+        if (username === "admin" && password === "password") {
+            setError('');
         } else {
-            alert('Please enter both username and password');
+            setError('Invalid username or password');
         }
     };
 
@@ -23,16 +24,15 @@ function Login() {
     };
 
     return (
-        
-        <div className="flex justify-center items-center h-screen bg-gray-300"> {/* BIG background  */}
+        <div className="flex justify-center items-center min-h-screen bg-gray-300 p-4"> {/* BIG background  */}
 
-            <div className="bg-white p-10 rounded-lg shadow-lg" style={{ width: '450px', height: '550px' }}> {/*  background  */}
+            <div className="bg-white p-10 rounded-lg shadow-lg w-full max-w-md"> {/*  background  */}
 
-                <img src={Logo} alt="Ultimate X-ray" className=" h-60 mx-auto" />
+                <img src={Logo} alt="Ultimate X-ray" className="h-40 mx-auto mb-4" />
                 <h2 className="text-2xl font-bold mb-5 text-center">Welcome to Ultimate X-ray</h2>
                 <form onSubmit={handleSubmit}>
 
-                    {/* ฟังก์ชั้น username  */}
+                    {/* Username */}
                     <div className="mb-4">
                         <input
                             type="text"
@@ -45,7 +45,7 @@ function Login() {
                         />
                     </div>
 
-                    {/* ฟังก์ชั้น password  */}
+                    {/* Password */}
                     <div className="mb-4">
                         <div className="relative">
                             <input
@@ -62,17 +62,17 @@ function Login() {
                                 onClick={togglePasswordVisibility}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
                             >
-                                <img src={showPassword ? eyeOffLine : eyeLine} alt="Toggle Password Visibility" className="h-5 w-5" />
+                                {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                             </button>
                         </div>
                     </div>
-                    
+                    {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
                     {/* ปุ่ม login */}
                     <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md flex items-center justify-center">
-                        <img src={Loginicon} alt="Login Icon" className="h-5 w-5 mr-2" />
+                        <LoginIcon className="h-5 w-5 mr-2" />
                         Login
                     </button>
-                    
                 </form>
             </div>
         </div>
