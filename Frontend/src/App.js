@@ -1,7 +1,26 @@
-export default function App() {
+import React from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import FindPatient from "./pages/search";
+import './App.css';
+
+function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/find-patient",
+      element: (
+        <>
+          <FindPatient />
+        </>
+      ),
+    },
+
+  ]);
+
   return (
-    <h1 className="text-3xl font-bold underline text-red-500">
-      Hello world!
-    </h1>
-  )
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 }
+
+export default App;
