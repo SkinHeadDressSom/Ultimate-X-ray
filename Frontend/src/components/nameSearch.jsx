@@ -1,22 +1,35 @@
 import React from "react";
+import { useState } from "react";
 
 const NameSearch = () => {
+  const [patientName, setPatientName] = useState("");
+
+  const handleNameSearch = (e) => {
+    e.preventDefault();
+  };
+
+  const handleChange = (e) => {
+    setPatientName(e.target.value);
+  };
+
   return (
-    <div class="w-full max-w-lg">
-      <form>
+    <div className="w-full max-w-lg">
+      <form onSubmit={handleNameSearch}>
         <div className="mb-4">
-          <label className="block text-vivid-blue 2xl:text-lg text-base mb-2" for="name">
+          <label htmlFor="patientName" className="block text-vivid-blue 2xl:text-lg text-base mb-2">
             Patient name
           </label>
           <div className="flex overflow-hidden mx-auto appearance-none border-[1px] rounded-full w-full text-vivid-blue border-light-gray leading-tight items-center focus:border-vivid-blue focus:ring-1 focus:ring-vivid-blue">
             <input
               className="w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base"
-              id="name"
+              id="patientName"
               type="text"
+              value={patientName}
+              onChange={handleChange}
               placeholder="Enter patient name"
             />
             <button
-              type="button"
+              type="submit"
               className="flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat rounded-full w-8 2xl:w-10 h-8 p-2 m-[1px]"
             >
               <svg

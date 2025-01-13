@@ -1,23 +1,38 @@
 import React from "react";
+import { useState } from "react";
 
 const HNSearch = () => {
+  const [patientID, setPatientID] = useState("");
+  //หา HN
+  const handleSearchHN = (e) => {
+    e.preventDefault();
+  };
+
+  const handleChange = (e) => {
+    setPatientID(e.target.value);
+  };
+
   return (
-    <div class="w-full max-w-xs">
-      <form>
+    <div className="w-full max-w-xs">
+      <form onSubmit={handleSearchHN}>
         <div className="mb-4">
-          <label className="block text-vivid-blue 2xl:text-lg text-base mb-2" for="name">
+          <label htmlFor="patientID" className="block text-vivid-blue 2xl:text-lg text-base mb-2">
             Patient ID
           </label>
           <div className="flex overflow-hidden mx-auto appearance-none border-[1px] rounded-full w-full text-vivid-blue border-light-gray leading-tight items-center focus:border-vivid-blue focus:ring-1 focus:ring-vivid-blue">
             <input
-              className="w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base"
-              id="HN"
-              type="text"
+              className="w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              id="patientID"
+              type="number"
               placeholder="Enter patient ID"
             />
             <button
-              type="button"
-              className="flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat rounded-full w-8 2xl:w-10 h-8 p-2 m-[1px]"
+              id="patientID"
+              type="submit"
+              placeholder="Enter patient ID"
+              value={patientID}
+              onChange={handleChange}
+              className="flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat rounded-full w-8 2xl:w-10 h-8 p-2 m-[1px] "
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

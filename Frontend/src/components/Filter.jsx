@@ -1,19 +1,62 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import StatusExamine from "./statusExamine";
 import StatusSchedule from "./statusSchedule";
 const Filter = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  // Function to toggle the dropdown
+  const [isOpen, setIsOpen] = useState(false); // สร้าง state สำหรับเปิดปิด dropdown
+  const [isCheckedExamine, setIsCheckedExamine] = useState(false); // examine checkbox
+  const [isCheckedSchedule, setIsCheckedSchedule] = useState(false); // schedule checkbox
+  const dropdownRef = useRef(null); // ref ของ dropdown
+  const buttonRef = useRef(null); // ref ของ button
+  const commonCheckBoxStyles =
+    "absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none";
+  const commonInputStyles =
+    "peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2";
+  const commonCheckBoxContainerStyles =
+    "inline-flex w-full items-center px-2 py-2 gap-2 rounded-md hover:bg-light-blue hover:cursor-pointer";
+  // เปิดปิด dropdown
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsOpen((prev) => !prev);
+  };
+
+  // ปิด dropdown ตอนคลิกข้างนอก
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // เช็คว่า dropdown ถูกคลิ๊กหรือยัง
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    // ใช้เช็คว่าคลิกข้างนอก dropdown หรือยัง
+    document.addEventListener("mousedown", handleClickOutside);
+
+    // ถ้าไม่มีการคลิก dropdown ให้ปิด dropdown
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // ใช้เช็คว่า checkbox ถูกคลิกหรือยัง
+  const handleCheckExamine = (event) => {
+    setIsCheckedExamine(event.target.checked); // Update state
+  };
+
+  const handleCheckSchedule = (event) => {
+    setIsCheckedSchedule(event.target.checked); // Update state
   };
 
   return (
     <div className="relative text-left flex items-center center">
-        Status
+      Status
       <button
         className="rounded-sm hover:bg-light-gray"
         onClick={toggleDropdown}
+        ref={buttonRef}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -24,87 +67,85 @@ const Filter = () => {
           <path d="M18 9 12 3 6 9H18ZM18 15 12 21 6 15H18Z"></path>
         </svg>
       </button>
-
       {isOpen && (
         <div
+          ref={dropdownRef}
           className="absolute flex left-12 z-50 mt-28 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="menu-button"
-          tabindex="-1"
+          tabIndex="-1"
         >
           <div className="py-1 px-2 font-normal text-darkest-blue" role="none">
-            <div className="inline-flex w-full items-center px-2 py-2 gap-2 rounded-md hover:bg-light-blue hover:cursor-pointer">
+            <div className={commonCheckBoxContainerStyles}>
               <div className="flex items-center justify-center">
-                <label className="flex items-center cursor-pointer relative">
+                <label
+                  htmlFor="examine"
+                  className="flex items-center cursor-pointer relative"
+                >
                   <input
                     type="checkbox"
-                    class="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                    id="check"
+                    className={`${commonInputStyles}`}
+                    id="check-examine"
+                    checked={isCheckedExamine}
+                    onChange={handleCheckExamine}
                   />
-                  <span class="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <span className={commonCheckBoxStyles}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5"
+                      className="h-3.5 w-3.5"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
+                      strokeWidth="1"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       ></path>
                     </svg>
                   </span>
                 </label>
               </div>
-              <p
-                href="#"
-                className=""
-                role="menuitem"
-                tabindex="-1"
-                id="menu-item-0"
-              >
+              <div role="menuitem" tabIndex="-1" id="menu-item-examine">
                 <StatusExamine />
-              </p>
+              </div>
             </div>
-            <div className="inline-flex items-center w-full px-2 py-2 gap-2 rounded-md hover:bg-light-blue hover:cursor-pointer">
+            <div className={commonCheckBoxContainerStyles}>
               <div className="flex items-center justify-center">
-                <label className="flex items-center cursor-pointer relative">
+                <label
+                  htmlFor="schedule"
+                  className="flex items-center cursor-pointer relative"
+                >
                   <input
                     type="checkbox"
-                    class="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                    id="check"
+                    className={commonInputStyles}
+                    id="check-schedule"
+                    checked={isCheckedSchedule}
+                    onChange={handleCheckSchedule}
                   />
-                  <span class="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <span className={commonCheckBoxStyles}>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      class="h-3.5 w-3.5"
+                      className="h-3.5 w-3.5"
                       viewBox="0 0 20 20"
                       fill="currentColor"
                       stroke="currentColor"
-                      stroke-width="1"
+                      strokeWidth="1"
                     >
                       <path
-                        fill-rule="evenodd"
+                        fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clip-rule="evenodd"
+                        clipRule="evenodd"
                       ></path>
                     </svg>
                   </span>
                 </label>
               </div>
-              <p
-                href="#"
-                className=""
-                role="menuitem"
-                tabindex="-1"
-                id="menu-item-0"
-              >
+              <div role="menuitem" tabIndex="-1" id="menu-item-schedule">
                 <StatusSchedule />
-              </p>
+              </div>
             </div>
           </div>
         </div>

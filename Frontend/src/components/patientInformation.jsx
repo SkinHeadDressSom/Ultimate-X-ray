@@ -1,6 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Skeleton } from "@mui/material";
+import patientData from "../assets/mockup";
+
 
 const PatientInformation = () => {
+  // handle loading status
+  const [loading, setLoading] = useState(true);
+
+  // Simulate fetching data with a timeout
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false); // Data has loaded
+    }, 2000); // Adjust time as per your data fetch simulation
+  }, []);
+
+  // key-value pairs for patient details
+  const patientDetails = [
+    { label: "Patient ID", value: patientData.id },
+    { label: "Name", value: patientData.name },
+    { label: "Age", value: patientData.age },
+    { label: "DOB", value: patientData.dob },
+    { label: "Sex", value: patientData.sex },
+    { label: "Weight", value: patientData.weight },
+    { label: "Height", value: patientData.height },
+    { label: "Phone No.", value: patientData.phone },
+  ];
+
   return (
     <div className="w-full h-auto shadow-lg">
       <div className="inline-flex w-full bg-light-blue rounded-t-md border-t-[1px] border-r-[1px] border-l-[1px] border-light-gray px-5 py-2 gap-2 text-vivid-blue">
@@ -18,46 +43,29 @@ const PatientInformation = () => {
         <div className="flex gap-4">
           <table className="w-full text-left 2xl:text-xl text-base">
             <tbody>
-              <tr>
-                <th>Patient ID</th>
-                <th className="px-5">:</th>
-                <td>65090417</td>
-              </tr>
-              <tr>
-                <th>Name</th>
-                <th className="px-5">:</th>
-                <td>Araya Barbequeue</td>
-              </tr>
-              <tr>
-                <th>Age</th>
-                <th className="px-5">:</th>
-                <td>21 Years</td>
-              </tr>
-              <tr>
-                <th>DOB</th>
-                <th className="px-5">:</th>
-                <td>5/07/2003</td>
-              </tr>
-              <tr>
-                <th>Sex</th>
-                <th className="px-5">:</th>
-                <td>Female</td>
-              </tr>
-              <tr>
-                <th>Weight</th>
-                <th className="px-5">:</th>
-                <td>160 cm</td>
-              </tr>
-              <tr>
-                <th>Height</th>
-                <th className="px-5">:</th>
-                <td>40 kg</td>
-              </tr>
-              <tr>
-                <th>Phone No.</th>
-                <th className="px-5">:</th>
-                <td>0626377194</td>
-              </tr>
+              {loading
+                ? // Skeleton Loader for each row
+                  Array(8)
+                    .fill(0)
+                    .map((_, index) => (
+                      <tr key={index}>
+                        <th>
+                          <Skeleton variant="text" width="100px" />
+                        </th>
+                        <th className="px-5">:</th>
+                        <td>
+                          <Skeleton variant="text" width="150px" />
+                        </td>
+                      </tr>
+                    ))
+                : // Render actual patient data once it's loaded
+                  patientDetails.map(({ label, value }, index) => (
+                    <tr key={index}>
+                      <th>{label}</th>
+                      <th className="px-5">:</th>
+                      <td>{value}</td>
+                    </tr>
+                  ))}
             </tbody>
           </table>
         </div>

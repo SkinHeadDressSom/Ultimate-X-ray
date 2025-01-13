@@ -1,16 +1,15 @@
 import React from "react";
 import Navbar from "../components/navbar";
-import HeadFolderShape from "../components/folderShape";
+import FolderShape from "../components/folderShape";
 const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="bg-lightest-blue w-screen h-screen ">
+      <main className="bg-lightest-blue w-screen h-screen ">
         <div className="py-5 px-10">
-          <HeadFolderShape />
+          <FolderShape />
         </div>
-        
-      </div>
+      </main>
     </>
   );
 };

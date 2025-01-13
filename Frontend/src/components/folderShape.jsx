@@ -5,7 +5,8 @@ import NameSearch from "./nameSearch";
 import ViewerButton from "./viewerButton";
 import Table from "./table";
 
-const HeadFolderShape = () => {
+const FolderShape = () => {
+  
   return (
     <div className="flex flex-col">
       <div className="inline-flex">
@@ -34,20 +35,20 @@ const HeadFolderShape = () => {
         </div>
 
         <div className="flex flex-col md:flex-row lg:flex-row w-full py-5 px-5 gap-10 ">
-          <div className="w-3/12 2xl:w-4/12">
+          <aside className="w-3/12 2xl:w-4/12">
             <PatientInformation />
-          </div>
-          <div className="w-9/12 2xl:w-10/12">
+          </aside>
+          <main className="w-9/12 2xl:w-10/12">
             <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
               <div>All case</div>
               <div>Total 2 studies</div>
             </div>
             <Table />
-          </div>
+          </main>
         </div>
       </div>
     </div>
   );
 };
 
-export default HeadFolderShape;
+export default FolderShape;
