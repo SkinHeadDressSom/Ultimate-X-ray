@@ -1,13 +1,12 @@
 const { verifyPassword } = require("../utils/PasswordManagement");
-const pool = require("../database/postgres-config");
+const { createCookies } = require("../utils/CookiesManagement");
+const { getUser } = require("../database/userQuery");
 
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Fetch the user from the database
     const user = await getUser(username);
-    console.log("user", user);
 
     // Check if the user exists
     if (!user) {
@@ -15,18 +14,26 @@ const login = async (req, res) => {
         message: "User not found",
       });
     }
-    console.log("Userfound");
 
     // Verify the password
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
-      return res.status(401).send({
+      return res.status(401).json({
         message: "Invalid credentials",
       });
     }
-    console.log("Password valid");
 
-    res.status(200).send({
+    // Generate the payload and set the token cookie
+    const token = await createCookies(user.id);
+    res.cookie("token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+    });
+
+    // Login succesfully
+    console.log("Login successful");
+    console.log("Token:", token);
+    return res.status(200).json({
       message: "Login successful",
       user: {
         id: user.id,
@@ -35,22 +42,10 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in login controller ->", error.message);
-    res.status(500).send({
+    return res.status(500).json({
       message: "An error occurred during login",
     });
   }
 };
-
-// Fetch the user from the database by username
-async function getUser(username) {
-  try {
-    const query = "SELECT * FROM doctor WHERE username = $1";
-    const result = await pool.query(query, [username]);
-    return result.rows[0] || null;
-  } catch (error) {
-    console.error("Database error:", error);
-    throw error;
-  }
-}
 
 module.exports = { login };

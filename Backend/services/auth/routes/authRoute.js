@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const loginController = require("../controllers/login");
+const logoutController = require("../controllers/logout");
 const registerController = require("../controllers/register");
-const auth = require("../middleware/auth");
-const pool = require("../database/postgres-config");
+const { validateToken } = require("../middleware/auth");
 
-router.post("/login", loginController.login);
+router.post("/login", validateToken, loginController.login);
 router.post("/register", registerController.register);
+router.post("/logout", logoutController.logout);
 
 module.exports = router;

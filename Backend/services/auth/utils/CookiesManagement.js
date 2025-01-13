@@ -2,14 +2,24 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 
-function createCookies(user_id) {
-  return jwt.sign(user_id, String(process.env.SECRET_KEY), {
-    algorithm: "HS256",
-  });
+async function createCookies(user_id) {
+  try {
+    return jwt.sign(user_id, String(process.env.SECRET_KEY), {
+      algorithm: "HS256",
+    });
+  } catch (error) {
+    console.error("Failed to create cookies:", error.message);
+    return null;
+  }
 }
 
-function decodeToken(token) {
-  return jwt.verify(token, String(process.env.SECRET_KEY));
-}
+const decodeToken = async (token) => {
+  try {
+    return jwt.verify(token, process.env.SECRET_KEY);
+  } catch (error) {
+    console.error("Failed to decode token:", error.message);
+    return null; // Return null for invalid tokens
+  }
+};
 
 module.exports = { createCookies, decodeToken };
