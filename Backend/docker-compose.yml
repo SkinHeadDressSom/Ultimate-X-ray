@@ -1,4 +1,4 @@
-version: "3.8"
+#version: "3.8"
 
 services:
   kong-db:
@@ -31,21 +31,35 @@ services:
     build: ./services/test
     env_file: "./services/test/.env"
     ports:
-      - "3002:3002"
+      - "3000:3000"
 
-  # mongo:
-  #   image: mongo:latest
-  #   ports:
-  #     - "27017:27017"
+  auth-service:
+    build: ./services/auth
+    env_file: "./services/auth/.env"
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres-service
 
-  # postgres:
-  #   image: postgres:latest
-  #   environment:
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #     POSTGRES_DB: hospital
-  #   ports:
-  #     - "5432:5432"
+    # mongo:
+    #   image: mongo:latest
+    #   ports:
+    #     - "27017:27017"
+
+  postgres-service:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hospital
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./databasepg:/var/lib/postgresql/data
 
 volumes:
   kong-db-data:
+
+networks:
+  default:
+    driver: bridge
