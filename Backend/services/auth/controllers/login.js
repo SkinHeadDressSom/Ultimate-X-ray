@@ -3,7 +3,6 @@ const { createCookies } = require("../utils/CookiesManagement");
 const { getUser } = require("../database/userQuery");
 
 const RESPONSE_MESSAGES = {
-  userNotFound: "User not found",
   invalidCredentials: "Invalid Username or Password",
   loginSuccess: "Login successful",
   loginError: "An error occurred during login",
@@ -13,18 +12,28 @@ const login = async (req, res) => {
   try {
     const { username, password } = req.body;
 
+    // Check if the username or password are null
+    if (!username || !password) {
+      // console.log(" Username or Password are null");
+      return res.status(400).json({
+        message: RESPONSE_MESSAGES.invalidCredentials,
+      });
+    }
+
     const user = await getUser(username);
 
     // Check if the user exists
     if (!user) {
+      // console.log(" User not found");
       return res.status(404).send({
-        message: RESPONSE_MESSAGES.userNotFound,
+        message: RESPONSE_MESSAGES.invalidCredentials,
       });
     }
 
     // Verify the password
     const isPasswordValid = await verifyPassword(password, user.password);
     if (!isPasswordValid) {
+      // console.log(" Password is invalid");
       return res.status(401).json({
         message: RESPONSE_MESSAGES.invalidCredentials,
       });
@@ -38,6 +47,7 @@ const login = async (req, res) => {
     });
 
     // Login succesfully
+    // console.log("Login successfully");
     return res.status(200).json({
       message: RESPONSE_MESSAGES.loginSuccess,
       user: {
