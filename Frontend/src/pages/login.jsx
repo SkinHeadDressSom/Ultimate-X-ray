@@ -5,13 +5,14 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username && password) {
-      alert("Login successful");
+    if (username === "admin" && password === "password") {
+      setError("");
     } else {
-      alert("Please enter both username and password");
+      setError("Invalid username or password");
     }
   };
 
@@ -87,8 +88,8 @@ function Login() {
                 )}
               </button>
             </div>
+            {error && <p className="text-red-500 text-sm text-left mt-1">{error}</p>}
           </div>
-          {/* ฟังก์ชั้น username  */}
 
           {/* ปุ่ม login */}
           <button
