@@ -3,14 +3,23 @@ import { useState } from "react";
 
 const SearchPatient = () => {
   const [patientID, setPatientID] = useState("");
+  // const [patient, setPatient] = useState
+
 
   // ฟังก์ชั่นแจ้งเตือนการค้นหาข้อมูลผู้ป่วย
   const handleSearch = () => {
-    if (patientID) {
-    } else {
-      alert("Please cheack patient ID again.");
+    if ( patient === "patient ID" ) {
+    } 
+    else {
+      alert("Invalid patient ID .");
     }
   };
+
+
+  // เพิ่มกรณีใส่ผิดด้วย (patient === "patient ID")
+  // เพิ่มกรณีเช็คว่าค่าที่กรอกเป็นช่องว่างไหม /find-patient
+
+
 
   // ฟังก์ชั่นจำกัด input ID จำกัดแค่ตัวเลข
   const handleChange = (e) => {
