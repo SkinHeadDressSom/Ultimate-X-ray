@@ -1,7 +1,24 @@
-export default function App() {
+import React from "react";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Dashboard from "./pages/dashboard";
+
+function App() {
+  const router = createBrowserRouter([
+    {
+      path: "/dashboard",
+      element: (
+        <>
+          <Dashboard />
+        </>
+      ),
+    },
+  ]);
+
   return (
-    <h1 className="text-3xl font-bold underline text-red-500">
-      Hello world!
-    </h1>
-  )
+    <>
+      <RouterProvider router={router} />
+    </>
+  );
 }
+
+export default App;
