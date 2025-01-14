@@ -1,11 +1,12 @@
 const { verifyPassword } = require("../utils/PasswordManagement");
-const { createCookies } = require("../utils/CookiesManagement");
+const { createToken } = require("../utils/CookiesManagement");
 const { getUser } = require("../database/userQuery");
 
 const RESPONSE_MESSAGES = {
   invalidCredentials: "Invalid Username or Password",
   loginSuccess: "Login successful",
   loginError: "An error occurred during login",
+  databaseError: "Database error occurred",
 };
 
 const login = async (req, res) => {
@@ -21,7 +22,12 @@ const login = async (req, res) => {
     }
 
     const user = await getUser(username);
-
+    // Check query error
+    if (user.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.databaseError,
+      });
+    }
     // Check if the user exists
     if (!user) {
       // console.log(" User not found");
@@ -40,7 +46,7 @@ const login = async (req, res) => {
     }
 
     // Generate the payload and set the token cookie
-    const token = await createCookies(user.id);
+    const token = await createToken(user.id);
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict",
@@ -51,7 +57,6 @@ const login = async (req, res) => {
     return res.status(200).json({
       message: RESPONSE_MESSAGES.loginSuccess,
       user: {
-        id: user.id,
         username: user.username,
       },
     });

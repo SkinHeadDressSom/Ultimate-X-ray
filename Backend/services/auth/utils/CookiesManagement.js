@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 dotenv.config();
 
-async function createCookies(user_id) {
+async function createToken(user_id) {
   try {
     return jwt.sign(user_id, String(process.env.SECRET_KEY), {
       algorithm: "HS256",
@@ -22,4 +22,4 @@ const decodeToken = async (token) => {
   }
 };
 
-module.exports = { createCookies, decodeToken };
+module.exports = { createToken, decodeToken };

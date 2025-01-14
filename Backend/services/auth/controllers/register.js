@@ -6,6 +6,7 @@ const RESPONSE_MESSAGES = {
   userConflict: "User already exists",
   registerSuccess: "User created successful",
   registerError: "An error occurred during register",
+  databaseError: "Database error occurred",
 };
 
 const register = async (req, res) => {
@@ -28,6 +29,11 @@ const register = async (req, res) => {
     }
     const hashedPassword = await hashPassword(password);
     const newUser = await createUser(username, hashedPassword);
+    // check query error
+    if (newUser.error) {
+      //console.error("Error creating user:", newUser.message);
+      return res.status(500).json({ message: RESPONSE_MESSAGES.databaseError });
+    }
 
     // console.log(" User is created successfully");
     return res.status(201).json({
