@@ -1,0 +1,33 @@
+docker compose up -d
+
+docker compose down -v
+
+docker-compose run --rm kong kong migrations bootstrap
+
+
+# Endpoint url 
+curl http://localhost:8000
+
+# Check admin
+curl http://localhost:8001  
+
+# Check services
+curl http://localhost:8001/services
+
+# Check routes
+curl http:http://localhost:8001/routes
+
+# Create service
+curl -i -X POST http://localhost:8001/services \
+  --data "name=<service-name>" \
+  --data "url=http://<service-name>:<port>/"
+
+# Create route
+curl -i -X POST http://localhost:8001/services/<service-name>/routes \
+  --data "paths[]=/<route-name>"
+
+# Delete route
+curl -i -X DELETE http://localhost:8001/routes/<route-id>
+
+# Use api
+curl http:http://localhost:8000/<route-name>/<upstream route-name>
