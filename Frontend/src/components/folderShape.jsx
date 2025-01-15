@@ -6,7 +6,6 @@ import ViewerButton from "./viewerButton";
 import Table from "./table";
 
 const FolderShape = () => {
-  
   return (
     <div className="flex flex-col">
       <div className="inline-flex">
@@ -23,7 +22,7 @@ const FolderShape = () => {
         </div>
         <div className="border-l-lg border-l-transparent border-b-[48px] 2xl:border-b-[56px] border-b-wheat border-r-[40px] border-r-transparent rounded-tr-lg"></div>
       </div>
-      <div className="bg-wheat w-full h-[35rem] rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
+      <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="w-full px-5 pt-5 inline-flex justify-between items-center">
           <div className="inline-flex gap-5">
             <HNSearch />
@@ -34,15 +33,11 @@ const FolderShape = () => {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row lg:flex-row w-full py-5 px-5 gap-10 ">
-          <aside className="w-3/12 2xl:w-4/12">
+        <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
+          <aside className="w-5/12 xl:w-3/12 2xl:w-4/12">
             <PatientInformation />
           </aside>
-          <main className="w-9/12 2xl:w-10/12">
-            <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
-              <div>All case</div>
-              <div>Total 2 studies</div>
-            </div>
+          <main className="w-full xl:w-9/12 2xl:w-10/12">
             <Table />
           </main>
         </div>

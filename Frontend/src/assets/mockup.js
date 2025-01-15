@@ -1,7 +1,7 @@
 // patient data
 const patientData = {
     id: "65090417",
-    name: "Araya Barbequeue",
+    name: "Araya Watthana",
     age: "21 Years",
     dob: "5/07/2003",
     sex: "Female",
