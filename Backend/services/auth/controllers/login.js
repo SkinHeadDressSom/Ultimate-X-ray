@@ -3,6 +3,8 @@ const { createToken } = require("../utils/CookiesManagement");
 const { getUser } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
+RESPONSE_MESSAGES.taskError = "An error occurred at login";
+RESPONSE_MESSAGES.taskSuccess = "Login successfully";
 const login = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -61,7 +63,7 @@ const login = async (req, res) => {
 
     // Login succesfully
     return res.status(200).json({
-      message: RESPONSE_MESSAGES.taskSuccess,
+      message: RESPONSE_MESSAGES.loginSuccess,
       user: {
         username: user.username,
       },
@@ -69,7 +71,8 @@ const login = async (req, res) => {
   } catch (error) {
     console.error("Error in login controller ->", error.message);
     return res.status(500).json({
-      message: RESPONSE_MESSAGES.taskError,
+      message: RESPONSE_MESSAGES.loginError,
+      error: error.message,
     });
   }
 };

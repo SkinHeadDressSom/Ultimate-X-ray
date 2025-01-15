@@ -2,6 +2,8 @@ const { hashPassword } = require("../utils/PasswordManagement");
 const { getUser, createUser } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
+RESPONSE_MESSAGES.taskError = "An error occurred at register";
+RESPONSE_MESSAGES.taskSuccess = "Register successfully";
 RESPONSE_MESSAGES.userConflict = "User already exists";
 
 const register = async (req, res) => {
@@ -54,6 +56,7 @@ const register = async (req, res) => {
     console.error("Error on registerController ->", error.message);
     return res.status(500).json({
       message: RESPONSE_MESSAGES.taskError,
+      error: error.message,
     });
   }
 };

@@ -1,9 +1,9 @@
 const RESPONSE_MESSAGES = {
   missingArguments: "Username and Password are required",
   invalidCredentials: "Invalid Username or Password",
-  cookieNotFound: "Cookie not found",
-  taskSuccess: "Task done successfully",
+  invalidToken: "Invalid Token or Token Expired",
   taskError: "An error occurred",
+  taskSuccess: "task done successfully",
   databaseError: "Database error occurred",
 };
 
