@@ -1,6 +1,6 @@
 const { decodeToken } = require("../utils/CookiesManagement");
 const { getUserbyID } = require("../database/userQuery");
-
+const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 const validateToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;

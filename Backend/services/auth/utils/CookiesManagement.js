@@ -9,7 +9,11 @@ async function createToken(user_id) {
     });
   } catch (error) {
     console.error("Failed to create cookies:", error.message);
-    return null;
+    // return error object
+    return {
+      error: true,
+      message: error.message,
+    };
   }
 }
 
@@ -18,7 +22,11 @@ const decodeToken = async (token) => {
     return jwt.verify(token, process.env.SECRET_KEY);
   } catch (error) {
     console.error("Failed to decode token:", error.message);
-    return null; // Return null for invalid tokens
+    // return error object
+    return {
+      error: true,
+      message: error.message,
+    };
   }
 };
 

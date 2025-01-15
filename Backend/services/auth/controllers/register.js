@@ -1,13 +1,8 @@
 const { hashPassword } = require("../utils/PasswordManagement");
 const { getUser, createUser } = require("../database/userQuery");
+const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
-const RESPONSE_MESSAGES = {
-  missingArguments: "Username and password are required",
-  userConflict: "User already exists",
-  registerSuccess: "User created successful",
-  registerError: "An error occurred during register",
-  databaseError: "Database error occurred",
-};
+RESPONSE_MESSAGES.userConflict = "User already exists";
 
 const register = async (req, res) => {
   try {
@@ -22,7 +17,6 @@ const register = async (req, res) => {
 
     const existUser = await getUser(username);
     if (existUser) {
-      // console.log(" User is already exists");
       return res.status(409).json({
         message: RESPONSE_MESSAGES.userConflict,
       });
@@ -31,18 +25,16 @@ const register = async (req, res) => {
     const newUser = await createUser(username, hashedPassword);
     // check query error
     if (newUser.error) {
-      //console.error("Error creating user:", newUser.message);
       return res.status(500).json({ message: RESPONSE_MESSAGES.databaseError });
     }
 
-    // console.log(" User is created successfully");
     return res.status(201).json({
-      message: RESPONSE_MESSAGES.registerSuccess,
+      message: RESPONSE_MESSAGES.taskSuccess,
     });
   } catch (error) {
     console.error("Error on registerController ->", error.message);
     return res.status(500).json({
-      message: RESPONSE_MESSAGES.registerError,
+      message: RESPONSE_MESSAGES.taskError,
     });
   }
 };
