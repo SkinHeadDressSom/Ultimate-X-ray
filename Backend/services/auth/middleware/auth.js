@@ -1,6 +1,9 @@
 const { decodeToken } = require("../utils/CookiesManagement");
 const { getUserbyID } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
+
+RESPONSE_MESSAGES.tokenExpired = "Token expired";
+
 const validateToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -10,6 +13,12 @@ const validateToken = async (req, res, next) => {
     }
 
     const decoded = await decodeToken(token);
+    // Check if the token has expired
+    if (decoded.tokenExpired) {
+      return res.status(401).json({
+        message: RESPONSE_MESSAGES.tokenExpired,
+      });
+    }
     // Handling token decode error
     if (decoded.error) {
       return res.status(500).json({
