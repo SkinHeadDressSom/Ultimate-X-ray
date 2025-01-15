@@ -9,8 +9,15 @@ const validateToken = async (req, res, next) => {
       return next(); // Token not found, continue to the next middleware (login)
     }
 
-    // Decode and verify the token
     const decoded = await decodeToken(token);
+    // Handling token decode error
+    if (decoded.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.taskError,
+        error: decoded.error,
+      });
+    }
+
     if (!decoded) {
       console.log("==== Invalid token, proceeding to login ====");
       return next(); // Invalid token, continue to the next middleware (login)

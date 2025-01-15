@@ -11,8 +11,7 @@ async function createToken(user_id) {
     console.error("Failed to create cookies:", error.message);
     // return error object
     return {
-      error: true,
-      message: error.message,
+      error: error.message,
     };
   }
 }
@@ -24,8 +23,7 @@ const decodeToken = async (token) => {
     console.error("Failed to decode token:", error.message);
     // return error object
     return {
-      error: true,
-      message: error.message,
+      error: error.message,
     };
   }
 };

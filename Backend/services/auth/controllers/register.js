@@ -9,23 +9,42 @@ const register = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-      // console.log(" Username or Password are null");
       return res.status(400).json({
         message: RESPONSE_MESSAGES.missingArguments,
       });
     }
 
     const existUser = await getUser(username);
+    // Handling query error
+    if (existUser.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.taskError,
+        error: existUser.error,
+      });
+    }
+    // Checking replication of username
     if (existUser) {
       return res.status(409).json({
         message: RESPONSE_MESSAGES.userConflict,
       });
     }
+
     const hashedPassword = await hashPassword(password);
+    // Handling Failed to verify the password
+    if (hashedPassword.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.taskError,
+        error: hashedPassword.error,
+      });
+    }
+
     const newUser = await createUser(username, hashedPassword);
-    // check query error
+    // Handling query error
     if (newUser.error) {
-      return res.status(500).json({ message: RESPONSE_MESSAGES.databaseError });
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.databaseError,
+        error: newUser.error,
+      });
     }
 
     return res.status(201).json({

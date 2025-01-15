@@ -7,8 +7,7 @@ async function hashPassword(password) {
     console.error("Error in hashPassword:", error.message);
     // return error object
     return {
-      error: true,
-      message: error.message,
+      error: error.message,
     };
   }
 }
@@ -20,8 +19,7 @@ async function verifyPassword(password, hashPassword) {
     console.error("Error in verifyPassword:", error.message);
     // return error object
     return {
-      error: true,
-      message: error.message,
+      error: error.message,
     };
   }
 }

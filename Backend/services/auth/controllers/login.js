@@ -14,13 +14,13 @@ const login = async (req, res) => {
     }
 
     const user = await getUser(username);
-    // Check query error
+    // Handling query error
     if (user.error) {
       return res.status(500).json({
         message: RESPONSE_MESSAGES.databaseError,
+        error: user.error,
       });
     }
-
     // Check if the user exists in database
     if (!user) {
       return res.status(404).send({
@@ -28,8 +28,15 @@ const login = async (req, res) => {
       });
     }
 
-    // Verify the password
     const isPasswordValid = await verifyPassword(password, user.password);
+    // Handling Failed to verify the password
+    if (isPasswordValid.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.taskError,
+        error: token.isPasswordValid,
+      });
+    }
+    // Check if the password is matching
     if (!isPasswordValid) {
       return res.status(401).json({
         message: RESPONSE_MESSAGES.invalidCredentials,
@@ -38,6 +45,15 @@ const login = async (req, res) => {
 
     // Generate the payload and set the token cookie
     const token = await createToken(user.id);
+    // Handling token creation error
+    if (token.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.taskError,
+        error: token.error,
+      });
+    }
+
+    // Set the token cookie
     res.cookie("token", token, {
       httpOnly: true,
       sameSite: "strict",
