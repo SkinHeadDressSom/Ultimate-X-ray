@@ -22,7 +22,7 @@ const FolderShape = () => {
         </div>
         <div className="border-l-lg border-l-transparent border-b-[48px] 2xl:border-b-[56px] border-b-wheat border-r-[40px] border-r-transparent rounded-tr-lg"></div>
       </div>
-      <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
+      <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="w-full px-5 pt-5 inline-flex justify-between items-center">
           <div className="inline-flex gap-5">
             <HNSearch />
