@@ -57,15 +57,13 @@ const Table = () => {
     <>
       <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
         <div>All studies</div>
-        <div className="flex items-center">
-          <span className="pr-1">Total</span>
-          {loading ? (
-            <Skeleton variant="text" width={10} height={30} />
-          ) : (
-            <span>{totalCases}</span>
-          )}
-          <span className="pl-1"> studies</span>
-        </div>
+        {loading ? (
+          <Skeleton variant="text" width={100} height={30} />
+        ) : (
+          <div className="flex items-center">
+            <span>Total {totalCases} studies</span>
+          </div>
+        )}
       </div>
       <div className="relative overflow-auto shadow-md w-full rounded-md border-[1px] border-light-gray">
         <table className="w-full text-left text-sm table-auto">

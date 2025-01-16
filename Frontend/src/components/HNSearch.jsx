@@ -18,7 +18,7 @@ const HNSearch = () => {
         <div className="mb-4">
           <label
             htmlFor="patientID"
-            className="block text-vivid-blue 2xl:text-lg text-base mb-2"
+            className="block text-vivid-blue 2xl:text-lg text-base mb-1 pl-2"
           >
             Patient ID
           </label>
@@ -34,7 +34,7 @@ const HNSearch = () => {
               />
               <button
                 type="submit"
-                className="absolute inset-y-0 right-0 text-sm flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat rounded-full w-auto p-2 m-[2px]"
+                className="absolute inset-y-0 right-0 text-sm flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat duration-200 rounded-full w-auto p-2 m-[2px]"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

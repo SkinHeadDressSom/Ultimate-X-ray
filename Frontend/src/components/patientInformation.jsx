@@ -51,7 +51,9 @@ const PatientInformation = () => {
                         <th>
                           <Skeleton variant="text" width="100px" />
                         </th>
-                        <th className="px-5">:</th>
+                        <th>
+                          <Skeleton variant="text" width="20px" />
+                        </th>
                         <td>
                           <Skeleton variant="text" width="150px" />
                         </td>
