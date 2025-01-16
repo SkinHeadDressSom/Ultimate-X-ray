@@ -52,6 +52,14 @@ services:
     depends_on:
       - postgres-service
 
+  fetch-data-service:
+    build: ./services/fetch-data
+    env_file: "./services/fetch-data/.env"
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgres-service
+
     # mongo:
     #   image: mongo:latest
     #   ports:
