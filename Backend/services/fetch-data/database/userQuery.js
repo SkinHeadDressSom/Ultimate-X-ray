@@ -39,7 +39,6 @@ async function getUserbyID(id) {
     console.error("Database error in getUserbyID:", error.message);
     // return an error object
     return {
-      error: true,
       error: error.message,
       code: error.code || "UNKNOWN_ERROR",
     };
