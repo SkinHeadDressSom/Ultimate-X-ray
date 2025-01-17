@@ -3,6 +3,8 @@ const { getUserbyID } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
 RESPONSE_MESSAGES.authError = "Authentication error";
+RESPONSE_MESSAGES.taskError = "An error occurred at auth";
+
 const validateToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;
@@ -31,7 +33,7 @@ const validateToken = async (req, res, next) => {
 
     const user = await getUserbyID(decoded);
     // Handling query error
-    if (user.error) {
+    if (user?.error) {
       return res.status(500).json({
         message: RESPONSE_MESSAGES.databaseError,
         error: user.error,
@@ -58,12 +60,10 @@ const checkToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      return res
-        .status(401)
-        .json({
-          message: RESPONSE_MESSAGES.invalidToken,
-        })
-        .clearCookie("token");
+      res.clearCookie("token");
+      return res.status(401).json({
+        message: RESPONSE_MESSAGES.invalidToken,
+      });
     }
     // if token is valid -> pass to next middleware
     return next();

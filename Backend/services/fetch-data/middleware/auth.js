@@ -58,12 +58,10 @@ const checkToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
-      return res
-        .status(401)
-        .json({
-          message: RESPONSE_MESSAGES.invalidToken,
-        })
-        .clearCookie("token");
+      res.clearCookie("token");
+      return res.status(401).json({
+        message: RESPONSE_MESSAGES.invalidToken,
+      });
     }
     // if token is valid -> pass to next middleware
     return next();
