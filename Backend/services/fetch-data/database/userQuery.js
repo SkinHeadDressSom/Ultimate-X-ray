@@ -49,7 +49,7 @@ async function getUserbyID(id) {
 async function createUser(username, password) {
   try {
     const query =
-      "INSERT INTO doctor (username, password) VALUES ($1, $2) RETURNING *";
+      "INSERT INTO doctor (username, password, role) VALUES ($1, $2, 'medical_staff') RETURNING *";
     const result = await pool.query(query, [username, password]);
     return result.rows.length === 0
       ? null
