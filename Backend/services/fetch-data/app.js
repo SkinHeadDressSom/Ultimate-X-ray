@@ -1,7 +1,8 @@
 // app.js
 const express = require("express");
 const dotenv = require("dotenv");
-//const cookieParser = require("cookie-parser");
+const cookieParser = require("cookie-parser");
+// import routes
 const pool = require("./database/postgres-config");
 const cors = require("cors");
 dotenv.config();
