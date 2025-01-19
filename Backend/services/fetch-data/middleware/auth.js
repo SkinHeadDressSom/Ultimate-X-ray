@@ -15,23 +15,18 @@ const validateToken = async (req, res, next) => {
     }
 
     const decoded = await decodeToken(token);
-    // Check if the token has expired
-    if (decoded.tokenExpired) {
+    // Handling token decode error and token expired
+    if (decoded.error || decoded.tokenExpired) {
+      res.clearCookie("token");
       return res.status(401).json({
         message: RESPONSE_MESSAGES.invalidToken,
-      });
-    }
-    // Handling token decode error
-    if (decoded.error) {
-      return res.status(500).json({
-        message: RESPONSE_MESSAGES.taskError,
         error: decoded.error,
       });
     }
 
-    const user = await getUserbyID(decoded);
+    const user = await getUserbyID(decoded.user_id);
     // Handling query error
-    if (user.error) {
+    if (user?.error) {
       return res.status(500).json({
         message: RESPONSE_MESSAGES.databaseError,
         error: user.error,
@@ -39,6 +34,7 @@ const validateToken = async (req, res, next) => {
     }
 
     if (!user) {
+      res.clearCookie("token");
       return res.status(401).json({
         message: RESPONSE_MESSAGES.invalidToken,
       });
@@ -47,6 +43,7 @@ const validateToken = async (req, res, next) => {
     // token is valid -> pass to next middleware
     return next();
   } catch (error) {
+    res.clearCookie("token");
     //console.log("function error:", error.message);
     return res.status(500).json({
       message: RESPONSE_MESSAGES.authError,

@@ -2,7 +2,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
-// import routes
+const patientRoute = require("./routes/patientRoute");
 const pool = require("./database/postgres-config");
 const cors = require("cors");
 dotenv.config();
@@ -26,7 +26,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(cors());
 // Routes
-//app.use("/api", authRoute);
+app.use("/api", patientRoute);
 
 // Start server
 app.listen(port, () => {
