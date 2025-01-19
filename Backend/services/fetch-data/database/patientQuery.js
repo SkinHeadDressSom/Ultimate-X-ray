@@ -1,7 +1,7 @@
 const pool = require("./postgres-config");
 
 // get patient
-async function getPatient(id) {
+async function getPatientbyID(id) {
   try {
     const query = `SELECT * FROM patients WHERE patient_id = $1`;
     const result = await pool.query(query, [id]);
@@ -29,4 +29,4 @@ async function getPatient(id) {
   }
 }
 
-module.exports = { getPatient };
+module.exports = { getPatientbyID };

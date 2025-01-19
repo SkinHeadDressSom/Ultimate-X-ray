@@ -14,7 +14,7 @@ const fetchPatient = async (req, res) => {
       });
     }
 
-    const patient = await getPatient(patient_id);
+    const patient = await getPatientbyID(patient_id);
     // Handling query error
     if (patient?.error) {
       return res.status(500).json({
