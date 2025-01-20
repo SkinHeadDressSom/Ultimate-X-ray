@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
 import patientData from "../assets/mockup";
 
-
 const PatientInformation = () => {
   // handle loading status
   const [loading, setLoading] = useState(true);
@@ -23,7 +22,7 @@ const PatientInformation = () => {
     { label: "Sex", value: patientData.sex },
     { label: "Weight", value: patientData.weight },
     { label: "Height", value: patientData.height },
-    { label: "Phone No.", value: patientData.phone },
+    { label: "Phone", value: patientData.phone },
   ];
 
   return (
@@ -52,7 +51,9 @@ const PatientInformation = () => {
                         <th>
                           <Skeleton variant="text" width="100px" />
                         </th>
-                        <th className="px-5">:</th>
+                        <th>
+                          <Skeleton variant="text" width="20px" />
+                        </th>
                         <td>
                           <Skeleton variant="text" width="150px" />
                         </td>
@@ -62,7 +63,7 @@ const PatientInformation = () => {
                   patientDetails.map(({ label, value }, index) => (
                     <tr key={index}>
                       <th>{label}</th>
-                      <th className="px-5">:</th>
+                      <th className="px-3">:</th>
                       <td>{value}</td>
                     </tr>
                   ))}

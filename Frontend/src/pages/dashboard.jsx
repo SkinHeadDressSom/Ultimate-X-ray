@@ -5,10 +5,8 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <main className="bg-lightest-blue w-screen h-screen ">
-        <div className="py-5 px-10">
-          <FolderShape />
-        </div>
+      <main className="bg-lightest-blue w-screen h-screen py-5 px-10">
+        <FolderShape />
       </main>
     </>
   );
