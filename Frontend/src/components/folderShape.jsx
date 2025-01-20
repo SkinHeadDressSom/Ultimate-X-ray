@@ -39,10 +39,6 @@ const FolderShape = () => {
             <PatientInformation />
           </aside>
           <main className="w-9/12 2xl:w-10/12">
-            <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
-              <div>All case</div>
-              <div>Total 2 studies</div>
-            </div>
             <Table />
           </main>
         </div>
