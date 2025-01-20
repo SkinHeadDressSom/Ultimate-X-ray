@@ -11,6 +11,7 @@ async function getPatientbyID(id) {
       ? null
       : {
           patient_id: result.rows[0].patient_id,
+          HN: result.rows[0].HN,
           first_name: result.rows[0].first_name,
           last_name: result.rows[0].last_name,
           date_of_birth: result.rows[0].date_of_birth,
@@ -18,6 +19,7 @@ async function getPatientbyID(id) {
           height: result.rows[0].height,
           weight: result.rows[0].weight,
           phone: result.rows[0].phone,
+          address: result.rows[0].address,
         };
   } catch (error) {
     console.error("Database error in getPatient:", error.message);
