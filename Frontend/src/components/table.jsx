@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import StatusExamine from "./statusExamine";
+import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
@@ -30,7 +30,7 @@ const Table = () => {
   // Skeleton Loader Row Component
   const SkeletonRow = () => (
     <tr className="even:bg-extra-light-blue odd:bg-wheat">
-      {Array(9)
+      {Array(8)
         .fill(null)
         .map((_, idx) => (
           <td key={idx} className={commonTableStyles}>
@@ -45,8 +45,8 @@ const Table = () => {
 
   // Status Component Selector
   const renderStatus = (status) => {
-    if (status === "Examine") {
-      return <StatusExamine />;
+    if (status === "Complete") {
+      return <StatusComplete />;
     } else if (status === "Scheduled") {
       return <StatusSchedule />;
     }
@@ -89,7 +89,6 @@ const Table = () => {
               </th>
               <th className={commonHeadTableStyles}>Time</th>
               <th className={commonHeadTableStyles}>Accession No.</th>
-              <th className={commonHeadTableStyles}>Case ID</th>
               <th className={commonHeadTableStyles}>Images</th>
             </tr>
           </thead>
@@ -144,7 +143,6 @@ const Table = () => {
                     <td className={commonTableStyles}>{caseItem.date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
                     <td className={commonTableStyles}>{caseItem.accession}</td>
-                    <td className={commonTableStyles}>{caseItem.caseId}</td>
                     <td className={commonTableStyles}>{caseItem.images}</td>
                   </tr>
                 ))}
