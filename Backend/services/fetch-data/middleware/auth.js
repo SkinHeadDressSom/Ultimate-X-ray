@@ -24,7 +24,7 @@ const validateToken = async (req, res, next) => {
       });
     }
 
-    const user = await getUserbyID(decoded);
+    const user = await getUserbyID(decoded.user_id);
     // Handling query error
     if (user?.error) {
       return res.status(500).json({
