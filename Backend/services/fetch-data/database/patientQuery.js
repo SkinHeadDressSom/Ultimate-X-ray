@@ -1,16 +1,15 @@
 const pool = require("./postgres-config");
 
 // get patient
-async function getPatientbyID(id) {
+async function getPatientbyHN(hn) {
   try {
-    const query = `SELECT * FROM patients WHERE patient_id = $1`;
-    const result = await pool.query(query, [id]);
+    const query = `SELECT * FROM patients WHERE hn = $1`;
+    const result = await pool.query(query, [hn]);
 
     // check if query is empty
     return result.rows.length === 0
       ? null
       : {
-          patient_id: result.rows[0].patient_id,
           HN: result.rows[0].HN,
           first_name: result.rows[0].first_name,
           last_name: result.rows[0].last_name,
@@ -31,4 +30,4 @@ async function getPatientbyID(id) {
   }
 }
 
-module.exports = { getPatientbyID };
+module.exports = { getPatientbyHN };
