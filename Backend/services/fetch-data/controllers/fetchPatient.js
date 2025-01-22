@@ -1,5 +1,5 @@
 const { getPatientbyHN } = require("../database/patientQuery");
-const { CalculateAge } = require("../utils/ConvertData");
+const { CalculateAge } = require("../utils/CalculateAge");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
 const fetchPatient = async (req, res) => {

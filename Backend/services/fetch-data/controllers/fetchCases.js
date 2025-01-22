@@ -1,6 +1,6 @@
 const { getCasebyHN } = require("../database/caseQuery");
 const { getImageCount } = require("../database/imageQuery");
-const { SplitDateandTime } = require("../utils/ConvertData");
+const { SplitDateandTime } = require("../utils/SplitDateandTime");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
 const fetchCases = async (req, res) => {
