@@ -34,7 +34,7 @@ const fetchCases = async (req, res) => {
       });
     }
 
-    const updated_cases = await Promise.all(
+    const enriched_cases = await Promise.all(
       cases.map(async (caseItem) => {
         // query image
         const image = await getImageCount(caseItem.AN);
@@ -69,7 +69,7 @@ const fetchCases = async (req, res) => {
     // Fetch case succesfully
     return res.status(200).json({
       message: RESPONSE_MESSAGES.taskSuccess,
-      data: updated_cases,
+      data: enriched_cases,
     });
   } catch (error) {
     console.error("Error in fetch case controller ->", error.message);
