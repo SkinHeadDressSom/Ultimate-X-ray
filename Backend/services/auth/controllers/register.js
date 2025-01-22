@@ -2,11 +2,11 @@ const { hashPassword } = require("../utils/PasswordManagement");
 const { getUser, createUser } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
-RESPONSE_MESSAGES.taskError = "An error occurred at register";
-RESPONSE_MESSAGES.taskSuccess = "Register successfully";
-RESPONSE_MESSAGES.userConflict = "User already exists";
-
 const register = async (req, res) => {
+  RESPONSE_MESSAGES.taskError = "An error occurred at register";
+  RESPONSE_MESSAGES.taskSuccess = "Register successfully";
+  RESPONSE_MESSAGES.userConflict = "User already exists";
+
   try {
     const { username, password } = req.body;
 
@@ -16,14 +16,16 @@ const register = async (req, res) => {
       });
     }
 
-    const existUser = await getUser(username);
+    const existUser = await getUser(username); // return null if no user exist: else obj
     // Handling query error
-    if (existUser.error) {
+    if (existUser?.error) {
+      // ?. if any part is null, then null
       return res.status(500).json({
         message: RESPONSE_MESSAGES.taskError,
         error: existUser.error,
       });
     }
+
     // Checking replication of username
     if (existUser) {
       return res.status(409).json({
