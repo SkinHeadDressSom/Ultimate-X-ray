@@ -7,10 +7,10 @@ const { validateToken } = require("../middleware/auth");
 
 // get patient by id
 router.get(
-  "/fetch-patient/:hn",
+  "/patients/:hn",
   validateToken,
   fetchPatientController.fetchPatient
 );
 
-router.get("/fetch-cases/:hn", validateToken, fetchCasesController.fetchCases);
+router.get("/patients/:hn/cases", validateToken, fetchCasesController.fetchCases);
 module.exports = router;
