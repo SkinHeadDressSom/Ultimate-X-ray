@@ -1,20 +1,22 @@
-const { getPatient } = require("../database/patientQuery");
+const { getPatientbyHN } = require("../database/patientQuery");
+const { CalculateAge } = require("../utils/CalculateAge");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
 const fetchPatient = async (req, res) => {
   RESPONSE_MESSAGES.taskError = "An error occurred at fetch patient";
   RESPONSE_MESSAGES.taskSuccess = "Fetch patient successfully";
   RESPONSE_MESSAGES.missingArguments = "Patient ID is missing";
+  RESPONSE_MESSAGES.notFound = "Patient not found";
   try {
-    const { patient_id } = req.body;
-    // Check if the patient_id are null
-    if (!patient_id) {
+    const { hn } = req.params;
+    // Check if the hn are null
+    if (!hn) {
       return res.status(400).json({
         message: RESPONSE_MESSAGES.missingArguments,
       });
     }
 
-    const patient = await getPatientbyID(patient_id);
+    const patient = await getPatientbyHN(hn);
     // Handling query error
     if (patient?.error) {
       return res.status(500).json({
@@ -26,18 +28,12 @@ const fetchPatient = async (req, res) => {
     // Check if the user exists in database
     if (!patient) {
       return res.status(404).json({
-        message: RESPONSE_MESSAGES.invalidCredentials,
+        message: RESPONSE_MESSAGES.notFound,
       });
     }
 
     // calculate age from date of birth
-    age = CalculateAge(patient.date_of_birth);
-    if (patient.age?.error) {
-      return res.status(500).json({
-        message: RESPONSE_MESSAGES.taskError,
-        error: error.message,
-      });
-    }
+    age = await CalculateAge(patient.date_of_birth);
     // Handle CalculateAge error
     if (age === null) {
       return res.status(500).json({
@@ -57,27 +53,6 @@ const fetchPatient = async (req, res) => {
       message: RESPONSE_MESSAGES.taskError,
       error: error.message,
     });
-  }
-};
-
-const CalculateAge = (dobString) => {
-  try {
-    const dob = new Date(dobString); // date of birth
-    const today = new Date();
-
-    let age = today.getFullYear() - dob.getFullYear();
-    const month_diff = today.getMonth() - dob.getMonth();
-    const day_diff = today.getDate() - dob.getDate();
-
-    // Check if the day and month has passed yet
-    if (month_diff < 0 || (month_diff === 0 && day_diff < 0)) {
-      age--;
-    }
-
-    return age;
-  } catch (error) {
-    console.error("Error at Calculate Age function:", error.message);
-    return null;
   }
 };
 

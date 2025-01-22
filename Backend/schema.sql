@@ -1,6 +1,16 @@
 -- Create Enum Type\
 CREATE TYPE status_type AS ENUM ('Pending', 'Completed');
 
+-- Create Users Table
+CREATE TABLE Users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(30) NOT NULL,
+    name VARCHAR(40) NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(40),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
 -- Create Patients Table
 CREATE TABLE Patients (
     patient_id SERIAL PRIMARY KEY,
@@ -19,6 +29,7 @@ CREATE TABLE Patients (
 CREATE TABLE MedicalRecords (
     record_id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL REFERENCES Patients(patient_id),
+    user_id INT NOT NULL REFERENCES Users(user_id),
     AN INT NOT NULL UNIQUE,
     description TEXT,
     clinical_history  TEXT,
@@ -50,38 +61,43 @@ CREATE TABLE Annotations (
     image_id INT NOT NULL REFERENCES Images(image_id),
     bounding_data JSON,
     annotation_detail TEXT,
-    created_by INT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
--- Create Users Table
-CREATE TABLE Users (
-    user_id SERIAL PRIMARY KEY,
-    username VARCHAR(30) NOT NULL,
-    password_hash TEXT NOT NULL,
-    role VARCHAR(40),
-    created_at TIMESTAMP DEFAULT NOW()
-);
 
--- Insert Sample Data
+-- Insert Users
+INSERT INTO Users (username, name, password_hash, role) VALUES
+('test', 'Thomas Shelby', '$2a$10$JJsQTNUQyWnp89rdvkAXgOTSdfTKN9pq1L277KW/.wMqwiW234jvm', 'General Practitioner');
+
+-- Insert Patients
 INSERT INTO Patients (HN, first_name, last_name, date_of_birth, sex, height, weight, phone, address) VALUES
-(93800043, 'John', 'Doe', '1985-06-15', 'Male', 180, 75, '1234567890', '123 Main St'),
-(45637289, 'Jane', 'Smith', '1990-08-22', 'Female', 165, 60, '9876543210', '456 Elm St');
+(93800044, 'Alice', 'Brown', '1982-03-11', 'Female', 170, 65, '3216549870', '789 Pine St'),
+(93800045, 'Charlie', 'Davis', '1995-12-02', 'Male', 175, 80, '6549873210', '123 Oak St'),
+(93800046, 'Emily', 'Evans', '1988-09-14', 'Female', 160, 55, '7890123456', '456 Maple St'),
+(93800047, 'Frank', 'Green', '1975-11-30', 'Male', 185, 90, '8901234567', '789 Cedar St'),
+(93800048, 'Grace', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
 
-INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, attached_images, status) VALUES
-(134985, 1, 'Hypertension', 'Routine check-up', 'Chest AP' ,'Lung Fields No evidence of pneumothorax', 'Healthy', 'Maintain diet', 'No issues', 1, 'Completed'),
-(211328, 2, 'Asthma', 'Follow-up', 'Chest PA' ,'Pleura : Mild pleural thickening on the right side; no pleural effusin noted.', 'Requires monitoring', 'Continue medication', 'Scheduled next visit', 2, 'Pending');
+-- Insert MedicalRecords
+INSERT INTO MedicalRecords (AN, patient_id, user_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, attached_images, status) VALUES
+(134986, 1, 1, 'Diabetes', 'Blood sugar check', 'Blood test', 'Normal levels', 'Stable', 'Continue medication', 'Monitor levels', 3, 'Completed'),
+(134987, 1, 1, 'Back pain', 'MRI scan', 'Spinal scan', 'Mild disc bulge', 'Requires physiotherapy', 'Under observation', 'Follow exercise routine', 4, 'Pending'),
+(134988, 2, 1, 'Heart disease', 'ECG', 'Heart function test', 'Mild arrhythmia', 'Monitor closely', 'Requires medication', 'Advised diet changes', 5, 'Completed'),
+(134989, 2, 1, 'Allergy', 'Skin test', 'Allergic reaction', 'Positive for pollen', 'Avoid allergens', 'Mild symptoms', 'Use antihistamines', 6, 'Pending'),
+(134990, 2, 1, 'Flu', 'Physical exam', 'Routine check', 'Normal flu symptoms', 'Rest and hydrate', 'Mild illness', 'No issues', 7, 'Completed');
 
+-- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782315, 1, '/images/patient1_scan1.jpg', NOW(), NOW(), 'Normal'),
-(118948, 2, '/images/patient2_scan1.jpg', NOW(), NULL, 'Abnormal');
+(782316, 1, '/images/patient3_scan1.jpg', NOW(), NOW(), 'Normal'),
+(782317, 1, '/images/patient4_scan1.jpg', NOW(), NULL, 'Abnormal'),
+(782318, 1, '/images/patient5_scan1.jpg', NOW(), NOW(), 'Abnormal'),
+(782319, 2, '/images/patient6_scan1.jpg', NOW(), NOW(), 'Normal'),
+(782320, 2, '/images/patient7_scan1.jpg', NOW(), NULL, 'Normal');
 
-INSERT INTO Annotations (image_id, bounding_data, created_by, created_at) VALUES
-(1, '{"x": 10, "y": 20, "width": 50, "height": 50}', 1, NOW()),
-(2, '{"x": 15, "y": 25, "width": 60, "height": 60}', 2, NOW());
-
-INSERT INTO Users (username, password_hash, role) VALUES
-('doctor1', 'hashed_password_1', 'Radiologist'),
-('doctor2', 'hashed_password_2', 'General practitioner'),
-('doctor3', 'hashed_password_3', 'Radiological technician ');
+-- Insert Annotations
+INSERT INTO Annotations (image_id, bounding_data, created_at) VALUES
+(1, '{"x": 20, "y": 30, "width": 40, "height": 40}', NOW()),
+(2, '{"x": 25, "y": 35, "width": 45, "height": 45}', NOW()),
+(3, '{"x": 30, "y": 40, "width": 50, "height": 50}', NOW()),
+(4, '{"x": 35, "y": 45, "width": 55, "height": 55}', NOW()),
+(5, '{"x": 40, "y": 50, "width": 60, "height": 60}', NOW());
