@@ -7,6 +7,8 @@ async function getCasebyHN(hn) {
                     FROM medicalrecords AS m
                     INNER JOIN patients AS p
                     ON m.patient_id = p.patient_id 
+                    INNER JOIN users AS u
+                    ON m.user_id = u.user_id
                     WHERE p.HN = $1`;
     const result = await pool.query(query, [hn]);
 
@@ -21,6 +23,7 @@ async function getCasebyHN(hn) {
       status: row.status,
       description: row.description,
       study_date: row.created_at,
+      responsible_doctor: row.name,
     }));
 
     return cases;
