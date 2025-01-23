@@ -1,10 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import HNSearch from "./HNSearch";
 import PatientInformation from "./patientInformation";
 import Table from "./table";
 import ViewerButton from "./viewerButton";
+import axios from "axios";
 
-const FolderShape = () => {
+const FolderShape = ({ patient }) => {
+  const [patientData, setPatientData] = useState(patient);
+  const [patientCases, setPatientCases] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const getPatientCases = async (HN) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/patients/${HN}/cases`,
+        { withCredentials: true }
+      );
+      setPatientCases(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  const handlePatientDataFetched = (data) => {
+    setPatientData(data);
+    getPatientCases(data.hn);
+  };
+
   return (
     <div className="flex flex-col">
       <div className="inline-flex">
@@ -24,7 +48,7 @@ const FolderShape = () => {
       <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="w-full px-5 pt-5 inline-flex justify-between items-center">
           <div className="inline-flex gap-5">
-            <HNSearch />
+            <HNSearch onPatientDataFetched={handlePatientDataFetched} />
             {/* <NameSearch /> */}
           </div>
           <div>
@@ -34,10 +58,10 @@ const FolderShape = () => {
 
         <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
           <aside className="w-5/12 xl:w-3/12 2xl:w-4/12">
-            <PatientInformation />
+            <PatientInformation patient={patientData} />
           </aside>
           <main className="w-9/12 2xl:w-10/12">
-            <Table />
+            <Table patientCases={patientCases} />
           </main>
         </div>
       </div>

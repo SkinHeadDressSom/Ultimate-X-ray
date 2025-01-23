@@ -59,7 +59,7 @@ const login = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "Lax",
     });
 
     // Login succesfully

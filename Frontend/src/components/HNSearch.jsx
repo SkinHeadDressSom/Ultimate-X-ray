@@ -1,27 +1,37 @@
 import axios from "axios";
 import React, { useState } from "react";
 
-const HNSearch = () => {
+const HNSearch = ({ onPatientDataFetched }) => {
   const [patientID, setPatientID] = useState("");
+  const [patientData, setPatientData] = useState(null);
+  const [error, setError] = useState(null);
   //หา HN
 
   // fetch Patient
   const getPatient = async (HN) => {
-    axios
-      .get(`http://localhost:8000/fetch-data/api/patients/${HN}`)
-      .then(function (response) {
-        console.log(response.data);
-        return response.data;
-      })
-      .catch(function (error) {
-        console.log(error.message);
-        console.log(error);
-      });
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/patients/${HN}`,
+        { withCredentials: true }
+      );
+      console.log(response.data);
+      setPatientData(response.data.data);
+      setError(null);
+      onPatientDataFetched(response.data.data);
+    } catch (error) {
+      console.log(error);
+      setError("Patient not found");
+      setPatientData(null);
+    }
   };
 
   const handleSearchHN = (e) => {
     e.preventDefault();
-    getPatient(patientID);
+    if (patientID) {
+      getPatient(patientID);
+    } else {
+      setError("Please enter a valid Patient ID");
+    }
   };
 
   const handleChange = (e) => {

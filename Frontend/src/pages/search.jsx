@@ -9,32 +9,31 @@ const SearchPatient = () => {
 
   // fetch Patient
   const getPatient = async (HN) => {
-    axios
-      .get(`http://localhost:8000/fetch-data/api/patients/${HN}`, {
-        withCredentials: true,
-      })
-      .then(function (response) {
-        console.log("Response.data");
-        console.log(response.data);
-        return response.data.data;
-      })
-      .catch(function (error) {
-        console.log("Error");
-        console.log(error.message);
-        console.log(error);
-      });
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/patients/${HN}`,
+        { withCredentials: true }
+      );
+      console.log(response.data); 
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;  
+    }
   };
 
   // ฟังก์ชั่นแจ้งเตือนการค้นหาข้อมูลผู้ป่วย
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    const patient = getPatient(patientID);
 
     if (patientID.trim() === "") {
       setError("Patient ID cannot be empty");
-    } else if (patient) {
-      console.log(patient);
-      //navigate("/dashboard");
+    }
+    
+    const patient = await getPatient(patientID);
+
+    if (patient) {
+      navigate("/dashboard", { state: { patient } });
     } else {
       setError("Invalid patient ID");
     }

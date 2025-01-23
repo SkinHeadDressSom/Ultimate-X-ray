@@ -6,7 +6,7 @@ RESPONSE_MESSAGES.authError = "Authentication error";
 const validateToken = async (req, res, next) => {
   try {
     const token = req.cookies.token;
-    if (req.cookies.token) {
+    if (req.cookies) {
       console.log("Cookies received:", req.cookies);
     } else {
       console.log("No cookie found");

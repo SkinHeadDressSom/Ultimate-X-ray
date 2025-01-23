@@ -10,8 +10,8 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./databasepg:/var/lib/postgresql/data # Mount the data directory for persistence
-      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql # Mount the schema file and initialization
+      # - ./databasepg:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     restart: always
 
   kong-db:
@@ -40,12 +40,6 @@ services:
     depends_on:
       - kong-db
 
-  test-service:
-    build: ./services/test
-    env_file: "./services/test/.env"
-    ports:
-      - "4000:4000"
-
   auth-service:
     build: ./services/auth
     env_file: "./services/auth/.env"
@@ -61,11 +55,6 @@ services:
       - "3002:3002"
     depends_on:
       - postgres-service
-
-    # mongo:
-    #   image: mongo:latest
-    #   ports:
-    #     - "27017:27017"
 
 volumes:
   kong-db-data:
