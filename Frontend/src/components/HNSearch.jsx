@@ -1,11 +1,27 @@
-import React from "react";
-import { useState } from "react";
+import axios from "axios";
+import React, { useState } from "react";
 
 const HNSearch = () => {
   const [patientID, setPatientID] = useState("");
   //หา HN
+
+  // fetch Patient
+  const getPatient = async (HN) => {
+    axios
+      .get(`http://localhost:8000/fetch-data/api/patients/${HN}`)
+      .then(function (response) {
+        console.log(response.data);
+        return response.data;
+      })
+      .catch(function (error) {
+        console.log(error.message);
+        console.log(error);
+      });
+  };
+
   const handleSearchHN = (e) => {
     e.preventDefault();
+    getPatient(patientID);
   };
 
   const handleChange = (e) => {

@@ -1,9 +1,8 @@
 import React from "react";
-import PatientInformation from "./patientInformation";
 import HNSearch from "./HNSearch";
-import NameSearch from "./nameSearch";
-import ViewerButton from "./viewerButton";
+import PatientInformation from "./patientInformation";
 import Table from "./table";
+import ViewerButton from "./viewerButton";
 
 const FolderShape = () => {
   return (
@@ -26,7 +25,7 @@ const FolderShape = () => {
         <div className="w-full px-5 pt-5 inline-flex justify-between items-center">
           <div className="inline-flex gap-5">
             <HNSearch />
-            <NameSearch />
+            {/* <NameSearch /> */}
           </div>
           <div>
             <ViewerButton />

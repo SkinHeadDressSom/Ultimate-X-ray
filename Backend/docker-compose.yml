@@ -44,7 +44,7 @@ services:
     build: ./services/test
     env_file: "./services/test/.env"
     ports:
-      - "3000:3000"
+      - "4000:4000"
 
   auth-service:
     build: ./services/auth

@@ -1,4 +1,6 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 
 function Login() {
@@ -6,14 +8,33 @@ function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const postLogin = async (username, password) => {
+    axios
+      .post(
+        "http://localhost:8000/auth/api/login",
+        {
+          username: username,
+          password: password,
+        },
+        { withCredentials: true }
+      )
+      .then(function (response) {
+        console.log("Login successful:", response.data);
+        console.log("Login successful:", response.data);
+        // Navigate to dashboard page after successful login
+        navigate("/dashboard");
+      })
+      .catch(function (error) {
+        setError("Invalid username or password");
+        console.log(error);
+      });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === "admin" && password === "password") {
-      setError("");
-    } else {
-      setError("Invalid username or password");
-    }
+    postLogin(username, password);
   };
 
   const togglePasswordVisibility = () => {
@@ -88,7 +109,9 @@ function Login() {
                 )}
               </button>
             </div>
-            {error && <p className="text-red-500 text-sm text-left mt-1">{error}</p>}
+            {error && (
+              <p className="text-red-500 text-sm text-left mt-1">{error}</p>
+            )}
           </div>
 
           {/* ปุ่ม login */}
