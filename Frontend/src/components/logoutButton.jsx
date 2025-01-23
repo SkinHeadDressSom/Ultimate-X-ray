@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const LogoutButton = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
   const postLogout = async () => {
     axios
       .post(
@@ -14,18 +15,16 @@ const LogoutButton = () => {
       )
       .then(function (response) {
         console.log("Logout successful:", response.data);
-
         navigate("/");
       })
       .catch(function (error) {
-        setError("Invalid username or password");
+        setError("Invalid cookie");
         console.log(error);
       });
   };
   const handleLogout = (e) => {
     e.preventDefault();
-    navigate("/");
-    //postLogout();
+    postLogout();
   };
 
   return (
