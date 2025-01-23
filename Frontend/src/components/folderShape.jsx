@@ -13,7 +13,7 @@ const FolderShape = ({ patient }) => {
   const getPatientCases = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/api/patients/${HN}/cases`,
+        `http://localhost:8000/fetch-data/api/patients/${HN}/cases`,
         { withCredentials: true }
       );
       setPatientCases(response.data.data);

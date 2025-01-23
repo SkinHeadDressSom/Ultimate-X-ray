@@ -11,7 +11,7 @@ const SearchPatient = () => {
   const getPatient = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/api/patients/${HN}`,
+        `http://localhost:8000/fetch-data/api/patients/${HN}`,
         { withCredentials: true }
       );
       console.log(response.data); 
