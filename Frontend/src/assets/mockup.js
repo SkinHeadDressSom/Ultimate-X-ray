@@ -10,7 +10,7 @@ const patientData = {
     phone: "0626377194",
     case:[{
         caseId: "456787",
-        status: "Examine",
+        status: "Complete",
         description: "Chest PA",
         date: "23/01/2024", 
         time: "12:34:33",

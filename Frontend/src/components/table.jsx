@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import StatusExamine from "./statusExamine";
+import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
@@ -30,7 +30,7 @@ const Table = () => {
   // Skeleton Loader Row Component
   const SkeletonRow = () => (
     <tr className="even:bg-extra-light-blue odd:bg-wheat">
-      {Array(9)
+      {Array(8)
         .fill(null)
         .map((_, idx) => (
           <td key={idx} className={commonTableStyles}>
@@ -45,8 +45,8 @@ const Table = () => {
 
   // Status Component Selector
   const renderStatus = (status) => {
-    if (status === "Examine") {
-      return <StatusExamine />;
+    if (status === "Complete") {
+      return <StatusComplete />;
     } else if (status === "Scheduled") {
       return <StatusSchedule />;
     }
@@ -57,15 +57,13 @@ const Table = () => {
     <>
       <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
         <div>All studies</div>
-        <div className="flex items-center">
-          <span className="pr-1">Total</span>
-          {loading ? (
-            <Skeleton variant="text" width={10} height={30} />
-          ) : (
-            <span>{totalCases}</span>
-          )}
-          <span className="pl-1"> studies</span>
-        </div>
+        {loading ? (
+          <Skeleton variant="text" width={100} height={30} />
+        ) : (
+          <div className="flex items-center">
+            <span>Total {totalCases} studies</span>
+          </div>
+        )}
       </div>
       <div className="relative overflow-auto shadow-md w-full rounded-md border-[1px] border-light-gray">
         <table className="w-full text-left text-sm table-auto">
@@ -91,7 +89,6 @@ const Table = () => {
               </th>
               <th className={commonHeadTableStyles}>Time</th>
               <th className={commonHeadTableStyles}>Accession No.</th>
-              <th className={commonHeadTableStyles}>Case ID</th>
               <th className={commonHeadTableStyles}>Images</th>
             </tr>
           </thead>
@@ -146,7 +143,6 @@ const Table = () => {
                     <td className={commonTableStyles}>{caseItem.date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
                     <td className={commonTableStyles}>{caseItem.accession}</td>
-                    <td className={commonTableStyles}>{caseItem.caseId}</td>
                     <td className={commonTableStyles}>{caseItem.images}</td>
                   </tr>
                 ))}
