@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HNSearch from "./HNSearch";
 import PatientInformation from "./patientInformation";
 import Table from "./table";
@@ -28,6 +28,12 @@ const FolderShape = ({ patient }) => {
     setPatientData(data);
     getPatientCases(data.hn);
   };
+
+  useEffect(() => {
+    if (patientData && patientData.hn) {
+      getPatientCases(patientData.hn);
+    }
+  }, [patientData]);
 
   return (
     <div className="flex flex-col">
