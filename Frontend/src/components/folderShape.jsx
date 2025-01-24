@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import HNSearch from "./HNSearch";
 import PatientInformation from "./patientInformation";
 import Table from "./table";
@@ -13,7 +13,7 @@ const FolderShape = ({ patient }) => {
   const getPatientCases = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:3002/api/patients/${HN}/cases`,
+        `http://localhost:8000/fetch-data/api/patients/${HN}/cases`,
         { withCredentials: true }
       );
       setPatientCases(response.data.data);
@@ -28,6 +28,12 @@ const FolderShape = ({ patient }) => {
     setPatientData(data);
     getPatientCases(data.hn);
   };
+
+  useEffect(() => {
+    if (patientData && patientData.hn) {
+      getPatientCases(patientData.hn);
+    }
+  }, [patientData]);
 
   return (
     <div className="flex flex-col">
