@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
-import StatusComplete from "./statusComplete";
-import StatusSchedule from "./statusSchedule";
+import { Skeleton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
-import patientData from "../assets/mockup";
-import { Skeleton } from "@mui/material";
+import StatusComplete from "./statusComplete";
+import StatusSchedule from "./statusSchedule";
 
 const Table = ({ patientCases }) => {
   // Simulate loading state (replace with actual fetch)
@@ -143,7 +142,9 @@ const Table = ({ patientCases }) => {
                     <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
                     <td className={commonTableStyles}>{caseItem.AN}</td>
-                    <td className={commonTableStyles}>{caseItem.image_count}</td>
+                    <td className={commonTableStyles}>
+                      {caseItem.image_count}
+                    </td>
                   </tr>
                 ))}
           </tbody>

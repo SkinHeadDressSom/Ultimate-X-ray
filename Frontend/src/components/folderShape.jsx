@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import HNSearch from "./HNSearch";
 import PatientInformation from "./patientInformation";
 import Table from "./table";
 import ViewerButton from "./viewerButton";
-import axios from "axios";
 
 const FolderShape = ({ patient }) => {
   const [patientData, setPatientData] = useState(patient);
