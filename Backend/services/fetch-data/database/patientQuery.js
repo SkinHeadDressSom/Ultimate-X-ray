@@ -5,12 +5,11 @@ async function getPatientbyHN(hn) {
   try {
     const query = `SELECT * FROM patients WHERE hn = $1`;
     const result = await pool.query(query, [hn]);
-
     // check if query is empty
     return result.rows.length === 0
       ? null
       : {
-          HN: result.rows[0].HN,
+          hn: result.rows[0].hn,
           first_name: result.rows[0].first_name,
           last_name: result.rows[0].last_name,
           date_of_birth: result.rows[0].date_of_birth,

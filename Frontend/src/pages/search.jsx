@@ -1,15 +1,39 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SearchPatient = () => {
   const [patientID, setPatientID] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  // fetch Patient
+  const getPatient = async (HN) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:3002/api/patients/${HN}`,
+        { withCredentials: true }
+      );
+      console.log(response.data); 
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;  
+    }
+  };
 
   // ฟังก์ชั่นแจ้งเตือนการค้นหาข้อมูลผู้ป่วย
-  const handleSearch = () => {
+  const handleSearch = async (e) => {
+    e.preventDefault();
+
     if (patientID.trim() === "") {
       setError("Patient ID cannot be empty");
-    } else if (patientID === " patient ID ") {
-      setError("");
+    }
+    
+    const patient = await getPatient(patientID);
+
+    if (patient) {
+      navigate("/dashboard", { state: { patient } });
     } else {
       setError("Invalid patient ID");
     }

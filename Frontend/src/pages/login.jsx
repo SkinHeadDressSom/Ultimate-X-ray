@@ -1,21 +1,42 @@
+import axios from "axios";
 import React, { useState } from "react";
-import Logo from "../assets/logo.png";
+import { useNavigate } from "react-router-dom";
 import eyeClosed from "../assets/eyeClose.svg";
 import eyeOpen from "../assets/eyeOpen.svg";
+import Logo from "../assets/logo.png";
 
 function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const postLogin = async (username, password) => {
+    axios
+      .post(
+        "http://localhost:8000/auth/api/login",
+        {
+          username: username,
+          password: password,
+        },
+        { withCredentials: true }
+      )
+      .then(function (response) {
+        console.log("Login successful:", response.data);
+
+        // Navigate to dashboard page after successful login
+        navigate("/search");
+      })
+      .catch(function (error) {
+        setError("Invalid username or password");
+        console.log(error);
+      });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (username === "admin" && password === "password") {
-      setError("");
-    } else {
-      setError("Invalid username or password");
-    }
+    postLogin(username, password);
   };
 
   const togglePasswordVisibility = () => {
@@ -69,7 +90,11 @@ function Login() {
                 onClick={togglePasswordVisibility}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 text-vivid-blue"
               >
-                <img src={showPassword ? eyeOpen : eyeClosed} alt="Toggle Password Visibility" className="w-6 h-auto active:scale-105 duration-300"></img>
+                <img
+                  src={showPassword ? eyeOpen : eyeClosed}
+                  alt="Toggle Password Visibility"
+                  className="w-6 h-auto active:scale-105 duration-300"
+                ></img>
               </button>
             </div>
             {error && (
