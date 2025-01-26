@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from "react";
-import StatusComplete from "./statusComplete";
-import StatusSchedule from "./statusSchedule";
+import { Skeleton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
-import patientData from "../assets/mockup";
-import { Skeleton } from "@mui/material";
+import StatusComplete from "./statusComplete";
+import StatusSchedule from "./statusSchedule";
 
-const Table = () => {
+const Table = ({ patientCases }) => {
   // Simulate loading state (replace with actual fetch)
   const [loading, setLoading] = useState(true);
   const [checkedState, setCheckedState] = useState({});
   // Common table cell styles
   const commonTableStyles = "px-4 py-3";
   const commonHeadTableStyles = "px-4 py-1";
-  const totalCases = patientData.case.length;
+  const totalCases = patientCases.length;
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000); // Simulate a 2-second data fetch delay
@@ -45,7 +44,7 @@ const Table = () => {
 
   // Status Component Selector
   const renderStatus = (status) => {
-    if (status === "Complete") {
+    if (status === "Completed") {
       return <StatusComplete />;
     } else if (status === "Scheduled") {
       return <StatusSchedule />;
@@ -97,7 +96,7 @@ const Table = () => {
               ? Array(2)
                   .fill(0)
                   .map((_, index) => <SkeletonRow key={index} />)
-              : patientData.case.map((caseItem, index) => (
+              : patientCases.map((caseItem, index) => (
                   <tr
                     key={caseItem.caseId}
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
@@ -140,10 +139,12 @@ const Table = () => {
                     <td className={commonTableStyles}>
                       {caseItem.description}
                     </td>
-                    <td className={commonTableStyles}>{caseItem.date}</td>
+                    <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.accession}</td>
-                    <td className={commonTableStyles}>{caseItem.images}</td>
+                    <td className={commonTableStyles}>{caseItem.AN}</td>
+                    <td className={commonTableStyles}>
+                      {caseItem.image_count}
+                    </td>
                   </tr>
                 ))}
           </tbody>

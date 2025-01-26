@@ -1,0 +1,9 @@
+_format_version: "3.0"
+
+services:
+  - name: test
+    url: http://localhost:3002 # Host: localhost, Port: 3002, Protocol: http
+    routes:
+      - name: sayHello
+        paths:
+          - /hello
