@@ -1,28 +1,34 @@
-import React, { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
-import patientData from "../assets/mockup";
+import React, { useEffect, useState } from "react";
 
-const PatientInformation = () => {
+const PatientInformation = ({ patient }) => {
   // handle loading status
   const [loading, setLoading] = useState(true);
+  const [patientDetails, setPatientDetails] = useState(null);
 
   // Simulate fetching data with a timeout
   useEffect(() => {
-    setTimeout(() => {
-      setLoading(false); // Data has loaded
-    }, 2000); // Adjust time as per your data fetch simulation
-  }, []);
+    if (patient) {
+      setPatientDetails(patient);
+      setTimeout(() => {
+        setLoading(false); // Data has loaded
+      }, 2000); // Adjust time as per your data fetch simulation
+    }
+  }, [patient]);
 
   // key-value pairs for patient details
-  const patientDetails = [
-    { label: "Patient ID", value: patientData.id },
-    { label: "Name", value: patientData.name },
-    { label: "Age", value: patientData.age },
-    { label: "DOB", value: patientData.dob },
-    { label: "Sex", value: patientData.sex },
-    { label: "Weight", value: patientData.weight },
-    { label: "Height", value: patientData.height },
-    { label: "Phone", value: patientData.phone },
+  const defaultPatientDetails = [
+    { label: "Patient ID", value: patientDetails?.hn },
+    {
+      label: "Name",
+      value: patientDetails?.first_name + " " + patientDetails?.last_name,
+    },
+    { label: "Age", value: patientDetails?.age },
+    { label: "DOB", value: patientDetails?.date_of_birth },
+    { label: "Sex", value: patientDetails?.sex },
+    { label: "Weight", value: patientDetails?.weight },
+    { label: "Height", value: patientDetails?.height },
+    { label: "Phone", value: patientDetails?.phone },
   ];
 
   return (
@@ -51,17 +57,19 @@ const PatientInformation = () => {
                         <th>
                           <Skeleton variant="text" width="100px" />
                         </th>
-                        <th className="px-5">:</th>
+                        <th>
+                          <Skeleton variant="text" width="20px" />
+                        </th>
                         <td>
                           <Skeleton variant="text" width="150px" />
                         </td>
                       </tr>
                     ))
                 : // Render actual patient data once it's loaded
-                  patientDetails.map(({ label, value }, index) => (
+                  defaultPatientDetails.map(({ label, value }, index) => (
                     <tr key={index}>
                       <th>{label}</th>
-                      <th className="px-3">:</th>
+                      <th className="px-2">:</th>
                       <td>{value}</td>
                     </tr>
                   ))}

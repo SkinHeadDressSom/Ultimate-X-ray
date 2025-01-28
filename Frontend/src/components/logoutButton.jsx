@@ -1,7 +1,31 @@
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const LogoutButton = () => {
-  const handleLogout = () => {};
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const postLogout = async () => {
+    axios
+      .post(
+        "http://localhost:8000/auth/api/logout",
+        {},
+        { withCredentials: true }
+      )
+      .then(function (response) {
+        console.log("Logout successful:", response.data);
+        navigate("/");
+      })
+      .catch(function (error) {
+        setError("Invalid cookie");
+        console.log(error);
+      });
+  };
+  const handleLogout = (e) => {
+    e.preventDefault();
+    postLogout();
+  };
 
   return (
     <>
