@@ -6,7 +6,8 @@ async function getCasebyHN(hn) {
     const query = `SELECT *
                     FROM medicalrecords AS m
                     INNER JOIN patients AS p
-                    ON m.patient_id = p.patient_id`;
+                    ON m.patient_id = p.patient_id
+                    WHERE hn = $1`;
     const result = await pool.query(query, [hn]);
 
     // check if query is empty
