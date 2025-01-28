@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
-import patientData from "../assets/mockup";
+import React, { useEffect, useState } from "react";
 
 const PatientInformation = ({ patient }) => {
   // handle loading status
@@ -20,7 +19,10 @@ const PatientInformation = ({ patient }) => {
   // key-value pairs for patient details
   const defaultPatientDetails = [
     { label: "Patient ID", value: patientDetails?.hn },
-    { label: "Name", value: patientDetails?.first_name + ' ' + patientDetails?.last_name },
+    {
+      label: "Name",
+      value: patientDetails?.first_name + " " + patientDetails?.last_name,
+    },
     { label: "Age", value: patientDetails?.age },
     { label: "DOB", value: patientDetails?.date_of_birth },
     { label: "Sex", value: patientDetails?.sex },
@@ -64,10 +66,10 @@ const PatientInformation = ({ patient }) => {
                       </tr>
                     ))
                 : // Render actual patient data once it's loaded
-                defaultPatientDetails.map(({ label, value }, index) => (
+                  defaultPatientDetails.map(({ label, value }, index) => (
                     <tr key={index}>
                       <th>{label}</th>
-                      <th className="px-3">:</th>
+                      <th className="px-2">:</th>
                       <td>{value}</td>
                     </tr>
                   ))}
