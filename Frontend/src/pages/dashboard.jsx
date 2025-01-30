@@ -1,12 +1,12 @@
 import React from "react";
-import Navbar from "../components/navbar";
-import FolderShape from "../components/folderShape";
+import Navbar from "../components/Navbar/navbar";
+import FolderShape from "../components/Card/folderShape";
 import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
   const location = useLocation();
   const patient = location.state?.patient;
-  
+
   return (
     <>
       <Navbar />
