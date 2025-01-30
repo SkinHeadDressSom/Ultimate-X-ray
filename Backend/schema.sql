@@ -79,8 +79,8 @@ INSERT INTO Patients (HN, first_name, last_name, date_of_birth, sex, height, wei
 (93800044, 'Alice', 'Brown', '1982-03-11', 'Female', 170, 65, '3216549870', '789 Pine St'),
 (93800045, 'Charlie', 'Davis', '1995-12-02', 'Male', 175, 80, '6549873210', '123 Oak St'),
 (93800046, 'Emily', 'Evans', '1988-09-14', 'Female', 160, 55, '7890123456', '456 Maple St'),
-(93800047, 'Frank', 'Green', '1975-11-30', 'Male', 185, 90, '8901234567', '789 Cedar St'),
-(93800048, 'Grace', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
+(93800047, 'Frank', 'Alice', '1975-11-30', 'Male', 185, 90, '8901234567', '789 Cedar St'),
+(93800048, 'Davis', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
 
 -- Insert MedicalRecords
 INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status) VALUES
