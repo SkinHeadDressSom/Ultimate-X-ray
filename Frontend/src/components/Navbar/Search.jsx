@@ -22,7 +22,7 @@ const Search = ({ onPatientDataFetched }) => {
   const getPatient = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/${HN}`,
+        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
         { withCredentials: true }
       );
       setPatientData(response.data.data);
@@ -57,7 +57,7 @@ const Search = ({ onPatientDataFetched }) => {
       getPatient(search);
     }
   };
-  //เปลี่ยน input type ให้ HN=number 
+  //เปลี่ยน input type ให้ HN=number
   const inputType = selectedMenuItem === "HN" ? "number" : "text";
   //รับinput
   const handleChange = (e) => setSearch(e.target.value);
