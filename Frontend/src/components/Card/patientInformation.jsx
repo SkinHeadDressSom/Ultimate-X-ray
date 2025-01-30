@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { Skeleton } from "@mui/material";
+import React, { useEffect, useState } from "react";
 
 const PatientInformation = ({ patient }) => {
   // handle loading status
@@ -69,7 +69,7 @@ const PatientInformation = ({ patient }) => {
                   defaultPatientDetails.map(({ label, value }, index) => (
                     <tr key={index}>
                       <th>{label}</th>
-                      <th className="px-3">:</th>
+                      <th className="px-2">:</th>
                       <td>{value}</td>
                     </tr>
                   ))}

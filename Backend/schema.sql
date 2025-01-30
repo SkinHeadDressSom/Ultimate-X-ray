@@ -29,7 +29,6 @@ CREATE TABLE Patients (
 CREATE TABLE MedicalRecords (
     record_id SERIAL PRIMARY KEY,
     patient_id INT NOT NULL REFERENCES Patients(patient_id),
-    user_id INT NOT NULL REFERENCES Users(user_id),
     AN INT NOT NULL UNIQUE,
     description TEXT,
     clinical_history  TEXT,
@@ -38,6 +37,7 @@ CREATE TABLE MedicalRecords (
     impression TEXT,
     recommendations TEXT,
     action_comments TEXT,
+    created_by TEXT,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     status status_type DEFAULT 'Scheduled'
@@ -79,16 +79,16 @@ INSERT INTO Patients (HN, first_name, last_name, date_of_birth, sex, height, wei
 (93800044, 'Alice', 'Brown', '1982-03-11', 'Female', 170, 65, '3216549870', '789 Pine St'),
 (93800045, 'Charlie', 'Davis', '1995-12-02', 'Male', 175, 80, '6549873210', '123 Oak St'),
 (93800046, 'Emily', 'Evans', '1988-09-14', 'Female', 160, 55, '7890123456', '456 Maple St'),
-(93800047, 'Frank', 'Green', '1975-11-30', 'Male', 185, 90, '8901234567', '789 Cedar St'),
-(93800048, 'Grace', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
+(93800047, 'Frank', 'Alice', '1975-11-30', 'Male', 185, 90, '8901234567', '789 Cedar St'),
+(93800048, 'Davis', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
 
 -- Insert MedicalRecords
-INSERT INTO MedicalRecords (AN, patient_id, user_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status) VALUES
-(134986, 1, 1, 'Diabetes', 'Blood sugar check', 'Blood test', 'Normal levels', 'Stable', 'Continue medication', 'Monitor levels', 'Completed'),
-(134987, 1, 1, 'Back pain', 'MRI scan', 'Spinal scan', 'Mild disc bulge', 'Requires physiotherapy', 'Under observation', 'Follow exercise routine', 'Scheduled'),
-(134988, 2, 1, 'Heart disease', 'ECG', 'Heart function test', 'Mild arrhythmia', 'Monitor closely', 'Requires medication', 'Advised diet changes', 'Completed'),
-(134989, 2, 1,'Allergy', 'Skin test', 'Allergic reaction', 'Positive for pollen', 'Avoid allergens', 'Mild symptoms', 'Use antihistamines', 'Scheduled'),
-(134990, 2, 1, 'Flu', 'Physical exam', 'Routine check', 'Normal flu symptoms', 'Rest and hydrate', 'Mild illness', 'No issues', 'Completed');
+INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status) VALUES
+(134986, 1, 'Diabetes', 'Blood sugar check', 'Blood test', 'Normal levels', 'Stable', 'Continue medication', 'Monitor levels', 'Completed'),
+(134987, 1, 'Back pain', 'MRI scan', 'Spinal scan', 'Mild disc bulge', 'Requires physiotherapy', 'Under observation', 'Follow exercise routine', 'Scheduled'),
+(134988, 2, 'Heart disease', 'ECG', 'Heart function test', 'Mild arrhythmia', 'Monitor closely', 'Requires medication', 'Advised diet changes', 'Completed'),
+(134989, 2,'Allergy', 'Skin test', 'Allergic reaction', 'Positive for pollen', 'Avoid allergens', 'Mild symptoms', 'Use antihistamines', 'Scheduled'),
+(134990, 2, 'Flu', 'Physical exam', 'Routine check', 'Normal flu symptoms', 'Rest and hydrate', 'Mild illness', 'No issues', 'Completed');
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
