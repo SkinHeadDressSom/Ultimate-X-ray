@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import StatusExamine from "./statusComplete";
+import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import { ReactComponent as ExpandUD } from "../../assets/expandUpDown.svg";
 
 const Filter = () => {
   const [isOpen, setIsOpen] = useState(false); // สร้าง state สำหรับเปิดปิด dropdown
-  const [isCheckedExamine, setIsCheckedExamine] = useState(false); // examine checkbox
+  const [isCheckedComplete, setIsCheckedComplete] = useState(false); // examine checkbox
   const [isCheckedSchedule, setIsCheckedSchedule] = useState(false); // schedule checkbox
   const dropdownRef = useRef(null); // ref ของ dropdown
   const buttonRef = useRef(null); // ref ของ button
@@ -40,8 +40,14 @@ const Filter = () => {
   // ใช้เช็คว่า checkbox ถูกคลิกหรือยัง
   const handleCheck = (setter) => (event) => setter(event.target.checked);
 
-  const renderCheckbox = (id, checked, onChange, Component) => (
-    <div className={commonCheckBoxContainerStyles}>
+  const renderCheckbox = (
+    id,
+    checked,
+    onChange,
+    Component,
+    onComponentClick
+  ) => (
+    <div className={commonCheckBoxContainerStyles} onClick={onComponentClick}>
       <div className="flex items-center justify-center">
         <label
           htmlFor={id}
@@ -73,7 +79,7 @@ const Filter = () => {
         </label>
       </div>
       <div role="menuitem" tabIndex="-1">
-        <Component />
+        <Component onClick={onComponentClick} />
       </div>
     </div>
   );
@@ -91,22 +97,25 @@ const Filter = () => {
       {isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute flex left-12 z-50 mt-28 w-48 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+          className="absolute flex left-12 z-50 mt-28 w-36 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
           role="menu"
           tabIndex="-1"
         >
           <div className="py-1 px-2 font-normal text-darkest-blue">
             {renderCheckbox(
-              "check-examine",
-              isCheckedExamine,
-              handleCheck(setIsCheckedExamine),
-              StatusExamine
+              "check-complete",
+              isCheckedComplete,
+              handleCheck(setIsCheckedComplete, "Complete"),
+              StatusComplete,
+              () => setIsCheckedComplete((prev) => !prev)
             )}
+
             {renderCheckbox(
               "check-schedule",
               isCheckedSchedule,
-              handleCheck(setIsCheckedSchedule),
-              StatusSchedule
+              handleCheck(setIsCheckedSchedule, "Schedule"),
+              StatusSchedule,
+              () => setIsCheckedSchedule((prev) => !prev)
             )}
           </div>
         </div>

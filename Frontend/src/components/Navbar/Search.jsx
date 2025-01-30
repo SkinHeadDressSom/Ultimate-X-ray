@@ -57,7 +57,7 @@ const Search = ({ onPatientDataFetched }) => {
       getPatient(search);
     }
   };
-  //เปลี่ยน input type
+  //เปลี่ยน input type ให้ HN=number 
   const inputType = selectedMenuItem === "HN" ? "number" : "text";
   //รับinput
   const handleChange = (e) => setSearch(e.target.value);
@@ -111,7 +111,7 @@ const Search = ({ onPatientDataFetched }) => {
               aria-orientation="vertical"
               aria-labelledby="menu-button"
             >
-              <div className="py-1 font-normal text-darkest-blue">
+              <button className="py-1 font-normal text-darkest-blue">
                 {["HN", "Name"].map((item) => (
                   <div
                     key={item}
@@ -123,7 +123,7 @@ const Search = ({ onPatientDataFetched }) => {
                     {item}
                   </div>
                 ))}
-              </div>
+              </button>
             </div>
           )}
 
