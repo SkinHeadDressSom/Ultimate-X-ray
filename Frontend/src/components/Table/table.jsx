@@ -4,15 +4,22 @@ import Dropdown from "./dropdown";
 import Filter from "./Filter";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
+import ViewerButton from "../Button/viewerButton";
 
 const Table = ({ patientCases }) => {
   // Simulate loading state (replace with actual fetch)
   const [loading, setLoading] = useState(true);
   const [checkedState, setCheckedState] = useState({});
+  const [currentPage, setCurrentPage] = useState(1);
   // Common table cell styles
   const commonTableStyles = "px-4 py-3";
   const commonHeadTableStyles = "px-4 py-1";
+  const commonButtonStyles =
+    "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50";
   const totalCases = patientCases.length;
+  //pagination control
+  const casesPerPage = 10;
+  const totalPages = Math.ceil(totalCases / casesPerPage);
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000); // Simulate a 2-second data fetch delay
@@ -52,17 +59,21 @@ const Table = ({ patientCases }) => {
     return null;
   };
 
+  //pagination control
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Get current page cases
+  const indexOfLastCase = currentPage * casesPerPage;
+  const indexOfFirstCase = indexOfLastCase - casesPerPage;
+  const currentCases = patientCases.slice(indexOfFirstCase, indexOfLastCase);
+  
   return (
     <>
-      <div className="2xl:text-lg text-sm text-vivid-blue flex justify-between w-full pb-2">
-        <div>All studies</div>
-        {loading ? (
-          <Skeleton variant="text" width={100} height={30} />
-        ) : (
-          <div className="flex items-center">
-            <span>Total {totalCases} studies</span>
-          </div>
-        )}
+      <div className="flex justify-between items-end w-full pb-1">
+        <div className="2xl:text-2xl text-xl text-vivid-blue">Studies</div>
+        <ViewerButton />
       </div>
       <div className="relative overflow-auto shadow-md w-full rounded-md border-[1px] border-light-gray">
         <table className="w-full text-left text-sm table-auto">
@@ -149,6 +160,42 @@ const Table = ({ patientCases }) => {
                 ))}
           </tbody>
         </table>
+      </div>
+      <div className="flex justify-between mt-2">
+        <div className="text-vivid-blue">Total {totalCases} studies</div>
+        {totalPages > 1 && (
+          <div className="flex space-x-1">
+            <button
+              className={commonButtonStyles}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i}
+                className={`min-w-9 rounded-full py-2 px-3 text-sm transition-all ${
+                  currentPage === i + 1
+                    ? "bg-vivid-blue text-white"
+                    : "border border-light-gray hover:bg-vivid-blue hover:text-white"
+                }`}
+                onClick={() => handlePageChange(i + 1)}
+              >
+                {i + 1}
+              </button>
+            ))}
+
+            <button
+              className={commonButtonStyles}
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </>
   );
