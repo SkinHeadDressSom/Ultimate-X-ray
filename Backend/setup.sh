@@ -1,9 +1,38 @@
 #!/bin/bash
-echo "Starting Docker containers..."
+
+echo "🚀 Starting Docker containers..."
 docker-compose up -d
 
-echo "Running Kong migrations..."
+echo "⚡ Running Kong migrations..."
 docker-compose run --rm kong kong migrations bootstrap
 
-echo "Loading Kong configuration..."
+echo "🧹 Cleaning existing Kong configuration..."
+KONG_ADMIN_URL="http://localhost:8001"
+
+# Ensure Kong is ready before deleting routes/services
+until curl -s $KONG_ADMIN_URL >/dev/null; do
+  echo "Waiting for Kong Admin API..."
+  sleep 2
+done
+
+# Delete all routes
+for route in $(curl -s $KONG_ADMIN_URL/routes | jq -r '.data[].id'); do
+  curl -X DELETE $KONG_ADMIN_URL/routes/$route
+done
+
+# Delete all services
+for service in $(curl -s $KONG_ADMIN_URL/services | jq -r '.data[].id'); do
+  curl -X DELETE $KONG_ADMIN_URL/services/$service
+done
+
+# Delete all consumers
+for consumer in $(curl -s $KONG_ADMIN_URL/consumers | jq -r '.data[].id'); do
+  curl -X DELETE $KONG_ADMIN_URL/consumers/$consumer
+done
+
+echo "✅ Kong configuration cleared."
+
+echo "📥 Loading Kong configuration..."
 docker-compose exec kong kong config db_import /kong.yml
+
+echo "🎉 Kong setup complete!"
