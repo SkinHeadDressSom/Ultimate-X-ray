@@ -1,0 +1,27 @@
+_format_version: "1.1"
+_transform: true
+
+services:
+  - name: fetch-data-service
+    url: http://fetch-data-service:3002
+    routes:
+      - name: fetch-data
+        paths:
+          - /fetch-data
+        strip_path: true
+
+  - name: auth-service
+    url: http://auth-service:3001
+    routes:
+      - name: auth
+        paths:
+          - /auth
+        strip_path: true
+
+  - name: ai-detection-service
+    url: http://ai-detection-service:3003
+    routes:
+      - name: detect
+        paths:
+          - /detect
+        strip_path: true
