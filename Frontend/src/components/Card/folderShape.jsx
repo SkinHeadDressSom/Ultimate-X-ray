@@ -51,7 +51,7 @@ const FolderShape = ({ patient }) => {
       </div>
       <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
-          <aside className="w-5/12 xl:w-3/12 2xl:w-4/12 min-w-[300px]">
+          <aside className="w-5/12 xl:w-3/12 2xl:w-4/12 min-w-[300px] max-w-[400px]">
             <PatientInformation patient={patientData} />
           </aside>
           <main className="w-full">

@@ -55,13 +55,13 @@ const PatientInformation = ({ patient }) => {
                     .map((_, index) => (
                       <tr key={index}>
                         <th>
-                          <Skeleton variant="text" width="100px" />
+                          <Skeleton variant="text" width="80px" />
                         </th>
                         <th>
                           <Skeleton variant="text" width="20px" />
                         </th>
                         <td>
-                          <Skeleton variant="text" width="150px" />
+                          <Skeleton variant="text" width="120px" />
                         </td>
                       </tr>
                     ))
