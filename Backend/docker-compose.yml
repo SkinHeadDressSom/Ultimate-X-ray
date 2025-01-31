@@ -56,6 +56,15 @@ services:
     depends_on:
       - postgres-service
 
+  ai-detection-service:
+    build: ./services/ai-detection
+    ports:
+      - "3010:3010"
+    depends_on:
+      - kong
+    restart: always
+
+
 volumes:
   kong-db-data:
 
