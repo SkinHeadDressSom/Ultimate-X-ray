@@ -8,22 +8,22 @@ async function getCasebyHN(hn) {
                     INNER JOIN patients AS p
                     ON m.patient_id = p.patient_id
                     WHERE hn = $1`;
-    const result = await pool.query(query, [hn]);
+    const results = await pool.query(query, [hn]);
 
     // check if query is empty
-    if (result.rows.length === 0) {
+    if (results.rows.length === 0) {
       return null;
     }
 
-    const cases = result.rows.map((row) => ({
-      HN: row.hn,
-      AN: row.an,
-      status: row.status,
-      description: row.description,
-      study_date: row.created_at,
-    }));
-
-    return cases;
+    return {
+      hn: results.rows[0].hn,
+      patient_cases: results.rows.map((row) => ({
+        an: row.an,
+        status: row.status,
+        description: row.description,
+        study_date: row.created_at,
+      })),
+    };
   } catch (error) {
     console.error("Database error in getCasebyHN:", error.message);
     // return an error object
