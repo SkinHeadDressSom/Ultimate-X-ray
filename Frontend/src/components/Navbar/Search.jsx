@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
 
-const Search = ({ onPatientDataFetched }) => {
+const Search = ({ onPatientDataFetched = () => {} }) => {
   const [inputValue, setInputValue] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState(null);
@@ -43,19 +43,43 @@ const Search = ({ onPatientDataFetched }) => {
   };
 
   //Back-end
-  const getPatient = async (HN) => {
+  const getPatientByHN = async (HN) => {
     try {
       const response = await axios.get(
         `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
         { withCredentials: true }
       );
+      console.log("API Response from HN search:", response.data);
       setPatientData(response.data.data);
-      setError(null);
       onPatientDataFetched(response.data.data);
     } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
       handleError("Patient not found");
     }
   };
+
+  const getPatientByName = async (name) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        { withCredentials: true }
+      );
+
+      console.log("API Response from name search:", response.data);
+      setPatientData(response.data.data);
+      onPatientDataFetched(response.data.data);
+    } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
+      handleError("Patient not found");
+    }
+  };
+
   //handle error
   const handleError = (message) => {
     setError(message);
@@ -64,23 +88,23 @@ const Search = ({ onPatientDataFetched }) => {
   //handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    // หาHN
-    if (selectedMenuItem === "HN") {
-      if (inputValue.trim() === "") {
-        setError("Patient ID cannot be empty.");
-        return;
-      }
-      getPatient(inputValue);
+
+    if (inputValue.trim() === "") {
+      setError(
+        selectedMenuItem === "HN"
+          ? "Patient ID cannot be empty."
+          : "Patient name cannot be empty."
+      );
+      return;
     }
-    // หาName
-    else if (selectedMenuItem === "Name") {
-      if (inputValue.trim() === "") {
-        setError("Patient name cannot be empty.");
-        return;
-      }
-      getPatient(inputValue);
+
+    if (selectedMenuItem === "HN") {
+      getPatientByHN(inputValue);
+    } else if (selectedMenuItem === "Name") {
+      getPatientByName(inputValue); // Create a separate function for name-based search
     }
   };
+
   //เปลี่ยน input type ให้ HN=number
   const inputType = selectedMenuItem === "HN" ? "number" : "text";
 
