@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const fetchRoute = require("./routes/fetchRoute");
 const pool = require("./database/postgres-config");
 const cors = require("cors");
+
 dotenv.config();
 
 const app = express();

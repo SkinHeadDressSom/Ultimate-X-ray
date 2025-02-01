@@ -68,7 +68,7 @@ const Table = ({ patientCases }) => {
   const indexOfLastCase = currentPage * casesPerPage;
   const indexOfFirstCase = indexOfLastCase - casesPerPage;
   const currentCases = patientCases.slice(indexOfFirstCase, indexOfLastCase);
-  
+
   return (
     <>
       <div className="flex justify-between items-end w-full pb-1">
@@ -109,7 +109,7 @@ const Table = ({ patientCases }) => {
                   .map((_, index) => <SkeletonRow key={index} />)
               : patientCases.map((caseItem, index) => (
                   <tr
-                    key={caseItem.caseId}
+                    key={caseItem.AN} // ใช้ AN เป็น key
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                   >
                     <td className={`${commonTableStyles} flex justify-center`}>
@@ -118,11 +118,9 @@ const Table = ({ patientCases }) => {
                           <input
                             type="checkbox"
                             className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                            id={`check-${index}`}
-                            checked={checkedState[caseItem.caseId] || false}
-                            onChange={() =>
-                              handleCheckboxChange(caseItem.caseId)
-                            }
+                            id={`check-${caseItem.AN}`}
+                            checked={checkedState[caseItem.AN] || false}
+                            onChange={() => handleCheckboxChange(caseItem.AN)}
                           />
                           <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                             <svg
