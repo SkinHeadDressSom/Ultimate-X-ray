@@ -142,7 +142,6 @@ const Table = ({ patientCases }) => {
                       </div>
                     </td>
                     <td className={commonTableStyles}>{index + 1}</td>
-                    <td className={commonTableStyles}>{caseItem.AN}</td>
                     <td className={`${commonTableStyles} flex`}>
                       {renderStatus(caseItem.status)}
                     </td>
@@ -151,6 +150,7 @@ const Table = ({ patientCases }) => {
                     </td>
                     <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
+                    <td className={commonTableStyles}>{caseItem.AN}</td>
                     <td className={commonTableStyles}>
                       {caseItem.image_count}
                     </td>
