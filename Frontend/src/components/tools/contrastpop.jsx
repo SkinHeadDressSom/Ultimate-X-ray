@@ -4,7 +4,7 @@ import { Typography, Box } from "@mui/material";
 const ContrastPopup = () => {
   const [contrast, setContrast] = useState(0);
 
-  // ฟังก์ชั่นปรับสีตามค่าContrast
+  // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
   const calculateContrast = (value) => {
     return value >= 0 ? 1 + (value / 20) * 4 : 1 + (value / 100);
   };
