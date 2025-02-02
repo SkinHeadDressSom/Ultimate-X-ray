@@ -1,47 +1,42 @@
 import React, { useState } from "react";
-import { Slider, Typography, Box, Button } from "@mui/material";
-
-const ImageUploader = ({ onUpload }) => {
-  const handleImageUpload = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => onUpload(e.target.result);
-      reader.readAsDataURL(file);
-    }
-  };
-
-  return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, p: 2, borderRadius: 2, bgcolor: "#f5f5f5" }}>
-      <Button variant="contained" component="label">
-        Upload Image
-        <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
-      </Button>
-    </Box>
-  );
-};
+import { Typography, Box } from "@mui/material";
 
 const ContrastPopup = () => {
-  const [contrast, setContrast] = useState(5);
-  const [image, setImage] = useState(null);
+  const [contrast, setContrast] = useState(0);
+
+  // ฟังก์ชั่นปรับสีตามค่าContrast
+  const calculateContrast = (value) => {
+    return value >= 0 ? 1 + (value / 20) * 4 : 1 + (value / 100);
+  };
+  // -------------------------------------------------------------------------------------------------------------------------------------------
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2, p: 2, borderRadius: 2, bgcolor: "#f5f5f5" }}>
-      <ImageUploader onUpload={setImage} />
-      {image && <img src={image} alt="Uploaded" style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8 }} />}
-      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <Typography variant="body1">Contrast</Typography>
-        <Slider
-          value={contrast}
-          min={0}
-          max={10}
-          step={1}
-          onChange={(e, newValue) => setContrast(newValue)}
-          sx={{ width: 150 }}
-        />
-        <Typography variant="body2" sx={{ minWidth: 24 }}>{contrast}</Typography>
+      <Box className="p-4 bg-white rounded-lg shadow-md w-64 margin-center" sx={{ position: "relative" }}>
+      
+      {/* อันนี้ไว้เชื่อมต่อกับรูปภาพเปลี่ยนวิธีเอาให้ปรับตามรูปที่เลือที่กำลังแสดง */}
+      {/* <ImageUploader onUpload={setImage} />
+      {image && <img src={image} alt="Uploaded" style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, filter: `contrast(${calculateContrast(contrast)})` }} />} */}
+      {/* ------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
+        
+        <Box sx={{ position: "absolute", top: 8, right: 8, bgcolor: "#fff", p: 1, borderRadius: 2, width: 50, height: 30, textAlign: "center", border: "1px solid black" }}>
+          <Typography variant="body2" sx={{ textAlign: "center", lineHeight: "12px" }}>{contrast}</Typography>
+        </Box>
+        <label className="block text-gray-700 font-semibold mb-1">
+          Contrast
+        </label>
+
+        <div className="flex items-center">
+          <input
+            type="range"
+            min="-100"
+            max="100"
+            value={contrast}
+            onChange={(e) => setContrast(parseInt(e.target.value, 10))}
+            className="w-full accent-blue-600"
+          />
+        </div>
       </Box>
-    </Box>
+    
   );
 };
 

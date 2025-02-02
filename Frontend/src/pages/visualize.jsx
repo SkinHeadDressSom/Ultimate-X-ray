@@ -1,9 +1,10 @@
 import React from 'react'
-import Contrastpop from '../components/tools/contrastpop'
+import ContrastPopup from '../components/tools/contrastpop'
+import Colorpopup from '../components/tools/colorpop'
 
 const Visualize = () => {
   return (
-    <div> <Contrastpop/> </div>
+    <div> <ContrastPopup/> </div>
   )
 }
 

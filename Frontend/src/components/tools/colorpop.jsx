@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Colorpop = () => {
+const Colorpopup = () => {
   return (
     <div> colorpop </div>
   )
 }
 
-export default Colorpop
+export default Colorpopup
