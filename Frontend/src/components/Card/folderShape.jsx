@@ -22,16 +22,15 @@ const FolderShape = ({ patient }) => {
     }
   };
 
-  const handlePatientDataFetched = (data) => {
-    setPatientData(data);
-    getPatientCases(data.hn);
-  };
-
   useEffect(() => {
     if (patientData && patientData.hn) {
       getPatientCases(patientData.hn);
     }
   }, [patientData]);
+
+  useEffect(() => {
+    setPatientData(patient);
+  }, [patient]);
 
   return (
     <div className="flex flex-col">

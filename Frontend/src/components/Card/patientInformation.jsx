@@ -2,21 +2,18 @@ import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 const PatientInformation = ({ patient }) => {
-  // handle loading status
   const [loading, setLoading] = useState(true);
   const [patientDetails, setPatientDetails] = useState(null);
 
-  // Simulate fetching data with a timeout
   useEffect(() => {
     if (patient) {
       setPatientDetails(patient);
       setTimeout(() => {
-        setLoading(false); // Data has loaded
-      }, 2000); // Adjust time as per your data fetch simulation
+        setLoading(false);
+      }, 2000);
     }
   }, [patient]);
 
-  // key-value pairs for patient details
   const defaultPatientDetails = [
     { label: "Patient ID", value: patientDetails?.hn },
     {
@@ -49,8 +46,7 @@ const PatientInformation = ({ patient }) => {
           <table className="w-full text-left 2xl:text-xl text-base">
             <tbody>
               {loading
-                ? // Skeleton Loader for each row
-                  Array(8)
+                ? Array(8)
                     .fill(0)
                     .map((_, index) => (
                       <tr key={index}>
@@ -65,8 +61,7 @@ const PatientInformation = ({ patient }) => {
                         </td>
                       </tr>
                     ))
-                : // Render actual patient data once it's loaded
-                  defaultPatientDetails.map(({ label, value }, index) => (
+                : defaultPatientDetails.map(({ label, value }, index) => (
                     <tr key={index}>
                       <th>{label}</th>
                       <th className="px-2">:</th>
