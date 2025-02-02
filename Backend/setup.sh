@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "🚀 Starting Docker containers..."
-docker-compose up -d
+docker-compose up -d --build
 
 echo "⚡ Running Kong migrations..."
 docker-compose run --rm kong kong migrations bootstrap
