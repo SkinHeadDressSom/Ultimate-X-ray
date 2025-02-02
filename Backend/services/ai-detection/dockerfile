@@ -1,11 +1,14 @@
-FROM python:3.10
+FROM python:3.9-slim-buster
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y libgl1-mesa-glx libglib2.0-0
-
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+
+RUN apt-get update -y && \
+    apt-get install -y --no-install-recommends libgl1-mesa-dev libglib2.0-0 && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --upgrade -r requirements.txt && \
+    rm -rf /var/lib/apt/lists/*
 
 COPY . .
 
