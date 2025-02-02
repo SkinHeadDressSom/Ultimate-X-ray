@@ -34,7 +34,9 @@ async function getPatientbyName(name) {
     const searchTerm = `%${name}%`; // Adds % to the user input for partial matching
     const query = `SELECT *
                     FROM patients
-                    WHERE first_name LIKE $1 OR last_name LIKE $1`;
+                    WHERE first_name LIKE $1 
+                    OR last_name LIKE $1 
+                    OR CONCAT(first_name, ' ', last_name) LIKE $1`;
     const result = await pool.query(query, [searchTerm]); // Pass searchTerm as a parameter
 
     // check if query is empty
