@@ -6,18 +6,23 @@ docker-compose up -d --build
 echo "⚡ Running Kong migrations..."
 docker-compose run --rm kong kong migrations bootstrap
 
-echo "🧹 Cleaning existing Kong configuration..."
-KONG_ADMIN_URL="http://localhost:8001"
+# Restart Kong to ensure it picks up the migration changes
+echo "🔄 Restarting Kong service..."
+docker-compose restart kong
 
-# Ensure Kong is ready before deleting routes/services
+# Ensure Kong Admin API is ready
+KONG_ADMIN_URL="http://localhost:8001"
+echo "⏳ Waiting for Kong Admin API to be ready..."
 until curl -s $KONG_ADMIN_URL >/dev/null; do
   echo "Waiting for Kong Admin API..."
   sleep 2
 done
 
+echo "🧹 Cleaning existing Kong configuration..."
 # Delete all routes
 for route in $(curl -s $KONG_ADMIN_URL/routes | jq -r '.data[].id'); do
-  curl -X DELETE $KONG_ADMIN_URL/routes/$route
+  curl -s -X DELETE $KONG_ADMIN_URL/routes/$route
+  echo "Deleted route: $route"
 done
 
 # Delete all services
