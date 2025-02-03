@@ -16,7 +16,7 @@ router.get(
 
 // get patient by patient's name
 router.get(
-  "/patients/by-name/:name",
+  "/patients/by-name/:name", // convert space bar to %20 from front-end
   validateToken,
   fetchPatientbyNameController.fetchPatientbyName
 );
