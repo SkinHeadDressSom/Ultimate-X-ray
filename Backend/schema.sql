@@ -58,6 +58,7 @@ CREATE TABLE Images (
 CREATE TABLE Annotations (
     annotation_id SERIAL PRIMARY KEY,
     image_id INT NOT NULL REFERENCES Images(image_id),
+    user_id INT NOT NULL REFERENCES Users(user_id),
     file_path TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
@@ -99,10 +100,10 @@ INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result)
 
 
 -- Insert Annotations
-INSERT INTO Annotations (image_id, file_path, created_at) VALUES
-(1, '/annotations/patient3_scan1.jpg' , NOW()),
-(2, '/annotations/patient3_scan1.jpg', NOW()),
-(3, '/annotations/patient3_scan1.jpg', NOW()),
-(4, '/annotations/patient3_scan1.jpg', NOW());
+INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
+(1, 1, '/annotations/patient3_scan1.jpg', NOW()),
+(2, 1, '/annotations/patient3_scan1.jpg', NOW()),
+(3, 1, '/annotations/patient3_scan1.jpg', NOW()),
+(4, 1, '/annotations/patient3_scan1.jpg', NOW());
 
 
