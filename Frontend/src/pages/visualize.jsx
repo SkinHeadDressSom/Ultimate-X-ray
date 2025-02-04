@@ -4,7 +4,8 @@ import Colorpopup from '../components/tools/colorpop'
 
 const Visualize = () => {
   return (
-    <div> <ContrastPopup/> </div>
+    // <div> <ContrastPopup/> </div>
+    <div> <Colorpopup /> </div>
   )
 }
 
