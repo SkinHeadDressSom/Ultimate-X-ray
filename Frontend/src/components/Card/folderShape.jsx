@@ -1,9 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import HNSearch from "./HNSearch";
 import PatientInformation from "./patientInformation";
-import Table from "./table";
-import ViewerButton from "./viewerButton";
+import Table from "../Table/table";
 
 const FolderShape = ({ patient }) => {
   const [patientData, setPatientData] = useState(patient);
@@ -52,16 +50,6 @@ const FolderShape = ({ patient }) => {
         <div className="border-l-lg border-l-transparent border-b-[48px] 2xl:border-b-[56px] border-b-wheat border-r-[40px] border-r-transparent rounded-tr-lg"></div>
       </div>
       <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
-        <div className="w-full px-5 pt-5 inline-flex justify-between items-center">
-          <div className="inline-flex gap-5">
-            <HNSearch onPatientDataFetched={handlePatientDataFetched} />
-            {/* <NameSearch /> */}
-          </div>
-          <div>
-            <ViewerButton />
-          </div>
-        </div>
-
         <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
           <aside className="w-5/12 xl:w-3/12 2xl:w-4/12">
             <PatientInformation patient={patientData} />
