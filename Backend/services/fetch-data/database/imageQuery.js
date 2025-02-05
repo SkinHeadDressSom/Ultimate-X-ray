@@ -29,21 +29,21 @@ async function getImagesbyAN(an) {
                     ON i.record_id = m.record_id
                     WHERE an = $1`;
     const results = await pool.query(query, [an]);
+
     // check if query is empty
     if (results.rows.length === 0) {
       return null;
     }
-    console.log("============== Results:", results);
-    const images = results.rows.map((row) => ({
-      XN: row.xn,
-      file_path: row.file_path,
-      uploaded_date: row.uploaded_at,
-      result: row.result,
-    }));
 
-    const result = { AN: results.rows[0].an, case_images: images };
-
-    return result;
+    return {
+      an: results.rows[0].an,
+      case_images: results.rows.map((row) => ({
+        xn: row.xn,
+        file_path: row.file_path,
+        uploaded_date: row.uploaded_at,
+        result: row.result,
+      })),
+    };
   } catch (error) {
     console.error("Database error in getImages:", error.message);
     // return an error object
