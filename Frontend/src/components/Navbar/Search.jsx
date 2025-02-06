@@ -49,13 +49,37 @@ const Search = ({ onPatientDataFetched }) => {
         `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
+      console.log("API Response from HN search:", response.data);
       setPatientData(response.data.data);
-      setError(null);
       onPatientDataFetched(response.data.data);
     } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
       handleError("Patient not found");
     }
   };
+
+  const getPatientByName = async (name) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        { withCredentials: true }
+      );
+
+      console.log("API Response from name search:", response.data);
+      setPatientData(response.data.data);
+      onPatientDataFetched(response.data.data);
+    } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
+      handleError("Patient not found");
+    }
+  };
+
   //handle error
   const handleError = (message) => {
     setError(message);
@@ -81,6 +105,7 @@ const Search = ({ onPatientDataFetched }) => {
       getPatient(inputValue);
     }
   };
+
   //เปลี่ยน input type ให้ HN=number
   const inputType = selectedMenuItem === "HN" ? "number" : "text";
 
