@@ -2,36 +2,84 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
 
-const Search = ({ onPatientDataFetched }) => {
-  const [search, setSearch] = useState("");
+const Search = ({ onPatientDataFetched = () => {} }) => {
+  const [inputValue, setInputValue] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
   const [inputPlaceholder, setInputPlaceholder] = useState("Enter patient ID");
   const [selectedMenuItem, setSelectedMenuItem] = useState("HN");
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
+
+  //mockup patient name
+  const suggestions = ["Alice", "David", "Tony", "Anthony", "Hanna"];
 
   // Reusable styles
   const commonCheckBoxStyles =
     "inline-flex w-full items-center px-2 py-2 gap-2 rounded-md hover:bg-light-blue cursor-pointer text-sm";
   const commonFocusStyles =
     "focus:ring-1 focus:ring-vivid-blue focus:border-vivid-blue";
+
+  const handleChange = (event) => {
+    const inputValue = event.target.value;
+    setInputValue(inputValue);
+
+    if (inputValue.trim() === "") {
+      setFilteredSuggestions([]); // Hide dropdown when input is empty
+    } else {
+      const filteredSuggestions = suggestions.filter((suggestion) =>
+        suggestion.toLowerCase().includes(inputValue.toLowerCase())
+      );
+      setFilteredSuggestions(filteredSuggestions);
+    }
+  };
+  //select ชื่อคนไข้แล้วให้แสดงในช่อง search
+  const handleSelect = (value) => {
+    setInputValue(value);
+    setFilteredSuggestions([]);
+  };
+
   //Back-end
-  const getPatient = async (HN) => {
+  const getPatientByHN = async (HN) => {
     try {
       const response = await axios.get(
         `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
         { withCredentials: true }
       );
+      console.log("API Response from HN search:", response.data);
       setPatientData(response.data.data);
-      setError(null);
       onPatientDataFetched(response.data.data);
     } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
       handleError("Patient not found");
     }
   };
+
+  const getPatientByName = async (name) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        { withCredentials: true }
+      );
+
+      console.log("API Response from name search:", response.data);
+      setPatientData(response.data.data);
+      onPatientDataFetched(response.data.data);
+    } catch (err) {
+      console.error(
+        "API Error:",
+        err.response ? err.response.data : err.message
+      );
+      handleError("Patient not found");
+    }
+  };
+
   //handle error
   const handleError = (message) => {
     setError(message);
@@ -40,28 +88,26 @@ const Search = ({ onPatientDataFetched }) => {
   //handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    // หาHN
-    if (selectedMenuItem === "HN") {
-      if (search.trim() === "") {
-        setError("Patient ID cannot be empty.");
-        return;
-      }
-      getPatient(search);
+
+    if (inputValue.trim() === "") {
+      setError(
+        selectedMenuItem === "HN"
+          ? "Patient ID cannot be empty."
+          : "Patient name cannot be empty."
+      );
+      return;
     }
-    // หาName
-    else if (selectedMenuItem === "Name") {
-      if (search.trim() === "") {
-        setError("Patient name cannot be empty.");
-        return;
-      }
-      getPatient(search);
+
+    if (selectedMenuItem === "HN") {
+      getPatientByHN(inputValue);
+    } else if (selectedMenuItem === "Name") {
+      getPatientByName(inputValue); // Create a separate function for name-based search
     }
   };
+
   //เปลี่ยน input type ให้ HN=number
   const inputType = selectedMenuItem === "HN" ? "number" : "text";
-  //รับinput
-  const handleChange = (e) => setSearch(e.target.value);
-  //เปลี่ยน Placeholder ตาม choice ที่เลือก
+
   const menuItems = {
     HN: "Enter patient ID",
     Name: "Enter patient name",
@@ -106,7 +152,7 @@ const Search = ({ onPatientDataFetched }) => {
           {isOpen && (
             <div
               ref={dropdownRef}
-              className="absolute flex justify-center top-14 z-50 w-24 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+              className="absolute flex justify-center top-14 z-50 w-24 origin-top-right rounded-md bg-wheat shadow-lg ring-1 ring-black/5 focus:outline-none"
               role="menu"
               aria-orientation="vertical"
               aria-labelledby="menu-button"
@@ -132,11 +178,24 @@ const Search = ({ onPatientDataFetched }) => {
               id="patientData"
               type={inputType}
               placeholder={inputPlaceholder}
-              value={search}
+              value={inputValue}
               onChange={handleChange}
               required
               className={`${commonFocusStyles} overflow-hidden w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base border-s-0 border-[1px] rounded-e-full rounded-s-light-gray rounded-s-0 text-vivid-blue border-light-gray leading-tight focus:border-s-[1px]`}
             />
+            {filteredSuggestions.length > 0 && (
+              <ul className="absolute w-full left-0 top-10 p-1 z-50 rounded-md bg-wheat shadow-lg ring-1 ring-black/5 focus:outline-none">
+                {filteredSuggestions.map((suggestion, index) => (
+                  <li
+                    key={index}
+                    className={`${commonCheckBoxStyles} font-normal text-darkest-blue`}
+                    onClick={() => handleSelect(suggestion)}
+                  >
+                    {suggestion}
+                  </li>
+                ))}
+              </ul>
+            )}
             <button
               type="submit"
               className="absolute inset-y-0 right-0 text-sm flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat duration-200 rounded-full w-auto p-2 m-[2px]"
