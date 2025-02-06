@@ -39,7 +39,7 @@ echo "✅ Kong configuration cleared."
 
 echo "📥 Loading Kong configuration..."
 docker-compose exec kong kong config db_import /kong.yml
-docker exec -it kong kong reload
+docker-compose exec kong kong reload
 curl -s http://localhost:8001/routes | jq
 
 echo "🎉 Kong setup complete!"
