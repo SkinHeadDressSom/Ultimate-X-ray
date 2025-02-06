@@ -109,7 +109,7 @@ const Table = ({ patientCases }) => {
                   .map((_, index) => <SkeletonRow key={index} />)
               : patientCases.map((caseItem, index) => (
                   <tr
-                    key={caseItem.AN} // ใช้ AN เป็น key
+                    key={caseItem.an} // ใช้ AN เป็น key
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                   >
                     <td className={`${commonTableStyles} flex justify-center`}>
@@ -118,9 +118,9 @@ const Table = ({ patientCases }) => {
                           <input
                             type="checkbox"
                             className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                            id={`check-${caseItem.AN}`}
-                            checked={checkedState[caseItem.AN] || false}
-                            onChange={() => handleCheckboxChange(caseItem.AN)}
+                            id={`check-${caseItem.an}`}
+                            checked={checkedState[caseItem.an] || false}
+                            onChange={() => handleCheckboxChange(caseItem.an)}
                           />
                           <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                             <svg
@@ -150,7 +150,7 @@ const Table = ({ patientCases }) => {
                     </td>
                     <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.AN}</td>
+                    <td className={commonTableStyles}>{caseItem.an}</td>
                     <td className={commonTableStyles}>
                       {caseItem.image_count}
                     </td>

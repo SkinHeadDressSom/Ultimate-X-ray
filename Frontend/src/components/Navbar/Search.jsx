@@ -43,10 +43,10 @@ const Search = ({ onPatientDataFetched }) => {
   };
 
   //Back-end
-  const getPatient = async (HN) => {
+  const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
+        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       setPatientData(response.data.data);
