@@ -7,6 +7,7 @@ import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 
 const Table = ({ patientCases }) => {
+  const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
   const [loading, setLoading] = useState(true);
   const [checkedState, setCheckedState] = useState({});
@@ -16,7 +17,7 @@ const Table = ({ patientCases }) => {
   const commonHeadTableStyles = "px-4 py-1";
   const commonButtonStyles =
     "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50";
-  const totalCases = patientCases.length;
+  const totalCases = patient_cases?.length || 0;
   //pagination control
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
@@ -67,7 +68,7 @@ const Table = ({ patientCases }) => {
   // Get current page cases
   const indexOfLastCase = currentPage * casesPerPage;
   const indexOfFirstCase = indexOfLastCase - casesPerPage;
-  const currentCases = patientCases.slice(indexOfFirstCase, indexOfLastCase);
+  const currentCases = Array.isArray(patient_cases) ? patient_cases.slice(indexOfFirstCase, indexOfLastCase) : [];
   
   return (
     <>
@@ -107,7 +108,8 @@ const Table = ({ patientCases }) => {
               ? Array(2)
                   .fill(0)
                   .map((_, index) => <SkeletonRow key={index} />)
-              : patientCases.map((caseItem, index) => (
+              : Array.isArray(patient_cases) && patient_cases.length > 0
+              ? patient_cases.map((caseItem, index) => (
                   <tr
                     key={caseItem.caseId}
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
@@ -157,7 +159,9 @@ const Table = ({ patientCases }) => {
                       {caseItem.image_count}
                     </td>
                   </tr>
-                ))}
+                ))
+              : <tr><td colSpan="8" className="text-center">No data available</td></tr>
+              }
           </tbody>
         </table>
       </div>
