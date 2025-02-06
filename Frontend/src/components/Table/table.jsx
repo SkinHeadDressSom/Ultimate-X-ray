@@ -5,6 +5,7 @@ import Filter from "./Filter";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
+import { useNavigate } from "react-router-dom";
 
 const Table = ({ patientCases }) => {
   const { patient_cases } = patientCases || {};
@@ -21,6 +22,8 @@ const Table = ({ patientCases }) => {
   //pagination control
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
+  const navigate = useNavigate();
+
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
     setTimeout(() => setLoading(false), 2000); // Simulate a 2-second data fetch delay
@@ -52,6 +55,11 @@ const Table = ({ patientCases }) => {
         ))}
     </tr>
   );
+
+  // navigate to visualize page after click row
+  const handleRowClick = (caseItem) => {
+    navigate("/visualize", { state: { caseData: caseItem } });
+  };
 
   // Status Component Selector
   const renderStatus = (status) => {
@@ -116,18 +124,20 @@ const Table = ({ patientCases }) => {
                   <tr
                     key={caseItem.an} // ใช้ AN เป็น key
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
+                    onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
                   >
                     <td className={`${commonTableStyles} flex justify-center`}>
-                      <div className="flex items-center justify-center">
+                      <div 
+                        className="flex items-center justify-center"
+                        onClick={(e) => e.stopPropagation()} // Prevent row click when clicking checkbox
+                      >
                         <label className="flex items-center cursor-pointer relative">
                           <input
                             type="checkbox"
                             className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
                             id={`check-${index}`}
                             checked={checkedState.includes(caseItem.an)}
-                            onChange={() =>
-                              handleCheckboxChange(caseItem.an)
-                            }
+                            onChange={() => handleCheckboxChange(caseItem.an)}
                           />
                           <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                             <svg
