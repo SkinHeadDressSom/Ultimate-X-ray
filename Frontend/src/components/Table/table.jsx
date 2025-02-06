@@ -10,7 +10,7 @@ const Table = ({ patientCases }) => {
   const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
   const [loading, setLoading] = useState(true);
-  const [checkedState, setCheckedState] = useState({});
+  const [checkedState, setCheckedState] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   // Common table cell styles
   const commonTableStyles = "px-4 py-3";
@@ -28,10 +28,13 @@ const Table = ({ patientCases }) => {
 
   // Handle checkbox change
   const handleCheckboxChange = (caseId) => {
-    setCheckedState((prevCheckedState) => ({
-      ...prevCheckedState,
-      [caseId]: !prevCheckedState[caseId],
-    }));
+    setCheckedState((prevCheckedState) => {
+      if (prevCheckedState.includes(caseId)) {
+        return prevCheckedState.filter(id => id !== caseId);
+      } else {
+        return [...prevCheckedState, caseId];
+      }
+    });
   };
 
   // Skeleton Loader Row Component
@@ -111,7 +114,7 @@ const Table = ({ patientCases }) => {
               : Array.isArray(patient_cases) && patient_cases.length > 0
               ? patient_cases.map((caseItem, index) => (
                   <tr
-                    key={caseItem.caseId}
+                    key={caseItem.an}
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                   >
                     <td className={`${commonTableStyles} flex justify-center`}>
@@ -121,9 +124,9 @@ const Table = ({ patientCases }) => {
                             type="checkbox"
                             className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
                             id={`check-${index}`}
-                            checked={checkedState[caseItem.caseId] || false}
+                            checked={checkedState.includes(caseItem.an)}
                             onChange={() =>
-                              handleCheckboxChange(caseItem.caseId)
+                              handleCheckboxChange(caseItem.an)
                             }
                           />
                           <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
