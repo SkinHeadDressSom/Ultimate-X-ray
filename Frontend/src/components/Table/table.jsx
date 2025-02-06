@@ -154,7 +154,7 @@ const Table = ({ patientCases }) => {
                     </td>
                     <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.AN}</td>
+                    <td className={commonTableStyles}>{caseItem.an}</td>
                     <td className={commonTableStyles}>
                       {caseItem.image_count}
                     </td>
