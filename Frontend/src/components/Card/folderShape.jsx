@@ -8,15 +8,13 @@ const FolderShape = ({ patient }) => {
   const [patientCases, setPatientCases] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getPatientCases = async (hn) => {
+  const getPatientCases = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/${hn}/cases`,
+        `http://localhost:8000/fetch-data/api/patients/${HN}/cases`,
         { withCredentials: true }
       );
       setPatientCases(response.data.data);
-      console.log(patientData)
-      console.log(patientCases)
       setLoading(false);
     } catch (error) {
       console.log(error);
