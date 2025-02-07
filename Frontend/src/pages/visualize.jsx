@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
@@ -45,7 +45,7 @@ const Visualize = () => {
   return (
     <div className="w-screen max-h-lvh h-full">
       <div className="w-full">
-        <Topbar onImageSelect={handleImageSelect} caseData={[caseData]}/>
+        <Topbar onImageSelect={handleImageSelect} caseData={[caseData]} allCases={allCases} />
       </div>
 
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>

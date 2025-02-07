@@ -5,7 +5,7 @@ import Addfile from "./addfile"
 import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
 
-const Topbar = ({ onImageSelect, caseData }) => {
+const Topbar = ({ onImageSelect, caseData, allCases }) => {
   const [selectedItems, setSelectedItems] = useState([...caseData]);
   const [isDelete, setIsDelete] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState(null);
@@ -35,7 +35,7 @@ const Topbar = ({ onImageSelect, caseData }) => {
         <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm ">
           <h1 className="text-darkest-blue font-medium">Studies</h1>
           <div className="flex gap-1">
-            <Addfile />
+            <Addfile allCases={allCases} />
             <DeleteFile onClickDelete={() => setIsDelete((prev) => !prev)} />
           </div>
         </div>

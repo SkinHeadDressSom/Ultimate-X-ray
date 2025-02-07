@@ -87,7 +87,15 @@ const Table = ({ patientCases }) => {
       ...caseItem,
       case_images: caseImage?.case_images || [],
     };
-    navigate("/visualize", { state: { caseData: mergedCaseData, allCases: patient_cases } });
+
+    const allCasesWithImages = await Promise.all(
+      patient_cases.map(async (item) => {
+        const images = await getCaseImage(item.an);
+        return { ...item, case_images: images?.case_images || [] };
+      })
+    );
+
+    navigate("/visualize", { state: { caseData: mergedCaseData, allCases: allCasesWithImages } });
   };
 
   // Status Component Selector
