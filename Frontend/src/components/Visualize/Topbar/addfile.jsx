@@ -5,7 +5,7 @@ import OpenButton from "../../Button/openButton";
 import CancelButton from "../../Button/cancelButton";
 import mockup from "./mockup";
 
-const Addfile = () => {
+const Addfile = ({ allCases }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -61,7 +61,7 @@ const Addfile = () => {
             <span>Choose file to open</span>
           </div>
           <div>
-            {mockup.map((item, index) => (
+            {allCases.map((item, index) => (
               <div
                 key={index}
                 className="flex gap-2 items-center text-sm px-2 py-1.5 even:bg-extra-light-blue odd:bg-wheat rounded-md hover:cursor-pointer hover:bg-light-blue"
@@ -88,7 +88,7 @@ const Addfile = () => {
                     </svg>
                   </span>
                 </label>
-                <span className="text-darkest-blue">{item.date}</span>
+                <span className="text-darkest-blue">{item.study_date}</span>
                 <span className="text-darkest-blue">{item.time}</span>
               </div>
             ))}
