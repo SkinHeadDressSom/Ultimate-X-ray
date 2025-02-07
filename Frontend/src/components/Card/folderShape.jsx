@@ -15,8 +15,6 @@ const FolderShape = ({ patient }) => {
         { withCredentials: true }
       );
       setPatientCases(response.data.data);
-      console.log(patientData)
-      console.log(patientCases)
       setLoading(false);
     } catch (error) {
       console.log(error);

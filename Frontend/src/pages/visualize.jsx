@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
+import { useLocation } from "react-router-dom";
 
 const Visualize = () => {
   const [imageUrls, setImageUrls] = useState([null, null, null, null]);
   const [layout, setLayout] = useState("layout1");
+
+  const location = useLocation();
+  const caseData = location.state?.caseData || {};
+  const allCases = location.state?.allCases || {};
 
   // เลือกภาพ
   const handleImageSelect = (newImage) => {
@@ -40,7 +45,7 @@ const Visualize = () => {
   return (
     <div className="w-screen max-h-lvh h-full">
       <div className="w-full">
-        <Topbar onImageSelect={handleImageSelect} />
+        <Topbar onImageSelect={handleImageSelect} caseData={[caseData]}/>
       </div>
 
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>

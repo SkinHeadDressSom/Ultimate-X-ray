@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import mockup from "./mockup";
+// import mockup from "./mockup";
 import Thumbnail from "./thumbnail";
 import Addfile from "./addfile"
 import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
 
-const Topbar = ({ onImageSelect }) => {
-  const [selectedItems, setSelectedItems] = useState([...mockup]);
+const Topbar = ({ onImageSelect, caseData }) => {
+  const [selectedItems, setSelectedItems] = useState([...caseData]);
   const [isDelete, setIsDelete] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState(null);
 
@@ -41,7 +41,7 @@ const Topbar = ({ onImageSelect }) => {
         </div>
 
         <div className="flex flex-col px-2 py-1 h-20 overflow-y-scroll">
-          {mockup.map((item, index) => (
+          {caseData.map((item, index) => (
             <div key={index} className="flex gap-2 items-center text-sm">
               {/* ถ้ากดปุ่มถังขยะให้เปลี่ยนจาก checkbox เป็นปุ่มลบเคส */}
               {isDelete ? (
@@ -76,7 +76,7 @@ const Topbar = ({ onImageSelect }) => {
                   </span>
                 </label>
               )}
-              <span className="text-darkest-blue">{item.date}</span>
+              <span className="text-darkest-blue">{item.study_date}</span>
               <span className="text-darkest-blue">{item.time}</span>
             </div>
           ))}

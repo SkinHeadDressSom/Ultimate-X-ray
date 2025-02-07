@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Dropdown from "./dropdown";
@@ -56,9 +57,37 @@ const Table = ({ patientCases }) => {
     </tr>
   );
 
+  //pagination control
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Get current page cases
+  const indexOfLastCase = currentPage * casesPerPage;
+  const indexOfFirstCase = indexOfLastCase - casesPerPage;
+  const currentCases = Array.isArray(patient_cases) ? patient_cases.slice(indexOfFirstCase, indexOfLastCase) : [];
+  
+  const getCaseImage = async (an) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/images/${an}`,
+        { withCredentials: true }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+  
   // navigate to visualize page after click row
-  const handleRowClick = (caseItem) => {
-    navigate("/visualize", { state: { caseData: caseItem } });
+  const handleRowClick = async (caseItem) => {
+    const caseImage = await getCaseImage(caseItem.an);
+    const mergedCaseData = {
+      ...caseItem,
+      case_images: caseImage?.case_images || [],
+    };
+    navigate("/visualize", { state: { caseData: mergedCaseData, allCases: patient_cases } });
   };
 
   // Status Component Selector
@@ -71,16 +100,6 @@ const Table = ({ patientCases }) => {
     return null;
   };
 
-  //pagination control
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Get current page cases
-  const indexOfLastCase = currentPage * casesPerPage;
-  const indexOfFirstCase = indexOfLastCase - casesPerPage;
-  const currentCases = Array.isArray(patient_cases) ? patient_cases.slice(indexOfFirstCase, indexOfLastCase) : [];
-  
   return (
     <>
       <div className="flex justify-between items-end w-full pb-1">
