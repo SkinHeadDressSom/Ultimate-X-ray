@@ -7,16 +7,17 @@ import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 
 const Table = ({ patientCases }) => {
+  const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
   const [loading, setLoading] = useState(true);
-  const [checkedState, setCheckedState] = useState({});
+  const [checkedState, setCheckedState] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   // Common table cell styles
   const commonTableStyles = "px-4 py-3";
   const commonHeadTableStyles = "px-4 py-1";
   const commonButtonStyles =
     "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50";
-  const totalCases = patientCases.length;
+  const totalCases = patient_cases?.length || 0;
   //pagination control
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
@@ -27,10 +28,13 @@ const Table = ({ patientCases }) => {
 
   // Handle checkbox change
   const handleCheckboxChange = (caseId) => {
-    setCheckedState((prevCheckedState) => ({
-      ...prevCheckedState,
-      [caseId]: !prevCheckedState[caseId],
-    }));
+    setCheckedState((prevCheckedState) => {
+      if (prevCheckedState.includes(caseId)) {
+        return prevCheckedState.filter(id => id !== caseId);
+      } else {
+        return [...prevCheckedState, caseId];
+      }
+    });
   };
 
   // Skeleton Loader Row Component
@@ -67,8 +71,8 @@ const Table = ({ patientCases }) => {
   // Get current page cases
   const indexOfLastCase = currentPage * casesPerPage;
   const indexOfFirstCase = indexOfLastCase - casesPerPage;
-  const currentCases = patientCases.slice(indexOfFirstCase, indexOfLastCase);
-
+  const currentCases = Array.isArray(patient_cases) ? patient_cases.slice(indexOfFirstCase, indexOfLastCase) : [];
+  
   return (
     <>
       <div className="flex justify-between items-end w-full pb-1">
@@ -107,9 +111,10 @@ const Table = ({ patientCases }) => {
               ? Array(2)
                   .fill(0)
                   .map((_, index) => <SkeletonRow key={index} />)
-              : patientCases.map((caseItem, index) => (
+              : Array.isArray(patient_cases) && patient_cases.length > 0
+              ? patient_cases.map((caseItem, index) => (
                   <tr
-                    key={caseItem.AN} // ใช้ AN เป็น key
+                    key={caseItem.an} // ใช้ AN เป็น key
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                   >
                     <td className={`${commonTableStyles} flex justify-center`}>
@@ -118,9 +123,11 @@ const Table = ({ patientCases }) => {
                           <input
                             type="checkbox"
                             className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                            id={`check-${caseItem.AN}`}
-                            checked={checkedState[caseItem.AN] || false}
-                            onChange={() => handleCheckboxChange(caseItem.AN)}
+                            id={`check-${index}`}
+                            checked={checkedState.includes(caseItem.an)}
+                            onChange={() =>
+                              handleCheckboxChange(caseItem.an)
+                            }
                           />
                           <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                             <svg
@@ -150,12 +157,14 @@ const Table = ({ patientCases }) => {
                     </td>
                     <td className={commonTableStyles}>{caseItem.study_date}</td>
                     <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.AN}</td>
+                    <td className={commonTableStyles}>{caseItem.an}</td>
                     <td className={commonTableStyles}>
                       {caseItem.image_count}
                     </td>
                   </tr>
-                ))}
+                ))
+              : <tr><td colSpan="8" className="text-center">No data available</td></tr>
+              }
           </tbody>
         </table>
       </div>

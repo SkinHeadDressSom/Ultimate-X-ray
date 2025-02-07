@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./databasepg:/var/lib/postgresql/data
+      # - ./databasepg:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
     restart: always
 
@@ -39,6 +39,8 @@ services:
       - 8001:8001
     depends_on:
       - kong-db
+    volumes:
+      - ./kong.yml:/kong.yml
 
   auth-service:
     build: ./services/auth
@@ -53,6 +55,13 @@ services:
     env_file: "./services/fetch-data/.env"
     ports:
       - "3002:3002"
+    depends_on:
+      - postgres-service
+
+  ai-detection-service:
+    build: ./services/ai-detection
+    ports:
+      - "3010:3010"
     depends_on:
       - postgres-service
 

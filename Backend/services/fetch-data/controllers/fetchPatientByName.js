@@ -16,6 +16,7 @@ const fetchPatientbyName = async (req, res) => {
         message: RESPONSE_MESSAGES.missingArguments,
       });
     }
+    console.log("name:", name);
 
     const patients = await getPatientbyName(name);
     // Handling query error

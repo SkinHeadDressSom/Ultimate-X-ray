@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState, useRef, useEffect } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
 
-const Search = ({ onPatientDataFetched = () => {} }) => {
+const Search = ({ onPatientDataFetched }) => {
   const [inputValue, setInputValue] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState(null);
@@ -43,10 +43,10 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
   };
 
   //Back-end
-  const getPatientByHN = async (HN) => {
+  const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
+        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       console.log("API Response from HN search:", response.data);
@@ -88,20 +88,21 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
   //handle search
   const handleSearch = (e) => {
     e.preventDefault();
-
-    if (inputValue.trim() === "") {
-      setError(
-        selectedMenuItem === "HN"
-          ? "Patient ID cannot be empty."
-          : "Patient name cannot be empty."
-      );
-      return;
-    }
-
+    // หาHN
     if (selectedMenuItem === "HN") {
-      getPatientByHN(inputValue);
-    } else if (selectedMenuItem === "Name") {
-      getPatientByName(inputValue); // Create a separate function for name-based search
+      if (inputValue.trim() === "") {
+        setError("Patient ID cannot be empty.");
+        return;
+      }
+      getPatient(inputValue);
+    }
+    // หาName
+    else if (selectedMenuItem === "Name") {
+      if (inputValue.trim() === "") {
+        setError("Patient name cannot be empty.");
+        return;
+      }
+      getPatient(inputValue);
     }
   };
 
