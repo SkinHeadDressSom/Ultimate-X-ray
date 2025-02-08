@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { ReactComponent as DeleteLine } from "../../../assets/topbar/closeLine.svg";
 import { ReactComponent as DeleteFill } from "../../../assets/topbar/closeFill.svg";
 
-const DeleteItem = () => {
+const DeleteItem = ({ onDelete }) => {
   const [isHovered, setIsHovered] = useState(false);
+
   return (
     <button
+      onClick={onDelete} 
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

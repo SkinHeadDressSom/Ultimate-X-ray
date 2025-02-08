@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
@@ -11,6 +11,12 @@ const Visualize = () => {
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
+  //ล้าง localstoarage ถ้าออกจากหน้านี้ ก็คือถ้าย้อนไปหน้าอื่นการกระทำในหน้านี้ก็จะหายหมดเลย คิดว่าถ้าuser ยังไม่เซฟก็ต้องมี modal ให้ยืนยันการออกจากหน้าก่อนไหม
+  useEffect(() => {
+    return () => {
+      localStorage.removeItem("caseList");
+    };
+  }, []);
 
   // เลือกภาพ
   const handleImageSelect = (newImage) => {
@@ -19,11 +25,24 @@ const Visualize = () => {
       if (layout === "layout1") {
         updatedImages[0] = newImage;
       } else if (layout === "layout2") {
-        updatedImages[1] = updatedImages[0] ? newImage : updatedImages[1];
+        const firstEmptyIndex = updatedImages.findIndex(
+          (img, index) => index < 2 && img === null
+        );
+        if (firstEmptyIndex !== -1) {
+          updatedImages[firstEmptyIndex] = newImage;
+        }
       } else if (layout === "layout3") {
-        updatedImages[2] = updatedImages[1] ? newImage : updatedImages[2];
+        const firstEmptyIndex = updatedImages.findIndex(
+          (img, index) => index < 3 && img === null
+        );
+        if (firstEmptyIndex !== -1) {
+          updatedImages[firstEmptyIndex] = newImage;
+        }
       } else if (layout === "layout4") {
-        updatedImages[3] = updatedImages[2] ? newImage : updatedImages[3];
+        const firstEmptyIndex = updatedImages.findIndex((img) => img === null);
+        if (firstEmptyIndex !== -1) {
+          updatedImages[firstEmptyIndex] = newImage;
+        }
       }
       return updatedImages;
     });
@@ -45,7 +64,11 @@ const Visualize = () => {
   return (
     <div className="w-screen max-h-lvh h-full">
       <div className="w-full">
-        <Topbar onImageSelect={handleImageSelect} caseData={[caseData]} allCases={allCases} />
+        <Topbar
+          onImageSelect={handleImageSelect}
+          caseData={[caseData]}
+          allCases={allCases}
+        />
       </div>
 
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>
