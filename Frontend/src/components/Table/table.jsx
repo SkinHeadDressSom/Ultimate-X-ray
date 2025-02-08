@@ -8,7 +8,7 @@ import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 import { useNavigate } from "react-router-dom";
 
-const Table = ({ patientCases,loading }) => {
+const Table = ({ patientCases, loading }) => {
   const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
   const [getLoading, setLoading] = useState(loading);
@@ -93,7 +93,10 @@ const Table = ({ patientCases,loading }) => {
     const allCasesWithImages = await Promise.all(
       patient_cases.map(async (item) => {
         const images = await getCaseImage(item.an);
-        return { ...item, case_images: images?.case_images || [] };
+        return {
+          ...item,
+          case_images: images?.case_images || [],
+        };
       })
     );
 

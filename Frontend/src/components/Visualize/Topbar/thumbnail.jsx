@@ -37,8 +37,9 @@ function Thumbnail({
             src={imageObj.file_path}
             alt={imageObj.xn}
             onClick={() => {
-              onImageSelect(imageObj.file_path);
+              onImageSelect(imageObj.file_path); // เลือกรูปจาก thumbnail
               setSelectedImageId(imageObj.xn);
+              localStorage.setItem("selectedImageId", imageObj.xn); // บันทึกลง localStorage
             }}
             className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
               selectedImageId === imageObj.xn

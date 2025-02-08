@@ -42,6 +42,7 @@ const Addfile = ({ allCases, onAddCase, caseList }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
   const handleCheckbox = (item) => {
     if (selectedCases.some((selected) => selected.an === item.an)) {
       setSelectedCases(
@@ -51,7 +52,17 @@ const Addfile = ({ allCases, onAddCase, caseList }) => {
       setSelectedCases([...selectedCases, item]);
     }
   };
-  //กรองเคสที่ยังไม่ได้เอามาแสดงที่หน้านี้
+  //ทำให้กดได้ทั้งใน checkbox และนอก
+  const handleRowClick = (item) => {
+    if (selectedCases.some((selected) => selected.an === item.an)) {
+      setSelectedCases(
+        selectedCases.filter((selected) => selected.an !== item.an)
+      );
+    } else {
+      setSelectedCases([...selectedCases, item]);
+    }
+  };
+  //กรองเคสที่ยังไม่ได้เลือก
   const availableCases = allCases.filter(
     (item) => !caseList.some((c) => c.an === item.an)
   );
@@ -94,12 +105,16 @@ const Addfile = ({ allCases, onAddCase, caseList }) => {
               availableCases.map((item, index) => (
                 <div
                   key={index}
+                  onClick={() => handleRowClick(item)}
                   className="flex gap-2 items-center text-sm px-2 py-1.5 even:bg-extra-light-blue odd:bg-wheat rounded-md hover:cursor-pointer hover:bg-light-blue"
                 >
                   <label className="flex items-center cursor-pointer relative">
                     <input
                       type="checkbox"
                       onChange={() => handleCheckbox(item)}
+                      checked={selectedCases.some(
+                        (selected) => selected.an === item.an
+                      )}
                       className="peer h-3.5 w-3.5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
                     />
                     <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">

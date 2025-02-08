@@ -12,11 +12,42 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
   const [selectedItems, setSelectedItems] = useState([...caseList]);
   const [isDelete, setIsDelete] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState(null);
-  
+
   //เอาเคสที่เพิ่มมาเก็บไว้ใน storage
   useEffect(() => {
     localStorage.setItem("caseList", JSON.stringify(caseList));
   }, [caseList]);
+
+  //ภาพแรกสุดของเคสล่าสุดให้เปิดรอไว้
+  useEffect(() => {
+    const storedSelectedImageId = localStorage.getItem("selectedImageId");
+    if (caseList.length > 0) {
+      let latestCase;
+      if (storedSelectedImageId) {
+        latestCase = caseList.find((caseItem) =>
+          caseItem.case_images.some((img) => img.xn === storedSelectedImageId)
+        );
+      }
+      if (!latestCase) {
+        latestCase =
+          caseList.length === 1
+            ? caseList[0]
+            : [...caseList].sort((a, b) => b.an - a.an)[0];
+      }
+      if (latestCase?.case_images?.length > 0) {
+        const firstImage = storedSelectedImageId
+          ? latestCase.case_images.find(
+              (img) => img.xn === storedSelectedImageId
+            ) || latestCase.case_images[0]
+          : latestCase.case_images[0];
+
+        setSelectedImageId(firstImage.xn);
+        onImageSelect(firstImage.file_path);
+        localStorage.setItem("selectedImageId", firstImage.xn);
+      }
+    }
+  }, []);
+
   //กดเลือกดูเคสให้แสดงที่ thumbnail
   const handleCheckbox = (item) => {
     if (selectedItems.some((selected) => selected.an === item.an)) {
