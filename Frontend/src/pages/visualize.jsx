@@ -1,11 +1,10 @@
-import React from 'react'
-import ContrastPopup from '../components/tools/contrastpop'
-
+import React from 'react';
+import Zommer from '../components/tools/zoomsume';
 
 const Visualize = () => {
   return (
-    <div> <ContrastPopup /> </div>
-  )
-}
+    <div> <Zommer /> </div>
+  );
+};
 
-export default Visualize
+export default Visualize;
