@@ -5,7 +5,7 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-import Colorpopup from "./pages/colorpoop";
+import Zoom from "./pages/Zoom";
 
 function App() {
   const router = createBrowserRouter([
@@ -42,10 +42,10 @@ function App() {
       ),
     },
     {
-      path: "/colorpopup",
+      path: "/Zoom",
       element: (
         <>
-          <Colorpopup />
+          <Zoom />
         </>
       ),
     }
