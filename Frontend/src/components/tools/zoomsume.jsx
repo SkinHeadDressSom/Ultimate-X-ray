@@ -4,7 +4,7 @@ const Zoomer = () => {
     console.log("muhaha rendered");
     return (
         <div>
-            huhi
+            <h1>Zoomer</h1>
         </div>
     );
 };
