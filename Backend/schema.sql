@@ -87,7 +87,8 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', NOW(), NULL, 'Abnormal'),
-(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', NOW(), NOW(), 'Normal');
+
+(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Normal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', '2002-03-17 08:12:30', '2002-03-17 07:42:50', 'Abnormal'),
+(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Abnormal'),
+(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal');
