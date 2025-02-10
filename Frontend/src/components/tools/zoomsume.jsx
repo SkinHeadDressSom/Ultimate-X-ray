@@ -1,12 +1,12 @@
 import React from 'react';
 
-const Zommer = () => {
-    console.log("Zommer component rendered");
+const Zoomer = () => {
+    console.log("muhaha rendered");
     return (
         <div>
-            Zoomer Component
+            huhi
         </div>
     );
 };
 
-export default Zommer;
+export default Zoomer;
