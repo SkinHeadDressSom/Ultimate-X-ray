@@ -12,7 +12,7 @@ import {
 } from "../toolsdata";
 import ContrastPopup from "./contrastpop";
 
-const ImageTools = ({ onContrastChange }) => {
+const ImageTools = ({ onContrastChange,zoomIn,zoomOut,drag }) => {
   const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
 
@@ -47,7 +47,12 @@ const ImageTools = ({ onContrastChange }) => {
               activeId === button.id ||
               (button.id === "contrast" && showContrastPopup)
             }
-            onClick={() => handleButtonClick(button.id)}
+            onClick={() => {
+              handleButtonClick(button.id);
+              if (button.id === "zoomin") zoomIn();
+              if (button.id === "zoomout") zoomOut();
+              if (button.id === "drag") drag();
+            }}
           />
         ))}
       </div>

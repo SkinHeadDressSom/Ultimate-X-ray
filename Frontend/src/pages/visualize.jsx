@@ -13,11 +13,84 @@ const Visualize = () => {
   const [contrast, setContrast] = useState([0]);
   const [selectedColor, setSelectedColor] = useState("#000000");
   const [isAnnotationHidden, setIsAnnotationHidden] = useState(false);
+  const [scale, setScale] = useState([]);
+  const [position, setPosition] = useState([]);
+  const [dragging, setDragging] = useState(false);
+  const [start, setStart] = useState({ x: 0, y: 0 });
+  const [draggingIndex, setDraggingIndex] = useState(null);
+
+  const startDrag = (e, index) => {
+  if (!e || !e.clientX || !e.clientY) return;
+  if (e.button !== 0) return;
+  if (selectedPosition === null || !position[selectedPosition]) return;
+
+  setDragging(true);
+  setDraggingIndex(index);
+  setStart({
+    x: e.clientX - position[index].x,
+    y: e.clientY - position[index].y,
+  });
+};
+
+
+  const onDrag = (e) => {
+    if (draggingIndex === null) return;
+    requestAnimationFrame(() => {
+      setPosition((prevPositions) => {
+        const newPositions = [...prevPositions];
+        newPositions[draggingIndex] = {
+          x: e.clientX - start.x,
+          y: e.clientY - start.y,
+        };
+        return newPositions;
+      });
+    });
+  };
+
+  const stopDrag = () => {
+    setDragging(false);
+    setDraggingIndex(null);
+  };
 
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
-  console.log(selectedColor);
+  const zoomIn = () => {
+    setScale((prevScales) => {
+      const newScales = [...prevScales];
+      newScales[selectedPosition] = Math.min(
+        newScales[selectedPosition] + 0.3,
+        3
+      );
+      return newScales;
+    });
+  };
+
+  const zoomOut = () => {
+    setScale((prevScales) => {
+      const newScales = [...prevScales];
+      newScales[selectedPosition] = Math.max(
+        newScales[selectedPosition] - 0.3,
+        1
+      );
+      return newScales;
+    });
+  };
+  const handleImagePositionSelect = (index) => {
+    setSelectedPosition(index);
+    // เมื่อเลือกภาพให้ตั้งค่า scale และ position สำหรับภาพนั้น
+    setScale((prevScales) => {
+      const newScales = [...prevScales];
+      newScales[index] = newScales[index] || 1; // ถ้ายังไม่ได้ตั้งค่า scale สำหรับภาพนี้
+      return newScales;
+    });
+    setPosition((prevPositions) => {
+      const newPositions = [...prevPositions];
+      newPositions[index] = newPositions[index] || { x: 0, y: 0 }; // ถ้ายังไม่ได้ตั้งค่า position
+      return newPositions;
+    });
+  };
+
   useEffect(() => {
     return () => {
       localStorage.removeItem("caseList");
@@ -92,10 +165,6 @@ const Visualize = () => {
       setSelectedPosition(firstEmptyIndex);
     }
   };
-
-  const handleImagePositionSelect = (position) => {
-    setSelectedPosition(position);
-  };
   //ปรับค่า contrast แยกตามรูป
   const handleContrastChange = (value) => {
     setContrast((prevContrast) => {
@@ -125,6 +194,9 @@ const Visualize = () => {
             setSelectedColor={setSelectedColor}
             isAnnotationHidden={isAnnotationHidden}
             setIsAnnotationHidden={setIsAnnotationHidden}
+            zoomIn={zoomIn}
+            zoomOut={zoomOut}
+            drag={startDrag}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
@@ -139,6 +211,11 @@ const Visualize = () => {
             contrast={contrast}
             selectedColor={selectedColor}
             isAnnotationHidden={isAnnotationHidden}
+            scale={scale}
+            position={position}
+            startDrag={startDrag}
+            onDrag={onDrag}
+            stopDrag={stopDrag}
           />
         </main>
       </div>

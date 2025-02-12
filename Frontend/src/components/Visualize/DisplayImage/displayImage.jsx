@@ -13,6 +13,11 @@ const DisplayImage = ({
   contrast,
   selectedColor,
   isAnnotationHidden,
+  scale,
+  position,
+  startDrag, 
+  onDrag, 
+  stopDrag,
 }) => {
   const canvasRef = useRef([]);
   const canvases = useFabricCanvas(
@@ -65,16 +70,29 @@ const DisplayImage = ({
           }`}
         >
           {image ? (
-            <div className=" w-full h-full">
+            <div
+              className=" w-full h-full overflow-hidden relative"
+              onMouseDown={(e) => startDrag(e, index)}
+              onMouseMove={(e) => onDrag(e, index)}
+              onMouseUp={stopDrag}
+              onMouseLeave={stopDrag}
+            >
               <canvas ref={(el) => (canvasRef.current[index] = el)} />
               <img
                 src={image}
                 alt={`x-ray-${index}`}
-                draggable={false}
                 className={`w-full h-full object-contain rounded-none ${getBorderClasses(
                   index
                 )}`}
-                style={{filter: `contrast(${calculateContrast(contrast[index])})`, zIndex: 0}}
+                style={{
+                  filter: `contrast(${calculateContrast(contrast[index])})`,
+                  zIndex: 0,
+                  transform: `scale(${scale[index] || 1}) translate(${
+                    position[index]?.x || 0
+                  }px, ${position[index]?.y || 0}px)`,
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                }}
               />
             </div>
           ) : (
