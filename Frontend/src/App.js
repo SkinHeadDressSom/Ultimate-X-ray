@@ -5,6 +5,8 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
+import Zoom from './pages/zoom';
+
 
 function App() {
   const router = createBrowserRouter([
@@ -31,7 +33,8 @@ function App() {
           <Dashboard />
         </>
       ),
-    }, {
+    },
+    {
       path: "/visualize",
       element: (
         <>
@@ -39,9 +42,17 @@ function App() {
         </>
       ),
     },
-    
+    {
+      path: "/Zoom",
+      element: (
+        <>
+          <Zoom />
+        </>
+      ),
+    }
+
   ]);
-  
+
 
   return (
     <>
