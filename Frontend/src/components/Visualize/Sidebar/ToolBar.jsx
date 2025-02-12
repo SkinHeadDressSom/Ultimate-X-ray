@@ -10,12 +10,12 @@ const Toolbar = ({
   setSelectedShape,
   isTextMode,
   setIsTextMode,
-  
+  onContrastChange,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
     { component: <Layout onLayoutChange={onLayoutChange} />, key: "layout" },
-    { component: <ImageTools />, key: "imageTools" },
+    { component: <ImageTools onContrastChange={(value) => onContrastChange(value)} />, key: "imageTools" },
     {
       component: (
         <Annotaion

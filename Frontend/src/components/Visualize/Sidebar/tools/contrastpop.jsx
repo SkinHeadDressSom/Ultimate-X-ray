@@ -1,56 +1,58 @@
-import React, { useState } from "react";
-import { Typography, Box } from "@mui/material";
+import React, { useState, useRef, useEffect } from "react";
+import { Box } from "@mui/material";
 
-const ContrastPopup = () => {
+const ContrastPopup = ({ onClose, onContrastChange }) => {
   const [contrast, setContrast] = useState(0);
+  const popupRef = useRef(null);
+  // ฟังก์ชันเปลี่ยนค่า contrast จาก input number
+  const handleInputChange = (e) => {
+    let value = e.target.value === "" ? "" : parseFloat(e.target.value);
 
-  // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
-  const calculateContrast = (value) => {
-    return value >= 0 ? 1 + (value / 20) * 4 : 1 + value / 100;
+    if (value !== "" && (value < -100 || value > 100)) {
+      value = Math.max(-100, Math.min(100, value)); // จำกัดค่าระหว่าง -100 ถึง 100
+    }
+    setContrast(value);
+    onContrastChange(value);
   };
-  // -------------------------------------------------------------------------------------------------------------------------------------------
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        onClose(); // ปิด popup ถ้าคลิกนอก
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onClose]);
 
   return (
     <Box
-      className="p-4 bg-white rounded-lg shadow-md w-64 margin-center"
-      sx={{ position: "relative" }}
+      ref={popupRef}
+      className="flex flex-col items-center justify-center p-3 gap-4 bg-lightest-blue text-darkest-blue rounded-lg shadow-md w-64 absolute z-10 left-28 top-[450px]"
     >
-      {/* อันนี้ไว้เชื่อมต่อกับรูปภาพเปลี่ยนวิธีเอาให้ปรับตามรูปที่เลือที่กำลังแสดง */}
-      {/* <ImageUploader onUpload={setImage} />
-      {image && <img src={image} alt="Uploaded" style={{ maxWidth: "100%", maxHeight: 200, borderRadius: 8, filter: `contrast(${calculateContrast(contrast)})` }} />} */}
-      {/* ------------------------------------------------------------------------------------------------------------------------------------------------------------ */}
-
-      <Box
-        sx={{
-          position: "absolute",
-          top: 8,
-          right: 8,
-          bgcolor: "#fff",
-          p: 1,
-          borderRadius: 2,
-          width: 50,
-          height: 30,
-          textAlign: "center",
-          border: "1px solid black",
-        }}
-      >
-        <Typography
-          variant="body2"
-          sx={{ textAlign: "center", lineHeight: "12px" }}
-        >
-          {contrast}
-        </Typography>
-      </Box>
-      <label className="block text-gray-700 font-semibold mb-1">Contrast</label>
-
-      <div className="flex items-center">
+      <div className="flex flex-row justify-between items-center w-full">
+        <h1 className="text-lg font-semibold">Contrast</h1>
+        <input
+          type="number"
+          min="-100"
+          max="100"
+          value={contrast}
+          onChange={handleInputChange}
+          className="border-[1px] border-light-gray w-14 px-2 py-1 rounded-md text-sm text-center outline-none bg-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        />
+      </div>
+      <div className="flex items-center w-full py-2">
         <input
           type="range"
           min="-100"
           max="100"
           value={contrast}
-          onChange={(e) => setContrast(parseInt(e.target.value, 10))}
-          className="w-full accent-blue-600"
+          onChange={(e) => {
+            setContrast(Number(e.target.value));
+            onContrastChange(Number(e.target.value));
+          }}
+          className="w-full accent-blue-600 appearance-none rounded-full h-1 bg-gray"
         />
       </div>
     </Box>

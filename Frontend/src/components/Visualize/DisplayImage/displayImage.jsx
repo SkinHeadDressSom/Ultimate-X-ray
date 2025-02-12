@@ -10,6 +10,7 @@ const DisplayImage = ({
   selectedShape,
   isTextMode,
   setIsTextMode,
+  contrast,
 }) => {
   const canvasRef = useRef([]);
   const canvases = useFabricCanvas(
@@ -19,6 +20,9 @@ const DisplayImage = ({
     isTextMode,
     setIsTextMode
   );
+  const calculateContrast = (contrast) => {
+    return contrast >= 0 ? 1 + (contrast / 20) * 4 : 1 + contrast / 100;
+  };
 
   const gridStyles = {
     layout1: "grid-cols-1 grid-rows-1",
@@ -47,7 +51,7 @@ const DisplayImage = ({
   };
 
   return (
-    <div className={`grid ${gridStyles[layout]} w-full h-full`}>
+    <div className={`grid ${gridStyles[layout]} relative w-full h-full `}>
       {imageUrls.map((image, index) => (
         <div
           key={index}
@@ -57,20 +61,21 @@ const DisplayImage = ({
           }`}
         >
           {image ? (
-            <div className="w-full h-full">
+            <div className=" w-full h-full">
               <canvas ref={(el) => (canvasRef.current[index] = el)} />
               <img
                 src={image}
                 alt={`x-ray-${index}`}
                 draggable={false}
-                className={`w-full h-full object-contain rounded-none z-40 ${getBorderClasses(
+                className={`w-full h-full object-contain rounded-none ${getBorderClasses(
                   index
                 )}`}
+                style={{filter: `contrast(${calculateContrast(contrast[index])})`, zIndex: 0}}
               />
             </div>
           ) : (
             <div
-              className={`w-full h-full bg-gray-800 flex items-center justify-center text-wheat text-lg cursor-pointer ${getBorderClasses(
+              className={`w-full h-full bg-gray-800 flex items-center justify-center text-wheat text-lg cursor-pointer  ${getBorderClasses(
                 index
               )}`}
               onClick={() => onImagePositionSelect(index)}

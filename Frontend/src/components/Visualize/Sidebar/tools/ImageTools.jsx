@@ -12,8 +12,9 @@ import {
 } from "../toolsdata";
 import ContrastPopup from "./contrastpop";
 
-const ImageTools = () => {
-  const [activeId, setActiveId] = useState("pointer");
+const ImageTools = ({ onContrastChange }) => {
+  const [activeId, setActiveId] = useState(null);
+  const [showContrastPopup, setShowContrastPopup] = useState(false);
 
   const buttons = [
     { id: "undo", icon: Undo },
@@ -23,39 +24,14 @@ const ImageTools = () => {
     { id: "zoomin", icon: Zoomin },
     { id: "zoomout", icon: Zoomout },
     { id: "contrast", icon: Contrast },
-    { id: "hightlight", icon: Highlight },
+    { id: "highlight", icon: Highlight },
   ];
 
   const handleButtonClick = (id) => {
-    setActiveId((prevId) => (prevId === id ? null : id));
-    // เพิ่ม logic การทำงานของแต่ละปุ่มตาม id
-    switch (id) {
-      case "undo":
-        console.log("undo button clicked");
-        break;
-      case "redo":
-        console.log("redo button clicked");
-        break;
-      case "pointer":
-        console.log("pointer button clicked");
-        break;
-      case "drag":
-        console.log("drag button clicked");
-        break;
-      case "zoomin":
-        console.log("zoomin button clicked");
-        break;
-      case "zoomout":
-        console.log("zoomout button clicked");
-        break;
-      case "contrast":
-        console.log("contrast button clicked");
-        break;
-      case "highlight":
-        console.log("hightlight button clicked");
-        break;
-      default:
-        break;
+    if (id === "contrast") {
+      setShowContrastPopup((prev) => !prev); // สลับเปิด/ปิด popup
+    } else {
+      setActiveId((prevId) => (prevId === id ? null : id)); // เปลี่ยน active tool
     }
   };
 
@@ -67,11 +43,20 @@ const ImageTools = () => {
           <ButtonWithIcon
             key={button.id}
             icon={button.icon}
-            isActive={activeId === button.id}
+            isActive={
+              activeId === button.id ||
+              (button.id === "contrast" && showContrastPopup)
+            }
             onClick={() => handleButtonClick(button.id)}
           />
         ))}
       </div>
+      {showContrastPopup && (
+        <ContrastPopup
+          onClose={() => setShowContrastPopup(false)}
+          onContrastChange={onContrastChange}
+        />
+      )}
     </div>
   );
 };

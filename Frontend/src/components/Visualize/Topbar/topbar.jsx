@@ -143,7 +143,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
           ))}
         </div>
       </div>
-      <div className="flex flex-row w-full">
+      <div className="flex flex-row w-full h-full">
         {/* เพิ่ม thumbnail รูปภาพตามเคสที่เลือก */}
         {sortedSelectedItems.map((item) => (
           <Thumbnail

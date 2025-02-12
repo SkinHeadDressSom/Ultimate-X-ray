@@ -10,6 +10,7 @@ const Visualize = () => {
   const [selectedPosition, setSelectedPosition] = useState(null);
   const [selectedShape, setSelectedShape] = useState(null);
   const [isTextMode, setIsTextMode] = useState(false);
+  const [contrast, setContrast] = useState([0]);
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
@@ -92,10 +93,17 @@ const Visualize = () => {
   const handleImagePositionSelect = (position) => {
     setSelectedPosition(position);
   };
-
+  //ปรับค่า contrast แยกตามรูป
+  const handleContrastChange = (value) => {
+    setContrast((prevContrast) => {
+      const updatedContrast = [...prevContrast];
+      updatedContrast[selectedPosition] = value;
+      return updatedContrast;
+    });
+  };
   return (
     <div className="w-screen max-h-lvh h-full">
-      <div className="w-full">
+      <div className="z-50 relative">
         <Topbar
           onImageSelect={handleImageSelect}
           caseData={[caseData]}
@@ -109,6 +117,7 @@ const Visualize = () => {
             setSelectedShape={setSelectedShape}
             isTextMode={isTextMode}
             setIsTextMode={setIsTextMode}
+            onContrastChange={handleContrastChange}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
@@ -120,6 +129,7 @@ const Visualize = () => {
             selectedShape={selectedShape}
             isTextMode={isTextMode}
             setIsTextMode={setIsTextMode}
+            contrast={contrast}
           />
         </main>
       </div>
