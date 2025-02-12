@@ -25,7 +25,7 @@ const fetchImage = async (req, res) => {
 
     const enriched_images = await Promise.all(
       images.case_images.map(async (imageItem) => {
-        // Extract only date from date_of_birth
+        // Split date and time from uploaded_date
         const uploaded_date_time = new Date(imageItem.uploaded_date);
         const { date, time } = await SplitDateandTime(uploaded_date_time);
 
