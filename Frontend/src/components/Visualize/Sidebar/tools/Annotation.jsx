@@ -2,42 +2,23 @@ import React, { useState } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
 
-const Annotaion = () => {
+const Annotaion = ({ setSelectedShape, isTextMode, setIsTextMode }) => {
   const [activeId, setActiveId] = useState(null);
 
   const buttons = [
     { id: "arrow", icon: Arrow },
     { id: "circle", icon: Circle },
     { id: "square", icon: Square },
-    { id: "addtext", icon: AddText },
+    { id: "text", icon: AddText },
     { id: "ruler", icon: Ruler },
     { id: "hide", icon: Hide },
   ];
 
   const handleButtonClick = (id) => {
     setActiveId((prevId) => (prevId === id ? null : id));
-    // เพิ่ม logic การทำงานของแต่ละปุ่มตาม id
-    switch (id) {
-      case "arrow":
-        console.log("arrow button clicked");
-        break;
-      case "circle":
-        console.log("circle button clicked");
-        break;
-      case "square":
-        console.log("square button clicked");
-        break;
-      case "addtext":
-        console.log("addtext button clicked");
-        break;
-      case "ruler":
-        console.log("ruler button clicked");
-        break;
-      case "hide":
-        console.log("hide button clicked");
-        break;
-      default:
-        break;
+    setSelectedShape(id);
+    if (id === "text") {
+      setIsTextMode((prevMode) => !prevMode);
     }
   };
 
