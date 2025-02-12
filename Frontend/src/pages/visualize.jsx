@@ -3,8 +3,6 @@ import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
 import { useLocation } from "react-router-dom";
-import React from 'react';
-import Zommer from '../components/tools/zoomsume';
 
 const Visualize = () => {
   const [imageUrls, setImageUrls] = useState([null]);
@@ -128,10 +126,4 @@ const Visualize = () => {
     </div>
   );
 };
-    <div> <Zommer /> </div>
-  );
-};
-
-export default Visualize;
-
 export default Visualize;
