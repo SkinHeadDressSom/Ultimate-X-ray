@@ -1,10 +1,10 @@
 import React from 'react';
 import Zoomer from '../components/tools/zoomsume';
 
-const Visualize = () => {
+const Zoom = () => {
     return (
         <div> <Zoomer /> </div>
     );
 };
 
-export default Visualize;
+export default Zoom;
