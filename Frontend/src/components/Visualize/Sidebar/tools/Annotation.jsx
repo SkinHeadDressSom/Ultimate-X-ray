@@ -1,9 +1,17 @@
 import React, { useState } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
+import Colorpopup from "./colorpop";
 
-const Annotaion = ({ setSelectedShape, isTextMode, setIsTextMode }) => {
+const Annotaion = ({
+  setSelectedShape,
+  isTextMode,
+  setIsTextMode,
+  selectedColor,
+  setSelectedColor,
+}) => {
   const [activeId, setActiveId] = useState(null);
+  const [showColorPopup, setShowColorPopup] = useState(false);
 
   const buttons = [
     { id: "arrow", icon: Arrow },
@@ -15,10 +23,14 @@ const Annotaion = ({ setSelectedShape, isTextMode, setIsTextMode }) => {
   ];
 
   const handleButtonClick = (id) => {
-    setActiveId((prevId) => (prevId === id ? null : id));
+    setActiveId(id);
+
     setSelectedShape(id);
     if (id === "text") {
-      setIsTextMode((prevMode) => !prevMode);
+      setIsTextMode(true);
+      setShowColorPopup((prev) => !prev);
+    } else if (id === "arrow" || id === "circle" || id === "square") {
+      setShowColorPopup((prev) => !prev);
     }
   };
 
@@ -35,6 +47,13 @@ const Annotaion = ({ setSelectedShape, isTextMode, setIsTextMode }) => {
           />
         ))}
       </div>
+      {showColorPopup && (
+        <Colorpopup
+          onClose={() => setShowColorPopup(false)}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
+        />
+      )}
     </div>
   );
 };

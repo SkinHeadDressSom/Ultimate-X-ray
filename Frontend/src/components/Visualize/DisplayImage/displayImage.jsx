@@ -11,6 +11,7 @@ const DisplayImage = ({
   isTextMode,
   setIsTextMode,
   contrast,
+  selectedColor,
 }) => {
   const canvasRef = useRef([]);
   const canvases = useFabricCanvas(
@@ -18,7 +19,8 @@ const DisplayImage = ({
     imageUrls,
     selectedShape,
     isTextMode,
-    setIsTextMode
+    setIsTextMode,
+    selectedColor
   );
   const calculateContrast = (contrast) => {
     return contrast >= 0 ? 1 + (contrast / 20) * 4 : 1 + contrast / 100;

@@ -11,10 +11,11 @@ const Visualize = () => {
   const [selectedShape, setSelectedShape] = useState(null);
   const [isTextMode, setIsTextMode] = useState(false);
   const [contrast, setContrast] = useState([0]);
+  const [selectedColor, setSelectedColor] = useState("#000000");
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
-
+  console.log(selectedColor);
   useEffect(() => {
     return () => {
       localStorage.removeItem("caseList");
@@ -118,6 +119,8 @@ const Visualize = () => {
             isTextMode={isTextMode}
             setIsTextMode={setIsTextMode}
             onContrastChange={handleContrastChange}
+            selectedColor={selectedColor}
+            setSelectedColor={setSelectedColor}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
@@ -130,6 +133,7 @@ const Visualize = () => {
             isTextMode={isTextMode}
             setIsTextMode={setIsTextMode}
             contrast={contrast}
+            selectedColor={selectedColor}
           />
         </main>
       </div>

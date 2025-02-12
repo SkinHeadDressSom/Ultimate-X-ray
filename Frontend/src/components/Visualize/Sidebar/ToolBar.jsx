@@ -11,17 +11,28 @@ const Toolbar = ({
   isTextMode,
   setIsTextMode,
   onContrastChange,
+  selectedColor,
+  setSelectedColor,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
     { component: <Layout onLayoutChange={onLayoutChange} />, key: "layout" },
-    { component: <ImageTools onContrastChange={(value) => onContrastChange(value)} />, key: "imageTools" },
+    {
+      component: (
+        <ImageTools
+          onContrastChange={(value) => onContrastChange(value)}
+        />
+      ),
+      key: "imageTools",
+    },
     {
       component: (
         <Annotaion
           setSelectedShape={setSelectedShape}
           isTextMode={isTextMode}
           setIsTextMode={setIsTextMode}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
         />
       ),
       key: "annotation",

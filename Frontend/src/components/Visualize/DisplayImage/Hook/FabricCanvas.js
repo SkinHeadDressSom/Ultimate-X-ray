@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import * as fabric from "fabric";
 import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp } from "../Event/CanvasEvent.js";
 
-const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode) => {
+const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor) => {
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
   const [startPoint, setStartPoint] = useState(null);
@@ -41,10 +41,10 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
   
       document.addEventListener("keydown", (event) => handleKeyDown(event, canvases));
-      canvas.on("mouse:down", (event) => handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape));
-      canvas.on("mouse:move", (event) => handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape));
-      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape));
-      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode));  // Pass isTextMode and setIsTextMode
+      canvas.on("mouse:down", (event) => handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape,selectedColor));
+      canvas.on("mouse:move", (event) => handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape,selectedColor));
+      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape,selectedColor));
+      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor));
     });
   
     return () => {
@@ -58,7 +58,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
       });
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [canvases, selectedShape, startPoint, isTextMode, setIsTextMode]);
+  }, [canvases, selectedShape, startPoint, isTextMode, setIsTextMode, selectedColor]);
     
   
   return canvases;

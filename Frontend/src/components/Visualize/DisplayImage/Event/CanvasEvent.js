@@ -14,7 +14,7 @@ export const handleKeyDown = (event, canvases) => {
     }
 };
 //คลิ๊กที่ canvas แล้วเพิ่มข้อความ
-export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setIsTextMode) => {
+export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor) => {
     if (selectedShape !== "text" || !isTextMode) return;
     if (event.target && event.target.type === "textbox") {
       event.target.enterEditing();
@@ -25,8 +25,8 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
     const text = new fabric.Textbox("Enter text", {
       left: pointer.x,
       top: pointer.y,
-      fontSize: 30,
-      fill: "white",
+      fontSize: 40,
+      fill:selectedColor,
       backgroundColor: "",
       editable: true,
       borderColor: "blue",
@@ -42,13 +42,13 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
     setIsTextMode(false); //เพิ่มข้อความได้ครั้งเดียว
 };
 //คลิ๊กแล้วเริ่มวาด
-export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape) => {
+export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape,) => {
 if (event.target || !event.pointer || isDrawingRef.current) return;
 isDrawingRef.current = true;
 setStartPoint({ x: event.pointer.x, y: event.pointer.y });
 };
 //เลื่อนเมาส์
-export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selectedShape) => {
+export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
     const { x, y } = event.pointer;
     canvas.clearContext(canvas.contextTop);
@@ -59,8 +59,8 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
             top: startPoint.y,
             radius: Math.hypot(x - startPoint.x, y - startPoint.y),
             fill: "transparent",
-            stroke: "red",
-            strokeWidth: 3,
+            stroke: selectedColor,
+            strokeWidth: 4,
         });
     } else if (selectedShape === "square") {
         shape = new fabric.Rect({
@@ -69,13 +69,13 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
             width: Math.abs(x - startPoint.x),
             height: Math.abs(y - startPoint.y),
             fill: "transparent",
-            stroke: "blue",
-            strokeWidth: 3,
+            stroke: selectedColor,
+            strokeWidth: 4,
         });
     } else if (selectedShape === "arrow") {
         shape = new fabric.Line([startPoint.x, startPoint.y, x, y], {
-            stroke: "white",
-            strokeWidth: 3,
+            stroke: selectedColor,
+            strokeWidth: 4,
             evented: false, 
             selectable: false, 
         });
@@ -85,7 +85,7 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
     }
 };
 //ปล่อยเมาส์แล้วสร้าง shape
-export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedShape) => {
+export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedShape,selectedColor) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
     const { x, y } = event.pointer;
     let shape;
@@ -96,8 +96,8 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
             top: startPoint.y,
             radius: radius,
             fill: "transparent",
-            stroke: "red",
-            strokeWidth: 3,
+            stroke: selectedColor,
+            strokeWidth: 4,
             selectable: true,
         });
     } else if (selectedShape === "square") {
@@ -107,12 +107,13 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
             width: Math.abs(x - startPoint.x),
             height: Math.abs(y - startPoint.y),
             fill: "transparent",
-            stroke: "blue",
-            strokeWidth: 3,
+            stroke: selectedColor,
+            strokeWidth: 4,
             selectable: true,
         });
     }else if (selectedShape === "arrow") {
-        shape = createArrow(startPoint, { x, y });
+        shape = createArrow(startPoint, { x, y }, selectedColor);
+
       }
 
     if (shape) {
@@ -122,13 +123,13 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
     isDrawingRef.current = false;
 };
 //สร้างลูกศร
-export const createArrow = (startPoint, endPoint) => {
+export const createArrow = (startPoint, endPoint, selectedColor) => {
     const angle = Math.atan2(endPoint.y - startPoint.y, endPoint.x - startPoint.x) * (180 / Math.PI);
     const headLength = 20; // ความยาวของหัวลูกศร
     // สร้างเส้นลูกศร
     const line = new fabric.Line([startPoint.x, startPoint.y, endPoint.x, endPoint.y], {
-        stroke: "white",
-        strokeWidth: 3,
+        stroke: selectedColor,
+        strokeWidth: 4,
         selectable: true,
         evented: false,
     });
@@ -136,7 +137,7 @@ export const createArrow = (startPoint, endPoint) => {
     const arrowHead = new fabric.Triangle({
         width: headLength,
         height: headLength,
-        fill: "white",
+        fill: selectedColor,
         left: endPoint.x,
         top: endPoint.y,
         angle: angle + 90, //หมุนหัวลูกศร
