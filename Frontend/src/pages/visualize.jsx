@@ -12,6 +12,8 @@ const Visualize = () => {
   const [isTextMode, setIsTextMode] = useState(false);
   const [contrast, setContrast] = useState([0]);
   const [selectedColor, setSelectedColor] = useState("#000000");
+  const [isAnnotationHidden, setIsAnnotationHidden] = useState(false);
+
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
@@ -121,6 +123,8 @@ const Visualize = () => {
             onContrastChange={handleContrastChange}
             selectedColor={selectedColor}
             setSelectedColor={setSelectedColor}
+            isAnnotationHidden={isAnnotationHidden}
+            setIsAnnotationHidden={setIsAnnotationHidden}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
@@ -134,6 +138,7 @@ const Visualize = () => {
             setIsTextMode={setIsTextMode}
             contrast={contrast}
             selectedColor={selectedColor}
+            isAnnotationHidden={isAnnotationHidden}
           />
         </main>
       </div>

@@ -5,10 +5,11 @@ import Colorpopup from "./colorpop";
 
 const Annotaion = ({
   setSelectedShape,
-  isTextMode,
   setIsTextMode,
   selectedColor,
   setSelectedColor,
+  setIsAnnotationHidden,
+  isAnnotationHidden,
 }) => {
   const [activeId, setActiveId] = useState(null);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -23,14 +24,18 @@ const Annotaion = ({
   ];
 
   const handleButtonClick = (id) => {
-    setActiveId(id);
-
-    setSelectedShape(id);
-    if (id === "text") {
-      setIsTextMode(true);
-      setShowColorPopup((prev) => !prev);
-    } else if (id === "arrow" || id === "circle" || id === "square") {
-      setShowColorPopup((prev) => !prev);
+    if (id === "hide") {
+      setIsAnnotationHidden((prev) => !prev);
+      setActiveId((prev) => (!prev || !isAnnotationHidden ? "hide" : null));
+    } else {
+      setActiveId(id);
+      setSelectedShape(id);
+      if (id === "text") {
+        setIsTextMode(true);
+        setShowColorPopup((prev) => !prev);
+      } else if (id === "arrow" || id === "circle" || id === "square") {
+        setShowColorPopup((prev) => !prev);
+      }
     }
   };
 

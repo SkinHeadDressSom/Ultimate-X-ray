@@ -13,6 +13,8 @@ const Toolbar = ({
   onContrastChange,
   selectedColor,
   setSelectedColor,
+  isAnnotationHidden,
+  setIsAnnotationHidden,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
@@ -33,6 +35,8 @@ const Toolbar = ({
           setIsTextMode={setIsTextMode}
           selectedColor={selectedColor}
           setSelectedColor={setSelectedColor}
+          isAnnotationHidden={isAnnotationHidden}
+          setIsAnnotationHidden={setIsAnnotationHidden}
         />
       ),
       key: "annotation",

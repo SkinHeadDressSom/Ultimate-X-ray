@@ -13,7 +13,7 @@ import {
 import ContrastPopup from "./contrastpop";
 
 const ImageTools = ({ onContrastChange }) => {
-  const [activeId, setActiveId] = useState(null);
+  const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
 
   const buttons = [
@@ -29,9 +29,9 @@ const ImageTools = ({ onContrastChange }) => {
 
   const handleButtonClick = (id) => {
     if (id === "contrast") {
-      setShowContrastPopup((prev) => !prev); // สลับเปิด/ปิด popup
+      setShowContrastPopup((prev) => !prev);
     } else {
-      setActiveId((prevId) => (prevId === id ? null : id)); // เปลี่ยน active tool
+      setActiveId(id); // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
     }
   };
 

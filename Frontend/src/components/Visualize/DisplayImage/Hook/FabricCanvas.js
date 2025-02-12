@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import * as fabric from "fabric";
 import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp } from "../Event/CanvasEvent.js";
 
-const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor) => {
+const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor, isAnnotationHidden) => {
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
   const [startPoint, setStartPoint] = useState(null);
@@ -59,7 +59,21 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [canvases, selectedShape, startPoint, isTextMode, setIsTextMode, selectedColor]);
-    
+  useEffect(() => {
+    canvases.forEach((canvas) => {
+      if (!canvas) return;
+  
+      // ซ่อน annotation ทั้งหมด
+      canvas.getObjects().forEach((obj) => {
+        if (obj.type !== "image") {
+          obj.visible = !isAnnotationHidden;
+        }
+      });
+  
+      canvas.renderAll();
+    });
+  }, [isAnnotationHidden]);
+  
   
   return canvases;
 };
