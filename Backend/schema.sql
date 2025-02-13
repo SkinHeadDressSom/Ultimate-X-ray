@@ -93,17 +93,15 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', NOW(), NULL, 'Abnormal'),
-(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', NOW(), NOW(), 'Normal');
+(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW(), NOW(), 'Normal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW(), NULL, 'Abnormal'),
+(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW(), NOW(), 'Abnormal'),
+(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW(), NOW(), 'Normal');
 
 
 -- Insert Annotations
 INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
-(1, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(2, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(3, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(4, 1, '/annotations/patient3_scan1.jpg', NOW());
-
-
+(1, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW()),
+(2, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW()),
+(3, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW()),
+(4, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/3bc2e1cb9a227c162900a57fb5acd0cf.dicom', NOW());

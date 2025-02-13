@@ -2,6 +2,7 @@ import React, { useRef, useEffect } from "react";
 import useFabricCanvas from "./Hook/FabricCanvas.js";
 import "./display.css"; //ใช้บังคับขนาดของ Canvas
 import * as fabric from "fabric";
+
 const DisplayImage = ({
   imageUrls,
   layout,
