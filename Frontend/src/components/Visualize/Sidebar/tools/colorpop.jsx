@@ -1,7 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import "./chart.css";
 
-const Colorpopup = ({ onClose, selectedColor, setSelectedColor }) => {
+const Colorpopup = ({
+  onClose,
+  selectedColor,
+  setSelectedColor,
+  popupPosition,
+}) => {
   const popupRef = useRef(null);
   const defaultColors = ["#3498db", "#f1c40f", "#e74c3c", "#2ecc71", "#9b59b6"];
 
@@ -20,7 +25,8 @@ const Colorpopup = ({ onClose, selectedColor, setSelectedColor }) => {
   return (
     <div
       ref={popupRef}
-      className="p-4 bg-lightest-blue rounded-xl shadow-md w-48 absolute z-10 left-28 top-[550px] text-darkest-blue"
+      className="p-4 bg-lightest-blue rounded-xl shadow-md w-48 absolute z-10 left-28"
+      style={{ top: popupPosition }}
     >
       <h2 className="text-lg font-bold text-gray-700 mb-2">Colors</h2>
       <div className="grid grid-cols-3 gap-2">

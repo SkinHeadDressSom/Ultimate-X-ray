@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";;
 
 const Visualize = () => {
   const [imageUrls, setImageUrls] = useState([null]);
@@ -20,6 +20,7 @@ const Visualize = () => {
   const [start, setStart] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
   const [onPointerClick, setOnPointerClick] = useState(true);
+  const [isDrawMode, setIsDrawMode] = useState(false);
 
   const startDrag = (e, index) => {
     if (!isDragMode) return; // ถ้าไม่ได้เปิดโหมด Drag ห้ามลาก
@@ -57,6 +58,8 @@ const Visualize = () => {
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
+  const patientData = location.state?.patient || {};
+
   const zoomIn = () => {
     setScale((prevScales) => {
       const newScales = [...prevScales];
@@ -203,11 +206,15 @@ const Visualize = () => {
             drag={startDrag}
             onPointerClick={onPointerClick}
             setOnPointerClick={setOnPointerClick}
+            isDrawMode={isDrawMode}
+            setIsDrawMode={setIsDrawMode}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
           <DisplayImage
             imageUrls={imageUrls}
+            caseData={caseData}
+            patientData={patientData}
             layout={layout}
             onImagePositionSelect={handleImagePositionSelect}
             selectedPosition={selectedPosition}
@@ -222,6 +229,8 @@ const Visualize = () => {
             startDrag={startDrag}
             onDrag={onDrag}
             stopDrag={stopDrag}
+            isDrawMode={isDrawMode}
+            setIsDrawMode={setIsDrawMode}
           />
         </main>
       </div>

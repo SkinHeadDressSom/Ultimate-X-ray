@@ -42,48 +42,51 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
     setIsTextMode(false); //เพิ่มข้อความได้ครั้งเดียว
 };
 //คลิ๊กแล้วเริ่มวาด
-export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape,) => {
-if (event.target || !event.pointer || isDrawingRef.current) return;
-isDrawingRef.current = true;
-setStartPoint({ x: event.pointer.x, y: event.pointer.y });
+export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape) => {
+    if (event.target || !event.pointer || isDrawingRef.current) return;
+    isDrawingRef.current = true;
+    setStartPoint({ x: event.pointer.x, y: event.pointer.y });
 };
 //เลื่อนเมาส์
 export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
     const { x, y } = event.pointer;
     canvas.clearContext(canvas.contextTop);
-    let shape; 
+    let shape;
+
     if (selectedShape === "circle") {
         shape = new fabric.Circle({
-            left: startPoint.x,
-            top: startPoint.y,
-            radius: Math.hypot(x - startPoint.x, y - startPoint.y),
-            fill: "transparent",
-            stroke: selectedColor,
-            strokeWidth: 4,
+        left: startPoint.x,
+        top: startPoint.y,
+        radius: Math.hypot(x - startPoint.x, y - startPoint.y),
+        fill: "transparent",
+        stroke: selectedColor,
+        strokeWidth: 4,
         });
     } else if (selectedShape === "square") {
         shape = new fabric.Rect({
-            left: Math.min(startPoint.x, x),
-            top: Math.min(startPoint.y, y),
-            width: Math.abs(x - startPoint.x),
-            height: Math.abs(y - startPoint.y),
-            fill: "transparent",
-            stroke: selectedColor,
-            strokeWidth: 4,
+        left: Math.min(startPoint.x, x),
+        top: Math.min(startPoint.y, y),
+        width: Math.abs(x - startPoint.x),
+        height: Math.abs(y - startPoint.y),
+        fill: "transparent",
+        stroke: selectedColor,
+        strokeWidth: 4,
         });
     } else if (selectedShape === "arrow") {
         shape = new fabric.Line([startPoint.x, startPoint.y, x, y], {
-            stroke: selectedColor,
-            strokeWidth: 4,
-            evented: false, 
-            selectable: false, 
+        stroke: selectedColor,
+        strokeWidth: 4,
+        evented: false,
+        selectable: false,
         });
     }
+
     if (shape) {
         shape.render(canvas.contextTop);
     }
 };
+
 //ปล่อยเมาส์แล้วสร้าง shape
 export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedShape,selectedColor) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
@@ -151,4 +154,86 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
         selectable: true,
     });
     return arrow;
+};
+//measurement
+export const handleMeasurementLine = (event, canvas, selectedShape, selectedColor) => {
+    if (selectedShape !== "measurement") return;
+
+    const pointer = canvas.getPointer(event.e);
+    const startPoint = { x: pointer.x, y: pointer.y };
+
+    //เส้นหลัก
+    const line = new fabric.Line([startPoint.x, startPoint.y, startPoint.x, startPoint.y], {
+        stroke: "Yellow",
+        strokeWidth: 4,
+        selectable: false,
+        evented: false,
+    });
+
+    //ขีดปลายเส้น
+    const startTick = new fabric.Line([startPoint.x, startPoint.y - 10, startPoint.x, startPoint.y + 10], {
+        stroke: "Yellow",
+        strokeWidth: 4,
+        selectable: false,
+        evented: false,
+    });
+
+    const endTick = new fabric.Line([startPoint.x, startPoint.y - 10, startPoint.x, startPoint.y + 10], {
+        stroke: "Yellow",
+        strokeWidth: 4,
+        selectable: false,
+        evented: false,
+    });
+
+    //ขีดกลางเส้น
+    const tickMark = new fabric.Line([startPoint.x, startPoint.y - 5, startPoint.x, startPoint.y + 5], {
+        stroke: "Yellow",
+        strokeWidth: 3,
+        selectable: false,
+        evented: false,
+    });
+
+    //ข้อความ
+    const text = new fabric.Textbox("0 mm", {
+        left: startPoint.x,
+        top: startPoint.y + 15, //อยู่ใต้เส้น
+        fontSize: 25,
+        fill: "Yellow",
+        backgroundColor: "black",
+        padding: 5,
+        width: 120, // กำหนดความกว้างให้พอเหมาะ
+        textAlign: "center",
+        selectable: false,
+        evented: false,
+    });
+
+    canvas.add(line, startTick, endTick, tickMark, text);
+
+    const updateMeasurement = (moveEvent) => {
+        const pointer = canvas.getPointer(moveEvent.e);
+        line.set({ x2: pointer.x, y2: pointer.y });
+
+        //ขีดที่ปลายเส้น
+        endTick.set({ x1: pointer.x, y1: pointer.y - 10, x2: pointer.x, y2: pointer.y + 10 });
+
+        //ขีดกลางเส้น
+        const midX = (startPoint.x + pointer.x) / 2;
+        const midY = (startPoint.y + pointer.y) / 2;
+        tickMark.set({ x1: midX, y1: midY - 5, x2: midX, y2: midY + 5 });
+
+        //คำนวณระยะทาง
+        const distance = Math.hypot(pointer.x - startPoint.x, pointer.y - startPoint.y);
+        const distanceInMM = (distance / 10).toFixed(2); // สมมติ 1px = 0.1mm
+        text.set({ text: `${distanceInMM} mm`, left: midX, top: midY + 15 });
+
+        canvas.renderAll();
+    };
+
+    const stopMeasurement = () => {
+        canvas.off("mouse:move", updateMeasurement);
+        canvas.off("mouse:up", stopMeasurement);
+    };
+    
+    canvas.on("mouse:move", updateMeasurement);
+    canvas.on("mouse:up", stopMeasurement);
 };

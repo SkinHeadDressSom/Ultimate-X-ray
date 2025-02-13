@@ -22,6 +22,8 @@ const Toolbar = ({
   drag,
   onPointerClick,
   setOnPointerClick,
+  isDrawMode,
+  setIsDrawMode,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
@@ -38,6 +40,10 @@ const Toolbar = ({
           setIsTextMode={setIsTextMode}
           setSelectedShape={setSelectedShape}
           setOnPointerClick={setOnPointerClick}
+          isDrawMode={isDrawMode}
+          setIsDrawMode={setIsDrawMode}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
         />
       ),
       key: "imageTools",

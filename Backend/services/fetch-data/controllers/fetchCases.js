@@ -37,7 +37,7 @@ const fetchCases = async (req, res) => {
     const enriched_cases = await Promise.all(
       cases.patient_cases.map(async (caseItem) => {
         // query image
-        const image = await getImageCount(caseItem.AN);
+        const image = await getImageCount(caseItem.an);
 
         // Handling query error
         if (image?.error) {

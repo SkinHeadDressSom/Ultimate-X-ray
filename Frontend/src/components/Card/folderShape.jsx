@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import PatientInformation from "./patientInformation";
 import Table from "../Table/table";
+import PatientInformation from "./patientInformation";
 
 const FolderShape = ({ patient }) => {
   const [patientData, setPatientData] = useState(patient);
@@ -14,10 +14,16 @@ const FolderShape = ({ patient }) => {
         `http://localhost:8000/fetch-data/api/patients/${hn}/cases`,
         { withCredentials: true }
       );
-      setPatientCases(response.data.data);
-      setLoading(false);
+
+      if (response.data.data.length === 0) {
+        setPatientCases([]); // Clear old data if no cases found
+      } else {
+        setPatientCases(response.data.data);
+      }
     } catch (error) {
       console.log(error);
+      setPatientCases([]); // Reset on error
+    } finally {
       setLoading(false);
     }
   };
@@ -51,10 +57,10 @@ const FolderShape = ({ patient }) => {
       <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
           <aside className="w-5/12 xl:w-3/12 2xl:w-4/12 min-w-[300px] max-w-[400px]">
-            <PatientInformation patient={patientData} loading={loading} />
+            <PatientInformation patient={patientData} />
           </aside>
           <main className="w-full">
-            <Table patientCases={patientCases} loading={loading} />
+            <Table patientCases={patientCases} patient={patientData} />
           </main>
         </div>
       </div>
