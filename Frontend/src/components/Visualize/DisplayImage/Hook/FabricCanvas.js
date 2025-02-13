@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import * as fabric from "fabric";
-import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp } from "../Event/CanvasEvent.js";
+import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp, handleMeasurementLine } from "../Event/CanvasEvent.js";
 
 const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor, isAnnotationHidden, isDrawMode) => {
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
   const [startPoint, setStartPoint] = useState(null);
+  
 
   useEffect(() => {
     const newCanvases = imageUrls.map((_, index) => {
@@ -64,11 +65,24 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
   
       document.addEventListener("keydown", (event) => handleKeyDown(event, canvases));
-      canvas.on("mouse:down", (event) => handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor));
-      canvas.on("mouse:move", (event) => handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
-      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
-      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor));
+      canvas.on("mouse:down", (event) => {
+        if (selectedShape === "measurement") {
+            handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+        } else {
+            handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
+        }
     });
+    canvas.on("mouse:move", (event) => {
+        if (selectedShape === "measurement" && isDrawingRef.current) {
+            handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+        } else {
+            handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
+        }
+    });
+    canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
+    canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor));
+});
+
   
     return () => {
       canvases.forEach((canvas) => {

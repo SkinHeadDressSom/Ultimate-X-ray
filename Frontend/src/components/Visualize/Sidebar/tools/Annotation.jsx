@@ -21,7 +21,7 @@ const Annotaion = ({
     { id: "circle", icon: Circle },
     { id: "square", icon: Square },
     { id: "text", icon: AddText },
-    { id: "ruler", icon: Ruler },
+    { id: "measurement", icon: Ruler },
     { id: "hide", icon: Hide },
   ];
 

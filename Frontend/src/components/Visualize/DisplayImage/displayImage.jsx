@@ -15,8 +15,8 @@ const DisplayImage = ({
   isAnnotationHidden,
   scale,
   position,
-  startDrag, 
-  onDrag, 
+  startDrag,
+  onDrag,
   stopDrag,
   isDrawMode,
 }) => {
@@ -34,7 +34,6 @@ const DisplayImage = ({
   const calculateContrast = (contrast) => {
     return contrast >= 0 ? 1 + (contrast / 20) * 4 : 1 + contrast / 100;
   };
-
   const gridStyles = {
     layout1: "grid-cols-1 grid-rows-1",
     layout2: "grid-cols-2 grid-rows-1",
