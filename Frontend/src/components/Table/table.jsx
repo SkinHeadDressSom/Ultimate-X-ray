@@ -149,66 +149,67 @@ const Table = ({ patientCases, loading }) => {
             </tr>
           </thead>
           <tbody className="text-darkest-blue 2xl:text-lg text-sm">
-            {loading
-              ? Array(2)
-                  .fill(0)
-                  .map((_, index) => <SkeletonRow key={index} />)
-              : Array.isArray(patient_cases) && patient_cases.length > 0
-              ? patient_cases.map((caseItem, index) => (
-                  <tr
-                    key={caseItem.an}
-                    className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
-                    onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
-                  >
-                    <td className={`${commonTableStyles} flex justify-center`}>
-                      <div 
-                        className="flex items-center justify-center"
-                        onClick={(e) => e.stopPropagation()} // Prevent row click when clicking checkbox
-                      >
-                        <label className="flex items-center cursor-pointer relative">
-                          <input
-                            type="checkbox"
-                            className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                            id={`check-${index}`}
-                            checked={checkedState.includes(caseItem.an)}
-                            onChange={() => handleCheckboxChange(caseItem.an)}
-                          />
-                          <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3.5 w-3.5"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              stroke="currentColor"
-                              strokeWidth="1"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </span>
-                        </label>
-                      </div>
-                    </td>
-                    <td className={commonTableStyles}>{index + 1}</td>
-                    <td className={`${commonTableStyles} flex`}>
-                      {renderStatus(caseItem.status)}
-                    </td>
-                    <td className={commonTableStyles}>
-                      {caseItem.description}
-                    </td>
-                    <td className={commonTableStyles}>{caseItem.study_date}</td>
-                    <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.an}</td>
-                    <td className={commonTableStyles}>
-                      {caseItem.image_count}
-                    </td>
-                  </tr>
-                ))
-              : <tr><td colSpan="8" className="text-center">No data available</td></tr>
-              }
+            {loading ? (
+              Array(2)
+                .fill(0)
+                .map((_, index) => <SkeletonRow key={index} />)
+            ) : Array.isArray(patient_cases) && patient_cases.length > 0 ? (
+              patient_cases.map((caseItem, index) => (
+                <tr
+                  key={caseItem.an} // ใช้ AN เป็น key
+                  className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
+                  onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
+                >
+                  <td className={`${commonTableStyles} flex justify-center`}>
+                    <div
+                      className="flex items-center justify-center"
+                      onClick={(e) => e.stopPropagation()} // Prevent row click when clicking checkbox
+                    >
+                      <label className="flex items-center cursor-pointer relative">
+                        <input
+                          type="checkbox"
+                          className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
+                          id={`check-${index}`}
+                          checked={checkedState.includes(caseItem.an)}
+                          onChange={() => handleCheckboxChange(caseItem.an)}
+                        />
+                        <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3.5 w-3.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            stroke="currentColor"
+                            strokeWidth="1"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            ></path>
+                          </svg>
+                        </span>
+                      </label>
+                    </div>
+                  </td>
+                  <td className={commonTableStyles}>{index + 1}</td>
+                  <td className={`${commonTableStyles} flex`}>
+                    {renderStatus(caseItem.status)}
+                  </td>
+                  <td className={commonTableStyles}>{caseItem.description}</td>
+                  <td className={commonTableStyles}>{caseItem.study_date}</td>
+                  <td className={commonTableStyles}>{caseItem.time}</td>
+                  <td className={commonTableStyles}>{caseItem.an}</td>
+                  <td className={commonTableStyles}>{caseItem.image_count}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center">
+                  No data available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

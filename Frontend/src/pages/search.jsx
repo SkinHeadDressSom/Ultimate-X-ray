@@ -8,16 +8,16 @@ const SearchPatient = () => {
   const navigate = useNavigate();
 
   // fetch Patient
-  const getPatient = async (HN) => {
+  const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
+        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       return response.data.data;
     } catch (error) {
       console.log(error);
-      return null;  
+      return null;
     }
   };
 
@@ -28,7 +28,7 @@ const SearchPatient = () => {
     if (patientID.trim() === "") {
       setError("Patient ID cannot be empty");
     }
-    
+
     const patient = await getPatient(patientID);
 
     if (patient) {
