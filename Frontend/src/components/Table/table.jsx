@@ -24,7 +24,6 @@ const Table = ({ patientCases, loading, patient }) => {
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
   const navigate = useNavigate();
-console.log("patient_data", patient);
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
     setTimeout(() => setLoading(false), getLoading); // Simulate a 2-second data fetch delay

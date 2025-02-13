@@ -33,7 +33,6 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
 
   useEffect(() => {
     if (!selectedShape) return;
-  
     canvases.forEach((canvas) => {
       if (!canvas) return;
       const hexToRgb = (hex) => {
@@ -47,7 +46,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
         const b = bigint & 255;
         return `${r}, ${g}, ${b}`;
       };
-      if (selectedShape === "highlight") {
+      if (selectedShape === "highlight" && isDrawMode) {
         canvas.isDrawingMode = true;
         canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
         
@@ -92,6 +91,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
         canvas.off("mouse:up");
         canvas.off("selection:created");
         canvas.off("selection:updated");
+        canvas.isDrawingMode = false;
       });
       document.removeEventListener("keydown", handleKeyDown);
     };

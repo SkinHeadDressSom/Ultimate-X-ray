@@ -62,7 +62,7 @@ const ImageTools = ({
       }
       if (id === "highlight") {
         setPopupPosition("500px");
-        setIsDrawMode((prev) => !prev);
+        setIsDrawMode(true);
         setSelectedShape(id);
         setShowColorPopup(true);
       }
