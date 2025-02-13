@@ -14,7 +14,6 @@ const SearchPatient = () => {
         `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
         { withCredentials: true }
       );
-      console.log(response.data); 
       return response.data.data;
     } catch (error) {
       console.log(error);

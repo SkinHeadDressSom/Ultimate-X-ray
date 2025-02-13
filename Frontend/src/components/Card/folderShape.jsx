@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import PatientInformation from "./patientInformation";
 import Table from "../Table/table";
+import PatientInformation from "./patientInformation";
 
 const FolderShape = ({ patient }) => {
   const [patientData, setPatientData] = useState(patient);
@@ -14,10 +14,16 @@ const FolderShape = ({ patient }) => {
         `http://localhost:8000/fetch-data/api/patients/${HN}/cases`,
         { withCredentials: true }
       );
-      setPatientCases(response.data.data);
-      setLoading(false);
+
+      if (response.data.data.length === 0) {
+        setPatientCases([]); // Clear old data if no cases found
+      } else {
+        setPatientCases(response.data.data);
+      }
     } catch (error) {
       console.log(error);
+      setPatientCases([]); // Reset on error
+    } finally {
       setLoading(false);
     }
   };
