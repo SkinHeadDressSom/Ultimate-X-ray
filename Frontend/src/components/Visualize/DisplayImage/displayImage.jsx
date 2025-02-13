@@ -5,6 +5,8 @@ import * as fabric from "fabric";
 
 const DisplayImage = ({
   imageUrls,
+  caseData,
+  patientData,
   layout,
   onImagePositionSelect,
   selectedPosition,
@@ -96,6 +98,37 @@ const DisplayImage = ({
                   maxHeight: "100%",
                 }}
               />
+              <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
+                <div className="flex flex-row justify-between">
+                  <div>
+                    <p>
+                      {patientData.first_name} {patientData.last_name}
+                    </p>
+                    <p>{patientData.hn}</p>
+                    <p>
+                      {patientData.age} / {patientData.date_of_birth}
+                    </p>
+                    <p>{patientData.sex}</p>
+                    <p>
+                      {patientData.weight}kg / {patientData.height}cm
+                    </p>
+                  </div>
+                  <div>
+                    <p>ABC Hospital</p>
+                    <p>{caseData.an}</p>
+                    <p>{caseData.study_date}</p>
+                    <p>{caseData.time}</p>
+                  </div>
+                </div>
+                <div className="flex flex-col justify-end items-end">
+                  <p>
+                    Zoom: {scale[index] ? (scale[index] * 100).toFixed(0) : 100}
+                    %
+                  </p>
+                  <p>WL: 2244</p>
+                  <p>WW: 4400</p>
+                </div>
+              </div>
             </div>
           ) : (
             <div
