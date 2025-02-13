@@ -1,10 +1,12 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
 const fetchPatientController = require("../controllers/fetchPatient");
 const fetchPatientbyNameController = require("../controllers/fetchPatientByName");
 const fetchCasesController = require("../controllers/fetchCases");
 const fetchImageController = require("../controllers/fetchImage");
 const fetchAnnotationImageController = require("../controllers/fetchAnnotationImage");
+const saveAnnotationImageController = require("../controllers/saveAnnotationImage");
 
 const { validateToken } = require("../middleware/auth");
 
@@ -38,4 +40,15 @@ router.get(
   validateToken,
   fetchAnnotationImageController.fetchAnnotationImage
 );
+
+const upload = multer({ storage: multer.memoryStorage() }); // Store file in memory (Buffer)
+
+// save annotation image by xn
+router.post(
+  "/images/annotation/:xn/save",
+  validateToken,
+  upload.single("image_file"),
+  saveAnnotationImageController.saveAnnotationImage
+);
+
 module.exports = router;

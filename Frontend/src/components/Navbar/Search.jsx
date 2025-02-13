@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
 
-const Search = ({ onPatientDataFetched }) => {
+const Search = ({ onPatientDataFetched = () => {} }) => {
   const [inputValue, setInputValue] = useState("");
   const [patientData, setPatientData] = useState(null);
   const [error, setError] = useState(null);
@@ -15,7 +15,7 @@ const Search = ({ onPatientDataFetched }) => {
   const buttonRef = useRef(null);
 
   //mockup patient name
-  const suggestions = ["Alice", "David", "Tony", "Anthony", "Hanna"];
+  //const suggestions = ["Alice", "David", "Tony", "Anthony", "Hanna"];
 
   // Reusable styles
   const commonCheckBoxStyles =
@@ -29,11 +29,8 @@ const Search = ({ onPatientDataFetched }) => {
 
     if (inputValue.trim() === "") {
       setFilteredSuggestions([]); // Hide dropdown when input is empty
-    } else {
-      const filteredSuggestions = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setFilteredSuggestions(filteredSuggestions);
+    } else if (selectedMenuItem === "Name") {
+      getPatientSuggestions(inputValue); // Fetch suggestions from API
     }
   };
   //select ชื่อคนไข้แล้วให้แสดงในช่อง search
@@ -43,10 +40,10 @@ const Search = ({ onPatientDataFetched }) => {
   };
 
   //Back-end
-  const getPatient = async (hn) => {
+  const getPatientByHN = async (HN) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
+        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
         { withCredentials: true }
       );
       console.log("API Response from HN search:", response.data);
@@ -69,14 +66,48 @@ const Search = ({ onPatientDataFetched }) => {
       );
 
       console.log("API Response from name search:", response.data);
-      setPatientData(response.data.data);
-      onPatientDataFetched(response.data.data);
+      const patients = response.data.data; // This is an array
+
+      if (patients.length === 0) {
+        handleError("Patient not found");
+        return;
+      }
+
+      if (patients.length === 1) {
+        setPatientData(patients[0]); // Select the only patient
+        onPatientDataFetched(patients[0]);
+      } else {
+        // If multiple results, let user select one from suggestions
+        setFilteredSuggestions(
+          patients.map((p) => `${p.first_name} ${p.last_name}`)
+        );
+      }
     } catch (err) {
       console.error(
         "API Error:",
         err.response ? err.response.data : err.message
       );
       handleError("Patient not found");
+    }
+  };
+
+  const getPatientSuggestions = async (name) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        { withCredentials: true }
+      );
+
+      // Assuming the API returns an array of patients
+      const patients = response.data.data;
+      const suggestions = patients.map(
+        (patient) => `${patient.first_name} ${patient.last_name}`
+      );
+
+      setFilteredSuggestions(suggestions);
+    } catch (err) {
+      console.error("Error fetching patient suggestions:", err);
+      setFilteredSuggestions([]);
     }
   };
 
@@ -88,13 +119,18 @@ const Search = ({ onPatientDataFetched }) => {
   //handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    // หาHN
+
+    if (inputValue.trim() === "") {
+      setError(
+        selectedMenuItem === "HN"
+          ? "Patient ID cannot be empty."
+          : "Patient name cannot be empty."
+      );
+      return;
+    }
+    
     if (selectedMenuItem === "HN") {
-      if (inputValue.trim() === "") {
-        setError("Patient ID cannot be empty.");
-        return;
-      }
-      getPatient(inputValue);
+      getPatientByHN(inputValue);
     }
     // หาName
     else if (selectedMenuItem === "Name") {
@@ -102,7 +138,7 @@ const Search = ({ onPatientDataFetched }) => {
         setError("Patient name cannot be empty.");
         return;
       }
-      getPatient(inputValue);
+      getPatientByName(inputValue);
     }
   };
 
