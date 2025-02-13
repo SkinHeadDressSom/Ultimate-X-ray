@@ -17,8 +17,10 @@ const ImageTools = ({
   zoomIn,
   zoomOut,
   drag,
-  isDragMode,
+  setSelectedShape,
+  setIsTextMode,
   setIsDragMode,
+  setOnPointerClick
 }) => {
   const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
@@ -37,9 +39,12 @@ const ImageTools = ({
   const handleButtonClick = (id) => {
     if (id === "pointer") {
       // ถ้ากด pointer ให้ปิดโหมดอื่นทั้งหมด
+      setOnPointerClick(true);
       setActiveId("pointer");
       setIsDragMode(false);
       setShowContrastPopup(false);
+      setSelectedShape(null);
+      setIsTextMode(false);
     } else {
       if (id === "contrast") {
         setShowContrastPopup((prev) => !prev);
@@ -47,7 +52,9 @@ const ImageTools = ({
       if (id === "drag") {
         setIsDragMode((prev) => !prev);
       }
-      setActiveId(id); // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
+      setActiveId(id); 
+      setOnPointerClick(false);
+      // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
     }
   };
 

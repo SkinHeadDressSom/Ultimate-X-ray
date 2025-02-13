@@ -20,6 +20,8 @@ const Toolbar = ({
   zoomIn,
   zoomOut,
   drag,
+  onPointerClick,
+  setOnPointerClick,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
@@ -33,6 +35,9 @@ const Toolbar = ({
           isDragMode={isDragMode}
           setIsDragMode={setIsDragMode}
           drag={drag}
+          setIsTextMode={setIsTextMode}
+          setSelectedShape={setSelectedShape}
+          setOnPointerClick={setOnPointerClick}
         />
       ),
       key: "imageTools",
@@ -47,6 +52,8 @@ const Toolbar = ({
           setSelectedColor={setSelectedColor}
           isAnnotationHidden={isAnnotationHidden}
           setIsAnnotationHidden={setIsAnnotationHidden}
+          onPointerClick={onPointerClick}
+          setOnPointerClick={setOnPointerClick}
         />
       ),
       key: "annotation",

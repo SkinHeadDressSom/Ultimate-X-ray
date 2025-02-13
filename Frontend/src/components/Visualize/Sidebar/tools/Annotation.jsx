@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
 import Colorpopup from "./colorpop";
@@ -10,6 +10,8 @@ const Annotaion = ({
   setSelectedColor,
   setIsAnnotationHidden,
   isAnnotationHidden,
+  onPointerClick,
+  setOnPointerClick,
 }) => {
   const [activeId, setActiveId] = useState(null);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -24,11 +26,20 @@ const Annotaion = ({
   ];
 
   const handleButtonClick = (id) => {
-    if (id === "hide") {
+    if (id === "pointer") {
+      setActiveId(null);
+      setSelectedShape(null);
+      setIsTextMode(false);
+      setShowColorPopup(false);
+      setIsAnnotationHidden(false);
+      setOnPointerClick(false);
+    } else if (id === "hide") {
+      setOnPointerClick(false);
       setIsAnnotationHidden((prev) => !prev);
       setActiveId((prev) => (!prev || !isAnnotationHidden ? "hide" : null));
     } else {
       setActiveId(id);
+      setOnPointerClick(false);
       setSelectedShape(id);
       if (id === "text") {
         setIsTextMode(true);
@@ -38,6 +49,12 @@ const Annotaion = ({
       }
     }
   };
+  // เรียกใช้ onPointerClick เพื่อ reset activeId
+  useEffect(() => {
+    if (onPointerClick === true) {
+      setActiveId(null);
+    }
+  }, [onPointerClick]);
 
   return (
     <div className="flex flex-col items-center justify-center bg-light-blue rounded-lg gap-y-2 p-2 w-full">

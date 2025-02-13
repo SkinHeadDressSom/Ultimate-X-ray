@@ -19,6 +19,7 @@ const Visualize = () => {
   const [dragging, setDragging] = useState(false);
   const [start, setStart] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
+  const [onPointerClick, setOnPointerClick] = useState(true);
 
   const startDrag = (e, index) => {
     if (!isDragMode) return; // ถ้าไม่ได้เปิดโหมด Drag ห้ามลาก
@@ -200,6 +201,8 @@ const Visualize = () => {
             zoomIn={zoomIn}
             zoomOut={zoomOut}
             drag={startDrag}
+            onPointerClick={onPointerClick}
+            setOnPointerClick={setOnPointerClick}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">
