@@ -1,8 +1,8 @@
 import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-const PatientInformation = ({ patient }) => {
-  const [loading, setLoading] = useState(true);
+const PatientInformation = ({ patient,loading }) => {
+  const [getLoading, setLoading] = useState(loading);
   const [patientDetails, setPatientDetails] = useState(null);
 
   useEffect(() => {
@@ -10,7 +10,7 @@ const PatientInformation = ({ patient }) => {
       setPatientDetails(patient);
       setTimeout(() => {
         setLoading(false);
-      }, 2000);
+      }, loading);
     }
   }, [patient]);
 
