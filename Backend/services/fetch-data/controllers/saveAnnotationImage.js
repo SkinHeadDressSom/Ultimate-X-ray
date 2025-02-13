@@ -10,7 +10,7 @@ const {
 } = require("../database/annotationQuery");
 
 const saveAnnotationImage = async (req, res) => {
-  RESPONSE_MESSAGES.taskError = "XN error occurred at save annotation image";
+  RESPONSE_MESSAGES.taskError = "An error occurred at save annotation image";
   RESPONSE_MESSAGES.taskSuccess = "Save annotation successfully";
   RESPONSE_MESSAGES.missingArguments = "XN is missing";
   RESPONSE_MESSAGES.notFound = "Original Image not found";
@@ -48,7 +48,7 @@ const saveAnnotationImage = async (req, res) => {
     const decoded = await decodeToken(token);
     const user_id = decoded.user_id;
 
-    // TODO check if image_id and user_id already exist in database
+    // check if image_id and user_id already exist in database
     const existed_annotation = await getAnnotationImage(user_id, xn);
     // Handling query error
     if (existed_annotation?.error) {
@@ -74,14 +74,15 @@ const saveAnnotationImage = async (req, res) => {
     }
 
     // get files from request
-    const image_file = req.file.buffer;
+    const image_file = req.file;
     // Check if file exists
     if (!image_file) {
-      return res.status(400).json({ message: "No file uploaded" });
+      return res.status(401).json({ message: "Uploaded file not found" });
     }
 
     const file_name = `annotation-images/${req.file.originalname}`;
     console.log("File_name :", file_name);
+
     // Upload annotation image to Supabase
     const public_url = await UploadFiletoSupabase(image_file, file_name);
     if (public_url?.error) {
@@ -90,6 +91,7 @@ const saveAnnotationImage = async (req, res) => {
         error: public_url.error,
       });
     }
+
     // insert to annotation table
     const newAnnoImage = await createAnnotationImage(
       user_id,
