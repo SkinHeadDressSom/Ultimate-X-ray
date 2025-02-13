@@ -12,7 +12,14 @@ import {
 } from "../toolsdata";
 import ContrastPopup from "./contrastpop";
 
-const ImageTools = ({ onContrastChange,zoomIn,zoomOut,drag }) => {
+const ImageTools = ({
+  onContrastChange,
+  zoomIn,
+  zoomOut,
+  drag,
+  isDragMode,
+  setIsDragMode,
+}) => {
   const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
 
@@ -28,9 +35,18 @@ const ImageTools = ({ onContrastChange,zoomIn,zoomOut,drag }) => {
   ];
 
   const handleButtonClick = (id) => {
-    if (id === "contrast") {
-      setShowContrastPopup((prev) => !prev);
+    if (id === "pointer") {
+      // ถ้ากด pointer ให้ปิดโหมดอื่นทั้งหมด
+      setActiveId("pointer");
+      setIsDragMode(false);
+      setShowContrastPopup(false);
     } else {
+      if (id === "contrast") {
+        setShowContrastPopup((prev) => !prev);
+      }
+      if (id === "drag") {
+        setIsDragMode((prev) => !prev);
+      }
       setActiveId(id); // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
     }
   };

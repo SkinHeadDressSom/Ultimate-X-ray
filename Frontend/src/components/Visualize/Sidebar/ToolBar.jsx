@@ -15,9 +15,11 @@ const Toolbar = ({
   setSelectedColor,
   isAnnotationHidden,
   setIsAnnotationHidden,
+  isDragMode,
+  setIsDragMode,
   zoomIn,
   zoomOut,
-  drag
+  drag,
 }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
@@ -25,7 +27,12 @@ const Toolbar = ({
     {
       component: (
         <ImageTools
-          onContrastChange={(value) => onContrastChange(value)} zoomIn={zoomIn} zoomOut={zoomOut} drag={drag}
+          onContrastChange={(value) => onContrastChange(value)}
+          zoomIn={zoomIn}
+          zoomOut={zoomOut}
+          isDragMode={isDragMode}
+          setIsDragMode={setIsDragMode}
+          drag={drag}
         />
       ),
       key: "imageTools",

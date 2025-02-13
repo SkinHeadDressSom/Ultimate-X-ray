@@ -15,23 +15,24 @@ const Visualize = () => {
   const [isAnnotationHidden, setIsAnnotationHidden] = useState(false);
   const [scale, setScale] = useState([]);
   const [position, setPosition] = useState([]);
+  const [isDragMode, setIsDragMode] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [start, setStart] = useState({ x: 0, y: 0 });
   const [draggingIndex, setDraggingIndex] = useState(null);
 
   const startDrag = (e, index) => {
-  if (!e || !e.clientX || !e.clientY) return;
-  if (e.button !== 0) return;
-  if (selectedPosition === null || !position[selectedPosition]) return;
+    if (!isDragMode) return; // ถ้าไม่ได้เปิดโหมด Drag ห้ามลาก
+    if (!e || !e.clientX || !e.clientY) return;
+    if (e.button !== 0) return;
+    if (selectedPosition === null || !position[selectedPosition]) return;
 
-  setDragging(true);
-  setDraggingIndex(index);
-  setStart({
-    x: e.clientX - position[index].x,
-    y: e.clientY - position[index].y,
-  });
-};
-
+    setDragging(true);
+    setDraggingIndex(index);
+    setStart({
+      x: e.clientX - position[index].x,
+      y: e.clientY - position[index].y,
+    });
+  };
 
   const onDrag = (e) => {
     if (draggingIndex === null) return;
@@ -194,6 +195,8 @@ const Visualize = () => {
             setSelectedColor={setSelectedColor}
             isAnnotationHidden={isAnnotationHidden}
             setIsAnnotationHidden={setIsAnnotationHidden}
+            isDragMode={isDragMode}
+            setIsDragMode={setIsDragMode}
             zoomIn={zoomIn}
             zoomOut={zoomOut}
             drag={startDrag}
