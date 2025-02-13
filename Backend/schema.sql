@@ -1,6 +1,6 @@
 -- Create Enum Type\
 CREATE TYPE status_type AS ENUM ('Scheduled', 'Completed');
-CREATE TYPE role_type AS ENUM ('Rediologist Technician ', 'General Practitioner', 'Radiologist');
+CREATE TYPE role_type AS ENUM ('Rediologist Technician', 'General Practitioner', 'Radiologist');
 -- Create Users Table
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
@@ -57,8 +57,8 @@ CREATE TABLE Images (
 -- Create Annotations Table
 CREATE TABLE Annotations (
     annotation_id SERIAL PRIMARY KEY,
-    image_id INT NOT NULL REFERENCES Images(image_id) UNIQUE,
-    user_id INT NOT NULL REFERENCES Users(user_id) UNIQUE,
+    image_id INT NOT NULL REFERENCES Images(image_id),
+    user_id INT NOT NULL REFERENCES Users(user_id),
     file_path TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     CONSTRAINT unique_image_user UNIQUE (image_id, user_id)
@@ -89,7 +89,7 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
 
 (782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/8de1d1a853009572844969d046f99f6b.png', '2002-03-17 07:42:50', 'Abnormal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/8de1d1a853009572844969d046f99f6b.png', '2002-03-17 07:42:50', '2002-03-17 07:40:50', 'Abnormal'),
 (782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Abnormal'),
 (782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal'),
 (782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2008-04-02 00:09:21', '2008-04-01 23:58:55', 'Normal');
