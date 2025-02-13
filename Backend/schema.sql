@@ -1,13 +1,13 @@
 -- Create Enum Type\
 CREATE TYPE status_type AS ENUM ('Scheduled', 'Completed');
-
+CREATE TYPE role_type AS ENUM ('Rediologist Technician ', 'General Practitioner', 'Radiologist');
 -- Create Users Table
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL,
     password_hash TEXT NOT NULL,
-    role VARCHAR(40),
+    role role_type,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -57,19 +57,13 @@ CREATE TABLE Images (
 -- Create Annotations Table
 CREATE TABLE Annotations (
     annotation_id SERIAL PRIMARY KEY,
-    image_id INT NOT NULL REFERENCES Images(image_id),
-    user_id INT NOT NULL REFERENCES Users(user_id),
+    image_id INT NOT NULL REFERENCES Images(image_id) UNIQUE,
+    user_id INT NOT NULL REFERENCES Users(user_id) UNIQUE,
     file_path TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    CONSTRAINT unique_image_user UNIQUE (image_id, user_id)
 );
 
--- Join table for attached image in report
-CREATE TABLE MedicalRecordAnnotations (
-    id SERIAL PRIMARY KEY,
-    record_id INT NOT NULL REFERENCES MedicalRecords(record_id) ON DELETE CASCADE,
-    annotation_id INT NOT NULL REFERENCES Annotations(annotation_id) ON DELETE CASCADE
-);
 
 -- Insert Users
 INSERT INTO Users ( name, username, password_hash, role) VALUES
@@ -93,17 +87,8 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', NOW(), NULL, 'Abnormal'),
-(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', NOW(), NOW(), 'Normal');
 
-
--- Insert Annotations
-INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
-(1, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(2, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(3, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(4, 1, '/annotations/patient3_scan1.jpg', NOW());
-
-
+(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Normal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', '2002-03-17 08:12:30', '2002-03-17 07:42:50', 'Abnormal'),
+(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Abnormal'),
+(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal');

@@ -149,7 +149,7 @@ const Table = ({ patientCases }) => {
               : Array.isArray(patient_cases) && patient_cases.length > 0
               ? patient_cases.map((caseItem, index) => (
                   <tr
-                    key={caseItem.an} // ใช้ AN เป็น key
+                    key={caseItem.an}
                     className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                     onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
                   >
