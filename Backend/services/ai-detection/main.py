@@ -36,6 +36,14 @@ async def detect(file: UploadFile = File(...)):
 
     if file_ext == "dcm" or file_ext == "dicom":
         temp_path = convert_dicom_to_png_and_resize(temp_path)
+    else:
+        image = cv2.imread(temp_path, cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            return {"error": "Invalid image format"}
+        equalized_image = cv2.equalizeHist(image)
+        resized_image = Image.fromarray(equalized_image).resize((640, 640))
+        temp_path = "temp_image.png"
+        resized_image.save(temp_path)
 
     results = model.predict(source=temp_path, conf=0.05)
     os.remove(temp_path)
