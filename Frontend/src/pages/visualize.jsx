@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
-import { useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";;
 
 const Visualize = () => {
   const [imageUrls, setImageUrls] = useState([null]);
@@ -58,6 +58,8 @@ const Visualize = () => {
   const location = useLocation();
   const caseData = location.state?.caseData || {};
   const allCases = location.state?.allCases || {};
+  const patientData = location.state?.patient || {};
+
   const zoomIn = () => {
     setScale((prevScales) => {
       const newScales = [...prevScales];
@@ -211,6 +213,8 @@ const Visualize = () => {
         <main className="w-screen bg-black flex items-center justify-center">
           <DisplayImage
             imageUrls={imageUrls}
+            caseData={caseData}
+            patientData={patientData}
             layout={layout}
             onImagePositionSelect={handleImagePositionSelect}
             selectedPosition={selectedPosition}

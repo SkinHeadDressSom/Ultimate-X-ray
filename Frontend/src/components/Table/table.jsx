@@ -8,7 +8,7 @@ import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 import { useNavigate } from "react-router-dom";
 
-const Table = ({ patientCases, loading }) => {
+const Table = ({ patientCases, loading, patient }) => {
   const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
   const [getLoading, setLoading] = useState(loading);
@@ -24,7 +24,6 @@ const Table = ({ patientCases, loading }) => {
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
   const navigate = useNavigate();
-
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
     setTimeout(() => setLoading(false), getLoading); // Simulate a 2-second data fetch delay
@@ -101,7 +100,7 @@ const Table = ({ patientCases, loading }) => {
     );
 
     navigate("/visualize", {
-      state: { caseData: mergedCaseData, allCases: allCasesWithImages },
+      state: { caseData: mergedCaseData, allCases: allCasesWithImages, patient },
     });
   };
 

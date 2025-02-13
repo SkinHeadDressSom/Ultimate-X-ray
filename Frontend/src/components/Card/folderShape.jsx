@@ -60,7 +60,7 @@ const FolderShape = ({ patient }) => {
             <PatientInformation patient={patientData} />
           </aside>
           <main className="w-full">
-            <Table patientCases={patientCases} />
+            <Table patientCases={patientCases} patient={patientData} />
           </main>
         </div>
       </div>

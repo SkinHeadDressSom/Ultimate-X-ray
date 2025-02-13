@@ -29,6 +29,7 @@ const ImageTools = ({
   const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
+  const [popupPosition, setPopupPosition] = useState("550px");
 
   const buttons = [
     { id: "undo", icon: Undo },
@@ -60,7 +61,8 @@ const ImageTools = ({
         setIsDragMode((prev) => !prev);
       }
       if (id === "highlight") {
-        setIsDrawMode((prev) => !prev);
+        setPopupPosition("500px");
+        setIsDrawMode(true);
         setSelectedShape(id);
         setShowColorPopup(true);
       }
