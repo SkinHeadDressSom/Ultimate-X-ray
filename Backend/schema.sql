@@ -85,7 +85,7 @@ INSERT INTO Patients (HN, first_name, last_name, date_of_birth, sex, height, wei
 
 -- Insert MedicalRecords
 INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status) VALUES
-(134986, 1, 'Diabetes', 'Blood sugar check', 'Blood test', 'Normal levels', 'Stable', 'Continue medication', 'Monitor levels', 'Completed'),
+(134986, 1, 'Chronic cough', 'Chest X-ray', 'Lung opacity', 'Mild infection', 'Needs antibiotics', 'Prescribed medication', 'Follow-up in 2 weeks', 'Completed'),
 (134987, 1, 'Back pain', 'MRI scan', 'Spinal scan', 'Mild disc bulge', 'Requires physiotherapy', 'Under observation', 'Follow exercise routine', 'Scheduled'),
 (134988, 2, 'Heart disease', 'ECG', 'Heart function test', 'Mild arrhythmia', 'Monitor closely', 'Requires medication', 'Advised diet changes', 'Completed'),
 (134989, 2,'Allergy', 'Skin test', 'Allergic reaction', 'Positive for pollen', 'Avoid allergens', 'Mild symptoms', 'Use antihistamines', 'Scheduled'),
@@ -94,14 +94,14 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
 (782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/c6c19cc8f966c6353e663a4e299d9a39.png', NOW(), NULL, 'Abnormal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/c6c19cc8f966c6353e663a4e299d9a39.png', NOW(), NOW(), 'Abnormal'),
 (782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/8de1d1a853009572844969d046f99f6b.png', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/77f4f19048695b17ba4194ae3b9bea8a.png', NOW(), NOW(), 'Normal');
-(782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ab11a974837f5313912804939bfae79e.png', NOW(), NOW(), 'Abnormal');
-(782321, 3, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ff924bcbd38f123aec723aa7040d7e43.png', NOW(), NOW(), 'Normal');
-(782322, 4, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/71a5a3f60976a7b46875a26dfd7a669e.png', NOW(), NOW(), 'Abnormal');
-(782323, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/15b164c54f0bf0baac308b47a45a1468.png', NOW(), NOW(), 'Abnormal');
-(782323, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/e652b2cebae0a6c74e292b3112d29e6e.png', NOW(), NOW(), 'Abnormal');
+(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/77f4f19048695b17ba4194ae3b9bea8a.png', NOW(), NOW(), 'Normal'),
+(782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ab11a974837f5313912804939bfae79e.png', NOW(), NOW(), 'Abnormal'),
+(782321, 3, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ff924bcbd38f123aec723aa7040d7e43.png', NOW(), NOW(), 'Normal'),
+(782322, 4, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/71a5a3f60976a7b46875a26dfd7a669e.png', NOW(), NOW(), 'Abnormal'),
+(782323, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/15b164c54f0bf0baac308b47a45a1468.png', NOW(), NOW(), 'Abnormal'),
+(782324, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/e652b2cebae0a6c74e292b3112d29e6e.png', NOW(), NOW(), 'Abnormal');
 
 
 -- Insert Annotations
