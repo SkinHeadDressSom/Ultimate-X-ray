@@ -95,7 +95,7 @@ INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result)
 (782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2008-04-02 00:09:21', '2008-04-01 23:58:55', 'Normal');
 
 -- Insert Annotation Images
-INSERT INTO Annotations (image_id, user_id, file_path, file_path, created_at) VALUES
+INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
 
 (1, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
 (2, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
