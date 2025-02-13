@@ -54,30 +54,4 @@ async function getImagesbyAN(an) {
   }
 }
 
-async function getImagebyXN(xn) {
-  try {
-    const query = `SELECT image_id
-                    FROM images
-                    WHERE xn = $1`;
-    const results = await pool.query(query, [xn]);
-
-    // check if query is empty
-    if (results.rows.length === 0) {
-      return null;
-    }
-
-    return {
-      xn: results.rows[0].xn,
-      image_id: results.rows[0].image_id,
-    };
-  } catch (error) {
-    console.error("Database error in getImages:", error.message);
-    // return an error object
-    return {
-      error: error.message,
-      code: error.code || "UNKNOWN_ERROR",
-    };
-  }
-}
-
-module.exports = { getImageCount, getImagesbyAN, getImagebyXN };
+module.exports = { getImageCount, getImagesbyAN };
