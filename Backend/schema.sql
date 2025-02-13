@@ -93,17 +93,20 @@ INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_detail
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', NOW(), NULL, 'Abnormal'),
-(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', NOW(), NOW(), 'Normal');
+(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW(), NOW(), 'Normal'),
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/c6c19cc8f966c6353e663a4e299d9a39.png', NOW(), NULL, 'Abnormal'),
+(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/8de1d1a853009572844969d046f99f6b.png', NOW(), NOW(), 'Abnormal'),
+(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/77f4f19048695b17ba4194ae3b9bea8a.png', NOW(), NOW(), 'Normal');
+(782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ab11a974837f5313912804939bfae79e.png', NOW(), NOW(), 'Abnormal');
+(782321, 3, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/ff924bcbd38f123aec723aa7040d7e43.png', NOW(), NOW(), 'Normal');
+(782322, 4, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/71a5a3f60976a7b46875a26dfd7a669e.png', NOW(), NOW(), 'Abnormal');
+(782323, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/15b164c54f0bf0baac308b47a45a1468.png', NOW(), NOW(), 'Abnormal');
+(782323, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/e652b2cebae0a6c74e292b3112d29e6e.png', NOW(), NOW(), 'Abnormal');
 
 
 -- Insert Annotations
 INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
-(1, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(2, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(3, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(4, 1, '/annotations/patient3_scan1.jpg', NOW());
-
-
+(1, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW()),
+(2, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW()),
+(3, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW()),
+(4, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/778592c49dc5b2bd4f4d4f415e174b5c.png', NOW());
