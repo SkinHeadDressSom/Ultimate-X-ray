@@ -30,15 +30,16 @@ function Thumbnail({
           )}
         </button>
       </div>
-      <div className="flex flex-row flex-wrap gap-2 p-1 overflow-scroll">
+      <div className="flex flex-row flex-wrap gap-2 overflow-scroll justify-center items-center py-1">
         {item.case_images.map((imageObj) => (
           <img
             key={imageObj.xn}
             src={imageObj.file_path}
             alt={imageObj.xn}
             onClick={() => {
-              onImageSelect(imageObj.file_path);
+              onImageSelect(imageObj.file_path); // เลือกรูปจาก thumbnail
               setSelectedImageId(imageObj.xn);
+              localStorage.setItem("selectedImageId", imageObj.xn); // บันทึกลง localStorage
             }}
             className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
               selectedImageId === imageObj.xn

@@ -6,6 +6,7 @@ import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
 
+
 function App() {
   const router = createBrowserRouter([
     {
@@ -31,7 +32,8 @@ function App() {
           <Dashboard />
         </>
       ),
-    }, {
+    },
+    {
       path: "/visualize",
       element: (
         <>
@@ -39,9 +41,9 @@ function App() {
         </>
       ),
     },
-    
+
   ]);
-  
+
 
   return (
     <>

@@ -1,14 +1,52 @@
-import React, { useState } from "react";
-// import mockup from "./mockup";
+import React, { useState, useEffect } from "react";
 import Thumbnail from "./thumbnail";
-import Addfile from "./addfile"
+import Addfile from "./addfile";
 import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
 
 const Topbar = ({ onImageSelect, caseData, allCases }) => {
-  const [selectedItems, setSelectedItems] = useState([...caseData]);
+  const [caseList, setCaseList] = useState(() => {
+    const savedCases = localStorage.getItem("caseList");
+    return savedCases ? JSON.parse(savedCases) : [...caseData];
+  });
+  const [selectedItems, setSelectedItems] = useState([...caseList]);
   const [isDelete, setIsDelete] = useState(false);
   const [selectedImageId, setSelectedImageId] = useState(null);
+
+  //เอาเคสที่เพิ่มมาเก็บไว้ใน storage
+  useEffect(() => {
+    localStorage.setItem("caseList", JSON.stringify(caseList));
+  }, [caseList]);
+
+  //ภาพแรกสุดของเคสล่าสุดให้เปิดรอไว้
+  useEffect(() => {
+    const storedSelectedImageId = localStorage.getItem("selectedImageId");
+    if (caseList.length > 0) {
+      let latestCase;
+      if (storedSelectedImageId) {
+        latestCase = caseList.find((caseItem) =>
+          caseItem.case_images.some((img) => img.xn === storedSelectedImageId)
+        );
+      }
+      if (!latestCase) {
+        latestCase =
+          caseList.length === 1
+            ? caseList[0]
+            : [...caseList].sort((a, b) => b.an - a.an)[0];
+      }
+      if (latestCase?.case_images?.length > 0) {
+        const firstImage = storedSelectedImageId
+          ? latestCase.case_images.find(
+              (img) => img.xn === storedSelectedImageId
+            ) || latestCase.case_images[0]
+          : latestCase.case_images[0];
+
+        setSelectedImageId(firstImage.xn);
+        onImageSelect(firstImage.file_path);
+        localStorage.setItem("selectedImageId", firstImage.xn);
+      }
+    }
+  }, []);
 
   //กดเลือกดูเคสให้แสดงที่ thumbnail
   const handleCheckbox = (item) => {
@@ -26,6 +64,26 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
       selectedItems.filter((item) => item.an !== itemToRemove.an)
     );
   };
+  //function เพิ่มเคส
+  const handleAddCase = (newCases) => {
+    const updatedCases = [
+      ...caseList,
+      ...newCases.filter((nc) => !caseList.some((c) => c.an === nc.an)),
+    ];
+    setCaseList(updatedCases);
+  };
+  // function ลบเคส
+  const handleDeleteItem = (itemToDelete) => {
+    const updatedCaseList = caseList.filter(
+      (item) => item.an !== itemToDelete.an
+    );
+    const updatedSelectedItems = selectedItems.filter(
+      (item) => item.an !== itemToDelete.an
+    );
+    setCaseList(updatedCaseList);
+    setSelectedItems(updatedSelectedItems);
+    localStorage.setItem("caseList", JSON.stringify(updatedCaseList));
+  };
   // sort thumbnail ตามเลข an
   const sortedSelectedItems = [...selectedItems].sort((a, b) => a.an - b.an);
 
@@ -35,18 +93,21 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
         <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm ">
           <h1 className="text-darkest-blue font-medium">Studies</h1>
           <div className="flex gap-1">
-            <Addfile allCases={allCases} />
+            <Addfile
+              allCases={allCases}
+              onAddCase={handleAddCase}
+              caseList={caseList}
+            />
             <DeleteFile onClickDelete={() => setIsDelete((prev) => !prev)} />
           </div>
         </div>
-
         <div className="flex flex-col px-2 py-1 h-20 overflow-y-scroll">
-          {caseData.map((item, index) => (
+          {caseList.map((item, index) => (
             <div key={index} className="flex gap-2 items-center text-sm">
               {/* ถ้ากดปุ่มถังขยะให้เปลี่ยนจาก checkbox เป็นปุ่มลบเคส */}
               {isDelete ? (
                 //ปุ่มลบเคส
-                <DeleteItem />
+                <DeleteItem onDelete={() => handleDeleteItem(item)} />
               ) : (
                 <label className="flex items-center cursor-pointer relative">
                   {/* checkbox ของ case */}
@@ -82,7 +143,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
           ))}
         </div>
       </div>
-      <div className="flex flex-row overflow-auto w-full">
+      <div className="flex flex-row w-full h-full">
         {/* เพิ่ม thumbnail รูปภาพตามเคสที่เลือก */}
         {sortedSelectedItems.map((item) => (
           <Thumbnail
