@@ -11,6 +11,7 @@ import {
   Highlight,
 } from "../toolsdata";
 import ContrastPopup from "./contrastpop";
+import Colorpopup from "./colorpop";
 
 const ImageTools = ({
   onContrastChange,
@@ -20,10 +21,14 @@ const ImageTools = ({
   setSelectedShape,
   setIsTextMode,
   setIsDragMode,
-  setOnPointerClick
+  setOnPointerClick,
+  setIsDrawMode,
+  selectedColor,
+  setSelectedColor,
 }) => {
   const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
   const [showContrastPopup, setShowContrastPopup] = useState(false);
+  const [showColorPopup, setShowColorPopup] = useState(false);
 
   const buttons = [
     { id: "undo", icon: Undo },
@@ -43,8 +48,10 @@ const ImageTools = ({
       setActiveId("pointer");
       setIsDragMode(false);
       setShowContrastPopup(false);
+      setShowColorPopup(false);
       setSelectedShape(null);
       setIsTextMode(false);
+      setIsDrawMode(false);
     } else {
       if (id === "contrast") {
         setShowContrastPopup((prev) => !prev);
@@ -52,7 +59,12 @@ const ImageTools = ({
       if (id === "drag") {
         setIsDragMode((prev) => !prev);
       }
-      setActiveId(id); 
+      if (id === "highlight") {
+        setIsDrawMode((prev) => !prev);
+        setSelectedShape(id);
+        setShowColorPopup(true);
+      }
+      setActiveId(id);
       setOnPointerClick(false);
       // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
     }
@@ -83,6 +95,13 @@ const ImageTools = ({
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
           onContrastChange={onContrastChange}
+        />
+      )}
+      {showColorPopup && (
+        <Colorpopup
+          onClose={() => setShowColorPopup(false)}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
         />
       )}
     </div>
