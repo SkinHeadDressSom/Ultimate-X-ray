@@ -2,7 +2,7 @@ const { getAnnotationImage } = require("../database/annotationQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 const { decodeToken } = require("../utils/CookiesManagement");
 const fetchAnnotationImage = async (req, res) => {
-  RESPONSE_MESSAGES.taskError = "XN error occurred at fetch annotation";
+  RESPONSE_MESSAGES.taskError = "An error occurred at fetch annotation";
   RESPONSE_MESSAGES.taskSuccess = "Fetch annotation successfully";
   RESPONSE_MESSAGES.missingArguments = "XN is missing";
   RESPONSE_MESSAGES.notFound = "Annotation image not found";
