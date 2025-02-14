@@ -1,3 +1,4 @@
+import axios from "axios";
 import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import Dropdown from "./dropdown";
@@ -5,32 +6,38 @@ import Filter from "./Filter";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
+import { useNavigate } from "react-router-dom";
 
-const Table = ({ patientCases }) => {
+const Table = ({ patientCases, loading, patient }) => {
+  const { patient_cases } = patientCases || {};
   // Simulate loading state (replace with actual fetch)
-  const [loading, setLoading] = useState(true);
-  const [checkedState, setCheckedState] = useState({});
+  const [getLoading, setLoading] = useState(loading);
+  const [checkedState, setCheckedState] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   // Common table cell styles
   const commonTableStyles = "px-4 py-3";
   const commonHeadTableStyles = "px-4 py-1";
   const commonButtonStyles =
     "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50";
-  const totalCases = patientCases.length;
+  const totalCases = patient_cases?.length || 0;
   //pagination control
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
+  const navigate = useNavigate();
   // Simulate loading of data (replace with actual fetch logic)
   useEffect(() => {
-    setTimeout(() => setLoading(false), 2000); // Simulate a 2-second data fetch delay
+    setTimeout(() => setLoading(false), getLoading); // Simulate a 2-second data fetch delay
   }, []);
 
   // Handle checkbox change
   const handleCheckboxChange = (caseId) => {
-    setCheckedState((prevCheckedState) => ({
-      ...prevCheckedState,
-      [caseId]: !prevCheckedState[caseId],
-    }));
+    setCheckedState((prevCheckedState) => {
+      if (prevCheckedState.includes(caseId)) {
+        return prevCheckedState.filter((id) => id !== caseId);
+      } else {
+        return [...prevCheckedState, caseId];
+      }
+    });
   };
 
   // Skeleton Loader Row Component
@@ -49,6 +56,54 @@ const Table = ({ patientCases }) => {
     </tr>
   );
 
+  //pagination control
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+
+  // Get current page cases
+  const indexOfLastCase = currentPage * casesPerPage;
+  const indexOfFirstCase = indexOfLastCase - casesPerPage;
+  const currentCases = Array.isArray(patient_cases)
+    ? patient_cases.slice(indexOfFirstCase, indexOfLastCase)
+    : [];
+
+  const getCaseImage = async (an) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/fetch-data/api/images/${an}`,
+        { withCredentials: true }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
+
+  // navigate to visualize page after click row
+  const handleRowClick = async (caseItem) => {
+    const caseImage = await getCaseImage(caseItem.an);
+    const mergedCaseData = {
+      ...caseItem,
+      case_images: caseImage?.case_images || [],
+    };
+
+    const allCasesWithImages = await Promise.all(
+      patient_cases.map(async (item) => {
+        const images = await getCaseImage(item.an);
+        return {
+          ...item,
+          case_images: images?.case_images || [],
+        };
+      })
+    );
+
+    navigate("/visualize", {
+      state: { caseData: mergedCaseData, allCases: allCasesWithImages, patient },
+    });
+  };
+
   // Status Component Selector
   const renderStatus = (status) => {
     if (status === "Completed") {
@@ -59,16 +114,6 @@ const Table = ({ patientCases }) => {
     return null;
   };
 
-  //pagination control
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Get current page cases
-  const indexOfLastCase = currentPage * casesPerPage;
-  const indexOfFirstCase = indexOfLastCase - casesPerPage;
-  const currentCases = patientCases.slice(indexOfFirstCase, indexOfLastCase);
-  
   return (
     <>
       <div className="flex justify-between items-end w-full pb-1">
@@ -103,61 +148,67 @@ const Table = ({ patientCases }) => {
             </tr>
           </thead>
           <tbody className="text-darkest-blue 2xl:text-lg text-sm">
-            {loading
-              ? Array(2)
-                  .fill(0)
-                  .map((_, index) => <SkeletonRow key={index} />)
-              : patientCases.map((caseItem, index) => (
-                  <tr
-                    key={caseItem.caseId}
-                    className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
-                  >
-                    <td className={`${commonTableStyles} flex justify-center`}>
-                      <div className="flex items-center justify-center">
-                        <label className="flex items-center cursor-pointer relative">
-                          <input
-                            type="checkbox"
-                            className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                            id={`check-${index}`}
-                            checked={checkedState[caseItem.caseId] || false}
-                            onChange={() =>
-                              handleCheckboxChange(caseItem.caseId)
-                            }
-                          />
-                          <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-3.5 w-3.5"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              stroke="currentColor"
-                              strokeWidth="1"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              ></path>
-                            </svg>
-                          </span>
-                        </label>
-                      </div>
-                    </td>
-                    <td className={commonTableStyles}>{index + 1}</td>
-                    <td className={`${commonTableStyles} flex`}>
-                      {renderStatus(caseItem.status)}
-                    </td>
-                    <td className={commonTableStyles}>
-                      {caseItem.description}
-                    </td>
-                    <td className={commonTableStyles}>{caseItem.study_date}</td>
-                    <td className={commonTableStyles}>{caseItem.time}</td>
-                    <td className={commonTableStyles}>{caseItem.AN}</td>
-                    <td className={commonTableStyles}>
-                      {caseItem.image_count}
-                    </td>
-                  </tr>
-                ))}
+            {loading ? (
+              Array(2)
+                .fill(0)
+                .map((_, index) => <SkeletonRow key={index} />)
+            ) : Array.isArray(patient_cases) && patient_cases.length > 0 ? (
+              patient_cases.map((caseItem, index) => (
+                <tr
+                  key={caseItem.an}
+                  className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
+                  onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
+                >
+                  <td className={`${commonTableStyles} flex justify-center`}>
+                    <div
+                      className="flex items-center justify-center"
+                      onClick={(e) => e.stopPropagation()} // Prevent row click when clicking checkbox
+                    >
+                      <label className="flex items-center cursor-pointer relative">
+                        <input
+                          type="checkbox"
+                          className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
+                          id={`check-${index}`}
+                          checked={checkedState.includes(caseItem.an)}
+                          onChange={() => handleCheckboxChange(caseItem.an)}
+                        />
+                        <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3.5 w-3.5"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                            stroke="currentColor"
+                            strokeWidth="1"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clipRule="evenodd"
+                            ></path>
+                          </svg>
+                        </span>
+                      </label>
+                    </div>
+                  </td>
+                  <td className={commonTableStyles}>{index + 1}</td>
+                  <td className={`${commonTableStyles} flex`}>
+                    {renderStatus(caseItem.status)}
+                  </td>
+                  <td className={commonTableStyles}>{caseItem.description}</td>
+                  <td className={commonTableStyles}>{caseItem.study_date}</td>
+                  <td className={commonTableStyles}>{caseItem.time}</td>
+                  <td className={commonTableStyles}>{caseItem.an}</td>
+                  <td className={commonTableStyles}>{caseItem.image_count}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="8" className="text-center">
+                  No data available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
