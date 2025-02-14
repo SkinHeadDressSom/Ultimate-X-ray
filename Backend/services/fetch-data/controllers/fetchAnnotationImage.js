@@ -22,6 +22,14 @@ const fetchAnnotationImage = async (req, res) => {
     const user_id = decoded.user_id;
 
     const images = await getAnnotationImage(user_id, xn);
+    // Handling query error
+    if (images?.error) {
+      return res.status(500).json({
+        message: RESPONSE_MESSAGES.databaseError,
+        error: cases.error,
+      });
+    }
+
     if (!images) {
       return res.status(404).json({
         message: RESPONSE_MESSAGES.notFound,
