@@ -1,0 +1,11 @@
+.canvas-container {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1 !important;
+}
+canvas {
+  position: absolute !important;
+  width: 100% !important;
+  height: 100% !important;
+}
