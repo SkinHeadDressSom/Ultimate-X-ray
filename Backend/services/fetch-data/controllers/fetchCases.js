@@ -69,7 +69,7 @@ const fetchCases = async (req, res) => {
     // Fetch case succesfully
     return res.status(200).json({
       message: RESPONSE_MESSAGES.taskSuccess,
-      data: { HN: cases.HN, patient_cases: enriched_cases },
+      data: { hn: cases.hn, patient_cases: enriched_cases },
     });
   } catch (error) {
     console.error("Error in fetch case controller ->", error.message);
