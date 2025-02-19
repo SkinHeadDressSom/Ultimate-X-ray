@@ -24,12 +24,12 @@ async function getCasebyHN(hn, order, status, page) {
 
     // ordering and pagination
     query += `
-      ORDER BY m.created_at ${order === "asc" ? "ASC" : "DESC"}
-      LIMIT $${params.length + 1}
-      OFFSET $${params.length + 2}
+      ORDER BY m.created_at $${params.length + 1}
+      LIMIT $${params.length + 2}
+      OFFSET $${params.length + 3}
     `;
 
-    params.push(limit, offset);
+    params.push(order === "asc" ? "ASC" : "DESC", limit, offset);
 
     const results = await pool.query(query, params);
 
