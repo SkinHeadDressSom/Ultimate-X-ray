@@ -11,7 +11,7 @@ export default function Analysis() {
                     {analysisData ? (
                         <p>{analysisData}</p>
                     ) : (
-                        <p className="text-gray">ผลการวิเคราะห์จาก AI จะถูกแสดงในกรอบนี้</p>
+                        <p className="text-gray">ผลการวิเคราะห์จาก AI ... </p>
                     )}
                 </div>
             </div>
