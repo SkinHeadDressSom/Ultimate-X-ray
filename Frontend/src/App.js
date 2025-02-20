@@ -6,7 +6,7 @@ import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
 import Zoom from './pages/zoom';
-
+import Analysis from "./components/tools/analysis";
 
 function App() {
   const router = createBrowserRouter([
@@ -47,6 +47,14 @@ function App() {
       element: (
         <>
           <Zoom />
+        </>
+      ),
+    },
+    {
+      path: "/Analysis",
+      element: (
+        <>
+          <Analysis />
         </>
       ),
     }

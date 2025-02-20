@@ -1,9 +1,9 @@
 import React from 'react';
-import Zommer from '../components/tools/zoomsume';
+import Contrast from '../components/tools/contrastpop';
 
 const Visualize = () => {
   return (
-    <div> <Zommer /> </div>
+    <div> <Contrast /> </div>
   );
 };
 
