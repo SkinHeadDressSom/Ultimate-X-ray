@@ -8,9 +8,9 @@ const ContrastPopup = () => {
   // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
   const calculateContrast = (value) => {
     if (value >= 0) {
-      return 1 + (value / 100) * 2; // ขยายค่าไปที่สูงสุด 3 เมื่อ value = 100
+      return 1 + (value / 100) * 5; // ขยายค่าไปที่สูงสุดที่ 6 เมื่อ value = 100 และ หลัง * ต่ำกว่าค่าที่อยากได้ 1 หน่วยเสมอ
     } else {
-      return 1 / (1 - value / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
+      return 1 / (1 - value / 100) ; // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
   };
 
@@ -56,7 +56,6 @@ const ContrastPopup = () => {
         />
       </div>
     </Box>
-
   );
 };
 
