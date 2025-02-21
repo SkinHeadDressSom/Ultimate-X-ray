@@ -8,8 +8,15 @@ const fetchCases = async (req, res) => {
   RESPONSE_MESSAGES.taskSuccess = "Fetch case(s) successfully";
   RESPONSE_MESSAGES.missingArguments = "HN is missing";
   RESPONSE_MESSAGES.notFound = "case not found";
+  RESPONSE_MESSAGES.invalidOrder = "Invalid order. Use 'asc' or 'desc'";
+  RESPONSE_MESSAGES.invalidStatus =
+    "Invalid order. Use 'Scheduled' or 'Completed'.";
+  RESPONSE_MESSAGES.invalidPageNumber =
+    "Invalid page number. Should be number type";
   try {
     const { hn } = req.params;
+    const { order = "desc", status = null, page = 1 } = req.query;
+
     // Check if the hn are null
     if (!hn) {
       return res.status(400).json({
@@ -17,7 +24,36 @@ const fetchCases = async (req, res) => {
       });
     }
 
-    const cases = await getCasebyHN(hn);
+    // Validate order
+    if (!["asc", "desc"].includes(order.toLowerCase())) {
+      return res.status(400).json({
+        message: RESPONSE_MESSAGES.invalidOrder,
+      });
+    }
+    // Validate status
+    if (status != null) {
+      if (!["Scheduled", "Completed"].includes(status.toString())) {
+        return res
+          .status(400)
+          .json({ message: RESPONSE_MESSAGES.invalidStatus });
+      }
+    }
+
+    // Validate page number
+    const pageNumber = parseInt(page, 10);
+    // NaN = Not-a-Number
+    if (isNaN(pageNumber) || pageNumber < 1) {
+      return res
+        .status(400)
+        .json({ message: RESPONSE_MESSAGES.invalidPageNumber });
+    }
+
+    const cases = await getCasebyHN(
+      hn,
+      order.toLowerCase(),
+      status,
+      pageNumber
+    );
 
     // Handling query error
     if (cases?.error) {
