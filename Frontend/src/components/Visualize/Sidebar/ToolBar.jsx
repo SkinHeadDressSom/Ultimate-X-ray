@@ -5,65 +5,12 @@ import ImageTools from "./tools/ImageTools";
 import Annotaion from "./tools/Annotation";
 import AIButton from "./tools/AI";
 
-const Toolbar = ({
-  onLayoutChange,
-  setSelectedShape,
-  isTextMode,
-  setIsTextMode,
-  onContrastChange,
-  selectedColor,
-  setSelectedColor,
-  isAnnotationHidden,
-  setIsAnnotationHidden,
-  isDragMode,
-  setIsDragMode,
-  zoomIn,
-  zoomOut,
-  drag,
-  onPointerClick,
-  setOnPointerClick,
-  isDrawMode,
-  setIsDrawMode,
-}) => {
+const Toolbar = ({ onLayoutChange }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
     { component: <Layout onLayoutChange={onLayoutChange} />, key: "layout" },
-    {
-      component: (
-        <ImageTools
-          onContrastChange={(value) => onContrastChange(value)}
-          zoomIn={zoomIn}
-          zoomOut={zoomOut}
-          isDragMode={isDragMode}
-          setIsDragMode={setIsDragMode}
-          drag={drag}
-          setIsTextMode={setIsTextMode}
-          setSelectedShape={setSelectedShape}
-          setOnPointerClick={setOnPointerClick}
-          isDrawMode={isDrawMode}
-          setIsDrawMode={setIsDrawMode}
-          selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-        />
-      ),
-      key: "imageTools",
-    },
-    {
-      component: (
-        <Annotaion
-          setSelectedShape={setSelectedShape}
-          isTextMode={isTextMode}
-          setIsTextMode={setIsTextMode}
-          selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
-          isAnnotationHidden={isAnnotationHidden}
-          setIsAnnotationHidden={setIsAnnotationHidden}
-          onPointerClick={onPointerClick}
-          setOnPointerClick={setOnPointerClick}
-        />
-      ),
-      key: "annotation",
-    },
+    { component: <ImageTools />, key: "imageTools" },
+    { component: <Annotaion />, key: "annotation" },
     { component: <AIButton />, key: "aiButton" },
   ];
 

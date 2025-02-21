@@ -1,13 +1,24 @@
 import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp, handleMeasurementLine } from "../Event/CanvasEvent.js";
-
-const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor, isAnnotationHidden, isDrawMode) => {
+import {
+  setIsTextMode,
+} from "../../../../redux/visualize";
+const useFabricCanvas = (canvasRef,) => {
+  const dispatch = useDispatch();
+  const {
+    selectedColor,
+    imageUrls,
+    selectedShape,
+    isTextMode,
+    isDrawMode,
+    isAnnotationHidden,
+  } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
   const [startPoint, setStartPoint] = useState(null);
   
-
   useEffect(() => {
     const newCanvases = imageUrls.map((_, index) => {
         const canvasEl = canvasRef.current[index];
@@ -79,7 +90,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
         }
     });
     canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
-    canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor));
+    canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor));
 });
 
   
@@ -95,8 +106,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
       });
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [canvases, selectedShape, startPoint, isTextMode, setIsTextMode, selectedColor]);
-
+  }, [canvases, selectedShape, startPoint, isTextMode, selectedColor]);
   useEffect(() => {
     canvases.forEach((canvas) => {
       if (!canvas) return;
@@ -113,6 +123,7 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
   }, [isAnnotationHidden]);
   
   return canvases;
+  
 };
 
 export default useFabricCanvas;

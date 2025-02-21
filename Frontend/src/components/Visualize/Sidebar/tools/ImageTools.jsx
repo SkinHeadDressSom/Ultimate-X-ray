@@ -1,74 +1,87 @@
 import React, { useState } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import {
-  Undo,
-  Redo,
+  UndoBtn,
+  RedoBtn,
   Pointer,
   Drag,
   Zoomin,
   Zoomout,
-  Contrast,
+  ContrastBtn,
   Highlight,
 } from "../toolsdata";
 import ContrastPopup from "./contrastpop";
 import Colorpopup from "./colorpop";
-
-const ImageTools = ({
-  onContrastChange,
-  zoomIn,
-  zoomOut,
-  drag,
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setIsDragMode,
   setSelectedShape,
   setIsTextMode,
-  setIsDragMode,
   setOnPointerClick,
   setIsDrawMode,
-  selectedColor,
   setSelectedColor,
-}) => {
-  const [activeId, setActiveId] = useState("pointer"); // ค่าเริ่มต้นเป็น pointer
+  setContrast,
+  setScale,
+} from "../../../../redux/visualize";
+
+const ImageTools = () => {
+  const dispatch = useDispatch();
+  const { isDragMode, selectedColor, contrast, scale, selectedPosition } =
+    useSelector((state) => state.visualize);
+
+  const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
   const [popupPosition, setPopupPosition] = useState("550px");
 
   const buttons = [
-    { id: "undo", icon: Undo },
-    { id: "redo", icon: Redo },
+    { id: "undobtn", icon: UndoBtn },
+    { id: "redobtn", icon: RedoBtn },
     { id: "pointer", icon: Pointer },
     { id: "drag", icon: Drag },
     { id: "zoomin", icon: Zoomin },
     { id: "zoomout", icon: Zoomout },
-    { id: "contrast", icon: Contrast },
+    { id: "contrastbtn", icon: ContrastBtn },
     { id: "highlight", icon: Highlight },
   ];
 
   const handleButtonClick = (id) => {
     if (id === "pointer") {
-      // ถ้ากด pointer ให้ปิดโหมดอื่นทั้งหมด
-      setOnPointerClick(true);
+      dispatch(setOnPointerClick(true));
       setActiveId("pointer");
-      setIsDragMode(false);
+      dispatch(setIsDragMode(false));
       setShowContrastPopup(false);
       setShowColorPopup(false);
-      setSelectedShape(null);
-      setIsTextMode(false);
-      setIsDrawMode(false);
+      dispatch(setSelectedShape(null));
+      dispatch(setIsTextMode(false));
+      dispatch(setIsDrawMode(false));
+    } else if (id === "zoomin" || id === "zoomout") {
+      // Handle zoom in/zoom out
+      const zoomFactor = id === "zoomin" ? 1.1 : 0.9; // Increase or decrease scale by 10%
+      const newScale = [...scale];
+      if (selectedPosition !== null) {
+        newScale[selectedPosition] = newScale[selectedPosition]
+          ? newScale[selectedPosition] * zoomFactor
+          : zoomFactor;
+      } else {
+        newScale[0] = newScale[0] ? newScale[0] * zoomFactor : zoomFactor;
+      }
+      dispatch(setScale(newScale));
     } else {
-      if (id === "contrast") {
+      if (id === "contrastbtn") {
         setShowContrastPopup((prev) => !prev);
       }
       if (id === "drag") {
-        setIsDragMode((prev) => !prev);
+        dispatch(setIsDragMode(!isDragMode));
       }
       if (id === "highlight") {
         setPopupPosition("500px");
-        setIsDrawMode(true);
-        setSelectedShape(id);
+        dispatch(setIsDrawMode(true));
+        dispatch(setSelectedShape(id));
         setShowColorPopup(true);
       }
       setActiveId(id);
-      setOnPointerClick(false);
-      // กดปุ่มอื่นให้เปลี่ยน activeId เสมอ
+      dispatch(setOnPointerClick(false));
     }
   };
 
@@ -84,26 +97,21 @@ const ImageTools = ({
               activeId === button.id ||
               (button.id === "contrast" && showContrastPopup)
             }
-            onClick={() => {
-              handleButtonClick(button.id);
-              if (button.id === "zoomin") zoomIn();
-              if (button.id === "zoomout") zoomOut();
-              if (button.id === "drag") drag();
-            }}
+            onClick={() => handleButtonClick(button.id)}
           />
         ))}
       </div>
       {showContrastPopup && (
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
-          onContrastChange={onContrastChange}
+          onContrastChange={(value) => dispatch(setContrast(value))}
         />
       )}
       {showColorPopup && (
         <Colorpopup
           onClose={() => setShowColorPopup(false)}
           selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
+          setSelectedColor={(color) => dispatch(setSelectedColor(color))}
         />
       )}
     </div>
