@@ -24,11 +24,10 @@ import {
   setScale,
 } from "../../../../redux/visualize";
 
-const ImageTools = () => {
+const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
   const { isDragMode, selectedColor, contrast, scale, selectedPosition } =
     useSelector((state) => state.visualize);
-
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -67,6 +66,10 @@ const ImageTools = () => {
         newScale[0] = newScale[0] ? newScale[0] * zoomFactor : zoomFactor;
       }
       dispatch(setScale(newScale));
+    } else if (id === "undobtn") {
+      undo();
+    } else if (id === "redobtn") {
+      redo();
     } else {
       if (id === "contrastbtn") {
         setShowContrastPopup((prev) => !prev);

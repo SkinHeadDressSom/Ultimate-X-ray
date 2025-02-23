@@ -5,11 +5,11 @@ import ImageTools from "./tools/ImageTools";
 import Annotaion from "./tools/Annotation";
 import AIButton from "./tools/AI";
 
-const Toolbar = ({ onLayoutChange }) => {
+const Toolbar = ({ onLayoutChange, redo, undo }) => {
   const tools = [
     { component: <SystemTools />, key: "systemTools" },
     { component: <Layout onLayoutChange={onLayoutChange} />, key: "layout" },
-    { component: <ImageTools />, key: "imageTools" },
+    { component: <ImageTools undo={undo} redo={redo}/>, key: "imageTools" },
     { component: <Annotaion />, key: "annotation" },
     { component: <AIButton />, key: "aiButton" },
   ];

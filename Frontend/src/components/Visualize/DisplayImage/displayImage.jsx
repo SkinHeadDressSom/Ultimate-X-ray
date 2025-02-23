@@ -5,7 +5,7 @@ import "./display.css";
 import { setSelectedPosition, setPosition } from "../../../redux/visualize";
 import useDragAndDrop from "../../../hooks/useDragAndDrop.js";
 
-const DisplayImage = ({ caseData }) => {
+const DisplayImage = ({ caseData, canvasRef}) => {
   const dispatch = useDispatch();
 
   const {
@@ -20,8 +20,6 @@ const DisplayImage = ({ caseData }) => {
 
   const patient = useSelector((state) => state.patient?.data || null);
 
-  const canvasRef = useRef([]);
-  const canvases = useFabricCanvas(canvasRef);
   const { startDrag, onDrag, stopDrag, dragging } = useDragAndDrop(isDragMode);
 
   const calculateContrast = (contrast) => {
