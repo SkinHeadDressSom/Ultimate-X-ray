@@ -1,9 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 
 const ContrastPopup = ({ onClose, onContrastChange }) => {
-  const [contrast, setContrast] = useState(0);
+  const selectedPosition = useSelector(
+    (state) => state.visualize.selectedPosition
+  );
+  const contrastFromRedux = useSelector(
+    (state) => state.visualize.contrast[selectedPosition] || 0
+  );
+  const [contrast, setContrast] = useState(contrastFromRedux);
   const popupRef = useRef(null);
+
+  useEffect(() => {
+    setContrast(contrastFromRedux);
+  }, [contrastFromRedux, selectedPosition]);
+
   // ฟังก์ชันเปลี่ยนค่า contrast จาก input number
   const handleInputChange = (e) => {
     let value = e.target.value === "" ? "" : parseFloat(e.target.value);

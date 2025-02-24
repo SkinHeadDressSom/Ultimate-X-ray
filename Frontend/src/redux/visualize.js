@@ -3,10 +3,10 @@ import { createSlice } from '@reduxjs/toolkit';
 const initialState = {
   imageUrls: [null],
   layout: "layout1",
-  selectedPosition: null,
+  selectedPosition: 0,
   selectedShape: null,
   isTextMode: false,
-  contrast: [0],
+  contrast: [],
   selectedColor: "white",
   isAnnotationHidden: false,
   scale: [],
@@ -36,8 +36,10 @@ const visualizeSlice = createSlice({
       state.isTextMode = action.payload;
     },
     setContrast: (state, action) => {
-      state.contrast = action.payload;
-    },
+      const { index, value } = action.payload;
+      state.contrast = [...state.contrast];
+      state.contrast[index] = value;
+    },    
     setSelectedColor: (state, action) => {
       state.selectedColor = action.payload;
     },

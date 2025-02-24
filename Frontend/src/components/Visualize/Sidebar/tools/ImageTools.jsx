@@ -107,7 +107,9 @@ const ImageTools = ({ undo, redo }) => {
       {showContrastPopup && (
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
-          onContrastChange={(value) => dispatch(setContrast(value))}
+          onContrastChange={(value) =>
+            dispatch(setContrast({ index: selectedPosition, value }))
+          }
         />
       )}
       {showColorPopup && (
