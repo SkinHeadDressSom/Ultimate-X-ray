@@ -1,29 +1,88 @@
 import { useEffect, useState, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
-import { handleKeyDown, handleCanvasClick, handleMouseDown, handleMouseMove, handleMouseUp, handleMeasurementLine } from "../Event/CanvasEvent.js";
+import {
+  handleCanvasClick,
+  handleMouseDown,
+  handleMouseMove,
+  handleMouseUp,
+  handleMeasurementLine,
+  handleRedo,
+  handleUndo,
+  handleHighlight
+} from "../Event/CanvasEvent.js";
+import { setIsTextMode } from "../../../../redux/visualize";
 
-const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsTextMode, selectedColor, isAnnotationHidden, isDrawMode) => {
+const useFabricCanvas = (canvasRef) => {
+  const dispatch = useDispatch();
+  const {
+    selectedColor,
+    imageUrls,
+    selectedShape,
+    isTextMode,
+    isDrawMode,
+    isAnnotationHidden,
+  } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
   const [startPoint, setStartPoint] = useState(null);
-  
-
+  //redo/undo
+  const undoStackRef = useRef([]);
+  const redoStackRef = useRef([]);
+  //เก็บสถานะ
+  const saveState = (canvas) => {
+    const objects = canvas.getObjects();
+    if (objects.length === 0) return;
+    const lastObject = objects[objects.length - 1];
+    if (undoStackRef.current.length === 0 || undoStackRef.current[undoStackRef.current.length - 1] !== lastObject) {
+      undoStackRef.current.push(lastObject);
+      redoStackRef.current = [];
+      console.log("Undo Stack Size:", undoStackRef.current.length);
+    }
+  };
+  //delete redo undo
+  useEffect(() => {
+    const handleKeyDownEvent = (event) => {
+      canvases.forEach((canvas) => {
+        const activeObject = canvas.getActiveObject();
+        if (!activeObject) return;
+        if (activeObject.type === "textbox" && activeObject.isEditing) return;
+        if (event.code === "Backspace" || event.code === "Delete") {
+          canvas.remove(activeObject);
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
+      });
+      if (event.ctrlKey && event.key === "z") {
+        handleUndo(canvases[0], undoStackRef, redoStackRef);
+      }
+      if (event.ctrlKey && event.key === "y") {
+        handleRedo(canvases[0], undoStackRef, redoStackRef);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDownEvent);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDownEvent);
+    };
+  }, [canvases]);
+  //set up canvas
   useEffect(() => {
     const newCanvases = imageUrls.map((_, index) => {
-        const canvasEl = canvasRef.current[index];
-        if (!canvasEl) return null;
-        // ตั้งค่าความละเอียดของ Canvas
-        const scale = window.devicePixelRatio;
-        canvasEl.width = canvasEl.offsetWidth * scale;
-        canvasEl.height = canvasEl.offsetHeight * scale;
+      const canvasEl = canvasRef.current[index];
+      if (!canvasEl) return null;
 
-        const canvas = new fabric.Canvas(canvasEl, { selection: false });
+      // ตั้งค่าความละเอียดของ Canvas
+      const scale = window.devicePixelRatio;
+      canvasEl.width = canvasEl.offsetWidth * scale;
+      canvasEl.height = canvasEl.offsetHeight * scale;
 
-        // ปิด anti-aliasing
-        const ctx = canvasEl.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
+      const canvas = new fabric.Canvas(canvasEl, { selection: false });
 
-        return canvas;
+      // ปิด anti-aliasing
+      const ctx = canvasEl.getContext("2d");
+      ctx.imageSmoothingEnabled = false;
+
+      return canvas;
     });
 
     setCanvases(newCanvases);
@@ -35,54 +94,35 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
     if (!selectedShape) return;
     canvases.forEach((canvas) => {
       if (!canvas) return;
-      const hexToRgb = (hex) => {
-        //ลบ #
-        hex = hex.replace(/^#/, '');
-        
-        //แปลง HEX เป็น RGB
-        const bigint = parseInt(hex, 16);
-        const r = (bigint >> 16) & 255;
-        const g = (bigint >> 8) & 255;
-        const b = bigint & 255;
-        return `${r}, ${g}, ${b}`;
-      };
-      if (selectedShape === "highlight" && isDrawMode) {
-        canvas.isDrawingMode = true;
-        canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-        
-        // ตั้งค่าสีด้วย RGBA (alpha = 0.2 สำหรับ opacity 40%)
-        const highlightColorWithOpacity = `rgba(${hexToRgb(selectedColor)}, 0.4)`;
-        canvas.freeDrawingBrush.color = highlightColorWithOpacity;
-        
-        canvas.freeDrawingBrush.width = 50; //ความหนา
+      canvas.on("object:added", () => saveState(canvas));
+      canvas.on("object:modified", () => saveState(canvas));
+      canvas.on("object:removed", () => saveState(canvas));
+      if (selectedShape === "highlight") {
+        handleHighlight(canvas, selectedColor, isDrawMode);
       } else {
         canvas.isDrawingMode = false;
       }
-      
       canvas.selection = true;
       canvas.on("selection:created", (event) => (canvas.selectedObject = event.selected[0]));
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
-  
-      document.addEventListener("keydown", (event) => handleKeyDown(event, canvases));
       canvas.on("mouse:down", (event) => {
         if (selectedShape === "measurement") {
-            handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
         } else {
-            handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
+          handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
         }
-    });
-    canvas.on("mouse:move", (event) => {
+      });
+      canvas.on("mouse:move", (event) => {
         if (selectedShape === "measurement" && isDrawingRef.current) {
-            handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
         } else {
-            handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
+          handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
         }
+      });
+      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
+      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor));
     });
-    canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
-    canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor));
-});
 
-  
     return () => {
       canvases.forEach((canvas) => {
         if (!canvas) return;
@@ -93,26 +133,21 @@ const useFabricCanvas = (canvasRef, imageUrls, selectedShape, isTextMode, setIsT
         canvas.off("selection:updated");
         canvas.isDrawingMode = false;
       });
-      document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [canvases, selectedShape, startPoint, isTextMode, setIsTextMode, selectedColor]);
-
+  }, [canvases, selectedShape, startPoint, isTextMode, selectedColor]);
+  //ซ่อน annotation
   useEffect(() => {
     canvases.forEach((canvas) => {
       if (!canvas) return;
-  
-      // ซ่อน annotation ทั้งหมด
       canvas.getObjects().forEach((obj) => {
         if (obj.type !== "image") {
           obj.visible = !isAnnotationHidden;
         }
       });
-  
       canvas.renderAll();
     });
   }, [isAnnotationHidden]);
-  
-  return canvases;
+  return { canvases, undo: () => handleUndo(canvases[0], undoStackRef, redoStackRef), redo: () => handleRedo(canvases[0], undoStackRef, redoStackRef)};
 };
 
 export default useFabricCanvas;

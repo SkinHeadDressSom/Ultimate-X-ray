@@ -10,25 +10,40 @@ import { useNavigate } from "react-router-dom";
 
 const Table = ({ patientCases, loading, patient }) => {
   const { patient_cases } = patientCases || {};
-  // Simulate loading state (replace with actual fetch)
-  const [getLoading, setLoading] = useState(loading);
   const [checkedState, setCheckedState] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
   // Common table cell styles
-  const commonTableStyles = "px-4 py-3";
-  const commonHeadTableStyles = "px-4 py-1";
-  const commonButtonStyles =
-    "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50";
-  const totalCases = patient_cases?.length || 0;
+  const commonStyles = {
+    tableCell: "px-4 py-3",
+    tableHead: "px-4 py-1",
+    button:
+      "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50",
+  };
   //pagination control
+  const totalCases = patient_cases?.length || 0;
   const casesPerPage = 10;
   const totalPages = Math.ceil(totalCases / casesPerPage);
-  const navigate = useNavigate();
-  // Simulate loading of data (replace with actual fetch logic)
-  useEffect(() => {
-    setTimeout(() => setLoading(false), getLoading); // Simulate a 2-second data fetch delay
-  }, []);
+  //pagination control
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  // Get current page cases
+  const indexOfLastCase = currentPage * casesPerPage;
+  const indexOfFirstCase = indexOfLastCase - casesPerPage;
+  const currentCases = Array.isArray(patient_cases)
+    ? patient_cases.slice(indexOfFirstCase, indexOfLastCase)
+    : [];
 
+  // Status Component Selector
+  const renderStatus = (status) => {
+    if (status === "Completed") {
+      return <StatusComplete />;
+    } else if (status === "Scheduled") {
+      return <StatusSchedule />;
+    }
+    return null;
+  };
   // Handle checkbox change
   const handleCheckboxChange = (caseId) => {
     setCheckedState((prevCheckedState) => {
@@ -39,14 +54,13 @@ const Table = ({ patientCases, loading, patient }) => {
       }
     });
   };
-
   // Skeleton Loader Row Component
   const SkeletonRow = () => (
     <tr className="even:bg-extra-light-blue odd:bg-wheat">
       {Array(8)
         .fill(null)
         .map((_, idx) => (
-          <td key={idx} className={commonTableStyles}>
+          <td key={idx} className={commonStyles.tableCell}>
             <Skeleton
               variant={idx === 0 ? "rectangular" : "text"}
               width={idx === 0 ? 20 : idx === 8 ? 30 : 60}
@@ -55,19 +69,7 @@ const Table = ({ patientCases, loading, patient }) => {
         ))}
     </tr>
   );
-
-  //pagination control
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-
-  // Get current page cases
-  const indexOfLastCase = currentPage * casesPerPage;
-  const indexOfFirstCase = indexOfLastCase - casesPerPage;
-  const currentCases = Array.isArray(patient_cases)
-    ? patient_cases.slice(indexOfFirstCase, indexOfLastCase)
-    : [];
-
+  //Fetch case images
   const getCaseImage = async (an) => {
     try {
       const response = await axios.get(
@@ -80,16 +82,8 @@ const Table = ({ patientCases, loading, patient }) => {
       return null;
     }
   };
-
-  // navigate to visualize page after click row
-  const handleRowClick = async (caseItem) => {
-    const caseImage = await getCaseImage(caseItem.an);
-    const mergedCaseData = {
-      ...caseItem,
-      case_images: caseImage?.case_images || [],
-    };
-
-    const allCasesWithImages = await Promise.all(
+  const fetchAllCaseImages = async () => {
+    const casesWithImages = await Promise.all(
       patient_cases.map(async (item) => {
         const images = await getCaseImage(item.an);
         return {
@@ -98,20 +92,16 @@ const Table = ({ patientCases, loading, patient }) => {
         };
       })
     );
+    return casesWithImages;
+  };
+  //handle row click
+  const handleRowClick = async (caseItem) => {
+    const allCasesWithImages = await fetchAllCaseImages();
+    const selectedCase = allCasesWithImages.find((c) => c.an === caseItem.an);
 
     navigate("/visualize", {
-      state: { caseData: mergedCaseData, allCases: allCasesWithImages, patient },
+      state: { caseData: selectedCase, allCases: allCasesWithImages, patient },
     });
-  };
-
-  // Status Component Selector
-  const renderStatus = (status) => {
-    if (status === "Completed") {
-      return <StatusComplete />;
-    } else if (status === "Scheduled") {
-      return <StatusSchedule />;
-    }
-    return null;
   };
 
   return (
@@ -134,17 +124,17 @@ const Table = ({ patientCases, loading, patient }) => {
                   <path d="M6.99979 7V3C6.99979 2.44772 7.4475 2 7.99979 2H20.9998C21.5521 2 21.9998 2.44772 21.9998 3V16C21.9998 16.5523 21.5521 17 20.9998 17H17V20.9925C17 21.5489 16.551 22 15.9925 22H3.00728C2.45086 22 2 21.5511 2 20.9925L2.00276 8.00748C2.00288 7.45107 2.4518 7 3.01025 7H6.99979ZM8.99979 7H15.9927C16.549 7 17 7.44892 17 8.00748V15H19.9998V4H8.99979V7ZM15 9H4.00255L4.00021 20H15V9ZM8.50242 18L4.96689 14.4645L6.3811 13.0503L8.50242 15.1716L12.7451 10.9289L14.1593 12.3431L8.50242 18Z"></path>
                 </svg>
               </th>
-              <th className={commonHeadTableStyles}>No.</th>
-              <th className={commonHeadTableStyles}>
+              <th className={commonStyles.tableHead}>No.</th>
+              <th className={commonStyles.tableHead}>
                 <Filter />
               </th>
-              <th className={commonHeadTableStyles}>Description</th>
-              <th className={commonHeadTableStyles}>
+              <th className={commonStyles.tableHead}>Description</th>
+              <th className={commonStyles.tableHead}>
                 <Dropdown />
               </th>
-              <th className={commonHeadTableStyles}>Time</th>
-              <th className={commonHeadTableStyles}>Accession No.</th>
-              <th className={commonHeadTableStyles}>Images</th>
+              <th className={commonStyles.tableHead}>Time</th>
+              <th className={commonStyles.tableHead}>Accession No.</th>
+              <th className={commonStyles.tableHead}>Images</th>
             </tr>
           </thead>
           <tbody className="text-darkest-blue 2xl:text-lg text-sm">
@@ -159,7 +149,9 @@ const Table = ({ patientCases, loading, patient }) => {
                   className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
                   onClick={() => handleRowClick(caseItem)} // Navigate when clicking row
                 >
-                  <td className={`${commonTableStyles} flex justify-center`}>
+                  <td
+                    className={`${commonStyles.tableCell} flex justify-center`}
+                  >
                     <div
                       className="flex items-center justify-center"
                       onClick={(e) => e.stopPropagation()} // Prevent row click when clicking checkbox
@@ -191,15 +183,21 @@ const Table = ({ patientCases, loading, patient }) => {
                       </label>
                     </div>
                   </td>
-                  <td className={commonTableStyles}>{index + 1}</td>
-                  <td className={`${commonTableStyles} flex`}>
+                  <td className={commonStyles.tableCell}>{index + 1}</td>
+                  <td className={`${commonStyles.tableCell} flex`}>
                     {renderStatus(caseItem.status)}
                   </td>
-                  <td className={commonTableStyles}>{caseItem.description}</td>
-                  <td className={commonTableStyles}>{caseItem.study_date}</td>
-                  <td className={commonTableStyles}>{caseItem.time}</td>
-                  <td className={commonTableStyles}>{caseItem.an}</td>
-                  <td className={commonTableStyles}>{caseItem.image_count}</td>
+                  <td className={commonStyles.tableCell}>
+                    {caseItem.description}
+                  </td>
+                  <td className={commonStyles.tableCell}>
+                    {caseItem.study_date}
+                  </td>
+                  <td className={commonStyles.tableCell}>{caseItem.time}</td>
+                  <td className={commonStyles.tableCell}>{caseItem.an}</td>
+                  <td className={commonStyles.tableCell}>
+                    {caseItem.image_count}
+                  </td>
                 </tr>
               ))
             ) : (
@@ -217,7 +215,7 @@ const Table = ({ patientCases, loading, patient }) => {
         {totalPages > 1 && (
           <div className="flex space-x-1">
             <button
-              className={commonButtonStyles}
+              className={commonStyles.button}
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
@@ -239,7 +237,7 @@ const Table = ({ patientCases, loading, patient }) => {
             ))}
 
             <button
-              className={commonButtonStyles}
+              className={commonStyles.button}
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
             >

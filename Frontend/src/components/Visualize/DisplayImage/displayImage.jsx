@@ -1,42 +1,35 @@
-import React, { useRef, useEffect } from "react";
-import useFabricCanvas from "./Hook/FabricCanvas.js";
-import "./display.css"; //ใช้บังคับขนาดของ Canvas
-import * as fabric from "fabric";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import "./display.css";
+import { setSelectedPosition } from "../../../redux/visualize";
+import useDragAndDrop from "../../../hooks/useDragAndDrop.js";
 
-const DisplayImage = ({
-  imageUrls,
-  caseData,
-  patientData,
-  layout,
-  onImagePositionSelect,
-  selectedPosition,
-  selectedShape,
-  isTextMode,
-  setIsTextMode,
-  contrast,
-  selectedColor,
-  isAnnotationHidden,
-  scale,
-  position,
-  startDrag,
-  onDrag,
-  stopDrag,
-  isDrawMode,
-}) => {
-  const canvasRef = useRef([]);
-  const canvases = useFabricCanvas(
-    canvasRef,
+const DisplayImage = ({ caseData, canvasRef }) => {
+  const dispatch = useDispatch();
+
+  const {
     imageUrls,
-    selectedShape,
-    isTextMode,
-    setIsTextMode,
-    selectedColor,
-    isAnnotationHidden,
-    isDrawMode
-  );
+    layout,
+    selectedPosition,
+    contrast,
+    scale,
+    position,
+    isDragMode,
+  } = useSelector((state) => state.visualize);
+
+  const patient = useSelector((state) => state.patient?.data || null);
+
+  const { startDrag, onDrag, stopDrag, dragging } = useDragAndDrop(isDragMode);
+
+  // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
   const calculateContrast = (contrast) => {
-    return contrast >= 0 ? 1 + (contrast / 20) * 4 : 1 + contrast / 100;
+    if (contrast >= 0) {
+      return 1 + (contrast / 100) * 5; // ขยายค่าไปที่สูงสุดที่ 6 เมื่อ value = 100 และ หลัง * ต่ำกว่าค่าที่อยากได้ 1 หน่วยเสมอ
+    } else {
+      return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
+    }
   };
+
   const gridStyles = {
     layout1: "grid-cols-1 grid-rows-1",
     layout2: "grid-cols-2 grid-rows-1",
@@ -63,85 +56,111 @@ const DisplayImage = ({
     return borderClasses.trim();
   };
 
+  const handleImagePositionSelect = (index) => {
+    dispatch(setSelectedPosition(index));
+  };
+
+  const handleMouseDown = (e, index) => {
+    if (isDragMode) {
+      startDrag(e, index);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (dragging) {
+      onDrag(e, position);
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (dragging) {
+      stopDrag();
+    }
+  };
+
   return (
-    <div className={`grid ${gridStyles[layout]} relative w-full h-full `}>
-      {imageUrls.map((image, index) => (
-        <div
-          key={index}
-          onClick={() => onImagePositionSelect(index)}
-          className={` ${
-            layout === "layout3" && index === 0 ? "col-span-1 row-span-2" : ""
-          }`}
-        >
-          {image ? (
-            <div
-              className=" w-full h-full overflow-hidden relative"
-              onMouseDown={(e) => startDrag(e, index)}
-              onMouseMove={(e) => onDrag(e, index)}
-              onMouseUp={stopDrag}
-              onMouseLeave={stopDrag}
-            >
-              <canvas ref={(el) => (canvasRef.current[index] = el)} />
-              <img
-                src={image}
-                alt={`x-ray-${index}`}
-                className={`w-full h-full object-contain rounded-none ${getBorderClasses(
+    <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
+      {imageUrls.map((image, index) => {
+        const contrastValue = calculateContrast(contrast[index] || 0);
+        return (
+          <div
+            key={index}
+            onClick={() => handleImagePositionSelect(index)}
+            className={`${
+              layout === "layout3" && index === 0 ? "col-span-1 row-span-2" : ""
+            }`}
+          >
+            {image ? (
+              <div
+                className={`w-full h-full overflow-hidden relative ${getBorderClasses(
                   index
                 )}`}
-                style={{
-                  filter: `contrast(${calculateContrast(contrast[index])})`,
-                  zIndex: 0,
-                  transform: `scale(${scale[index] || 1}) translate(${
-                    position[index]?.x || 0
-                  }px, ${position[index]?.y || 0}px)`,
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
-              />
-              <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
-                <div className="flex flex-row justify-between">
-                  <div>
-                    <p>
-                      {patientData.first_name} {patientData.last_name}
-                    </p>
-                    <p>{patientData.hn}</p>
-                    <p>
-                      {patientData.age} / {patientData.date_of_birth}
-                    </p>
-                    <p>{patientData.sex}</p>
-                    <p>
-                      {patientData.weight}kg / {patientData.height}cm
-                    </p>
+                onMouseDown={(e) => handleMouseDown(e, index)}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              >
+                <canvas ref={(el) => (canvasRef.current[index] = el)} />
+                <img
+                  src={image}
+                  alt={`x-ray-${index}`}
+                  className="w-full h-full object-contain rounded-none"
+                  style={{
+                    filter: `contrast(${contrastValue})`,
+                    zIndex: 0,
+                    transform: `translate(${position[index]?.x || 0}px, ${
+                      position[index]?.y || 0
+                    }px) scale(${scale[index] || 1})`,
+                    maxWidth: "100%",
+                    maxHeight: "100%",
+                    cursor: isDragMode ? "grab" : "default",
+                  }}
+                />
+                <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
+                  <div className="flex flex-row justify-between">
+                    <div>
+                      <p>
+                        {patient.first_name} {patient.last_name}
+                      </p>
+                      <p>{patient.hn}</p>
+                      <p>
+                        {patient.age} / {patient.date_of_birth}
+                      </p>
+                      <p>{patient.sex}</p>
+                      <p>
+                        {patient.weight}kg / {patient.height}cm
+                      </p>
+                    </div>
+                    <div>
+                      <p>ABC Hospital</p>
+                      <p>{caseData.an}</p>
+                      <p>{caseData.study_date}</p>
+                      <p>{caseData.time}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p>ABC Hospital</p>
-                    <p>{caseData.an}</p>
-                    <p>{caseData.study_date}</p>
-                    <p>{caseData.time}</p>
+                  <div className="flex flex-col justify-end items-end">
+                    <p>
+                      Zoom:{" "}
+                      {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
+                    </p>
+                    <p>WL: 2244</p>
+                    <p>WW: 4400</p>
                   </div>
-                </div>
-                <div className="flex flex-col justify-end items-end">
-                  <p>
-                    Zoom: {scale[index] ? (scale[index] * 100).toFixed(0) : 100}
-                    %
-                  </p>
-                  <p>WL: 2244</p>
-                  <p>WW: 4400</p>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div
-              className={`w-full h-full bg-gray-800 flex items-center justify-center text-wheat text-lg cursor-pointer  ${getBorderClasses(
-                index
-              )}`}
-              onClick={() => onImagePositionSelect(index)}
-            >
-              Click to add image
-            </div>
-          )}
-        </div>
-      ))}
+            ) : (
+              <div
+                className={`w-full h-full bg-gray-800 flex items-center justify-center text-wheat text-lg cursor-pointer ${getBorderClasses(
+                  index
+                )}`}
+                onClick={() => handleImagePositionSelect(index)}
+              >
+                Click to add image
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };

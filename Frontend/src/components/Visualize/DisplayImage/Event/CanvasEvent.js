@@ -1,18 +1,55 @@
 import * as fabric from "fabric";
-//ลบ annotation
-export const handleKeyDown = (event, canvases) => {
-    const activeObject = canvases.find((canvas) => canvas.getActiveObject())?.getActiveObject();
-    if (!activeObject) return;
-    if (activeObject.type === "textbox" && activeObject.isEditing) return;
-    if (event.code === "Backspace" || event.code === "Delete") {
-        const canvas = canvases.find((canvas) => canvas.getActiveObject());
-        if (canvas) {
-        canvas.remove(activeObject);
-        canvas.discardActiveObject();
-        canvas.renderAll();
-        }
+//undo
+export const handleUndo = (canvas, undoStackRef, redoStackRef) => {
+    if (!canvas) return;
+    if (undoStackRef.current.length > 0) {
+      const lastObject = undoStackRef.current.pop();
+      redoStackRef.current.push(lastObject);
+      console.log("Undo Stack Size before remove:", undoStackRef.current.length);
+      console.log("Redo Stack Size before remove:", redoStackRef.current.length);
+      canvas.remove(lastObject);
+      canvas.renderAll();
+      console.log("Undo performed");
+      console.log("Undo Stack Size after remove:", undoStackRef.current.length);
+      console.log("Redo Stack Size after remove:", redoStackRef.current.length);
     }
+  };
+//redo
+export const handleRedo = (canvas, undoStackRef, redoStackRef) => {
+if (!canvas) return;
+if (redoStackRef.current.length > 0) {
+    const lastObject = redoStackRef.current.pop();
+    undoStackRef.current.push(lastObject);
+    canvas.add(lastObject);
+    canvas.renderAll();
+    console.log("Redo performed");
+    console.log("Undo Stack Size:", undoStackRef.current.length);
+    console.log("Redo Stack Size:", redoStackRef.current.length);
+}
 };
+//highlight
+export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
+    if (!canvas || !selectedColor || !isDrawMode) return;
+  
+    const hexToRgb = (hex) => {
+      hex = hex.replace(/^#/, '');
+      const bigint = parseInt(hex, 16);
+      const r = (bigint >> 16) & 255;
+      const g = (bigint >> 8) & 255;
+      const b = bigint & 255;
+      return `${r}, ${g}, ${b}`;
+    };
+  
+    if (isDrawMode) {
+      canvas.isDrawingMode = true;
+      canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
+      const highlightColorWithOpacity = `rgba(${hexToRgb(selectedColor)}, 0.4)`;
+      canvas.freeDrawingBrush.color = highlightColorWithOpacity;
+      canvas.freeDrawingBrush.width = 50;
+    } else {
+      canvas.isDrawingMode = false;
+    }
+  };
 //คลิ๊กที่ canvas แล้วเพิ่มข้อความ
 export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor) => {
     if (selectedShape !== "text" || !isTextMode) return;

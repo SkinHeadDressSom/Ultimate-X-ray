@@ -2,17 +2,21 @@ import React, { useState, useEffect } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
 import Colorpopup from "./colorpop";
-
-const Annotaion = ({
+import { useDispatch, useSelector } from "react-redux";
+import {
   setSelectedShape,
   setIsTextMode,
-  selectedColor,
   setSelectedColor,
   setIsAnnotationHidden,
-  isAnnotationHidden,
-  onPointerClick,
   setOnPointerClick,
-}) => {
+} from "../../../../redux/visualize";
+
+const Annotaion = () => {
+  const dispatch = useDispatch();
+  const { selectedColor, isAnnotationHidden, onPointerClick } = useSelector(
+    (state) => state.visualize
+  );
+
   const [activeId, setActiveId] = useState(null);
   const [showColorPopup, setShowColorPopup] = useState(false);
 
@@ -28,28 +32,28 @@ const Annotaion = ({
   const handleButtonClick = (id) => {
     if (id === "pointer") {
       setActiveId(null);
-      setSelectedShape(null);
-      setIsTextMode(false);
+      dispatch(setSelectedShape(null));
+      dispatch(setIsTextMode(false));
       setShowColorPopup(false);
-      setIsAnnotationHidden(false);
-      setOnPointerClick(false);
+      dispatch(setIsAnnotationHidden(false));
+      dispatch(setOnPointerClick(false));
     } else if (id === "hide") {
-      setOnPointerClick(false);
-      setIsAnnotationHidden((prev) => !prev);
+      dispatch(setOnPointerClick(false));
+      dispatch(setIsAnnotationHidden(!isAnnotationHidden));
       setActiveId((prev) => (!prev || !isAnnotationHidden ? "hide" : null));
     } else {
       setActiveId(id);
-      setOnPointerClick(false);
-      setSelectedShape(id);
+      dispatch(setOnPointerClick(false));
+      dispatch(setSelectedShape(id));
       if (id === "text") {
-        setIsTextMode(true);
+        dispatch(setIsTextMode(true));
         setShowColorPopup((prev) => !prev);
       } else if (id === "arrow" || id === "circle" || id === "square") {
         setShowColorPopup((prev) => !prev);
       }
     }
   };
-  // เรียกใช้ onPointerClick เพื่อ reset activeId
+
   useEffect(() => {
     if (onPointerClick === true) {
       setActiveId(null);
@@ -73,7 +77,7 @@ const Annotaion = ({
         <Colorpopup
           onClose={() => setShowColorPopup(false)}
           selectedColor={selectedColor}
-          setSelectedColor={setSelectedColor}
+          setSelectedColor={(color) => dispatch(setSelectedColor(color))}
         />
       )}
     </div>

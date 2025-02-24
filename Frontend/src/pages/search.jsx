@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setPatient } from "../redux/patient";
 
 const SearchPatient = () => {
   const [patientID, setPatientID] = useState("");
@@ -20,19 +22,22 @@ const SearchPatient = () => {
       return null;
     }
   };
+  //update
+  const dispatch = useDispatch();
 
-  // ฟังก์ชั่นแจ้งเตือนการค้นหาข้อมูลผู้ป่วย
   const handleSearch = async (e) => {
     e.preventDefault();
 
     if (patientID.trim() === "") {
       setError("Patient ID cannot be empty");
+      return;
     }
 
     const patient = await getPatient(patientID);
 
     if (patient) {
-      navigate("/dashboard", { state: { patient } });
+      dispatch(setPatient(patient));
+      navigate("/dashboard");
     } else {
       setError("Invalid patient ID");
     }
