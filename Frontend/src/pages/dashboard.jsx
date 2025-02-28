@@ -1,21 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setPatient } from "../redux/patient";
 import Navbar from "../components/Navbar/navbar";
 import FolderShape from "../components/Card/folderShape";
-import { useLocation } from "react-router-dom";
 
 const Dashboard = () => {
-  const location = useLocation();
-  const [patient, setPatient] = useState(location.state?.patient);
+  const dispatch = useDispatch();
+  const patient = useSelector((state) => state.patient?.data || null);
 
   const handlePatientDataFetched = (data) => {
-    setPatient(data);
+    dispatch(setPatient(data));
   };
 
   return (
     <>
       <Navbar onPatientDataFetched={handlePatientDataFetched} />
       <main className="bg-lightest-blue w-screen h-screen py-5 px-10">
-        <FolderShape patient={patient} />
+        {patient ? (
+          <FolderShape patient={patient} />
+        ) : (
+          <p className="text-center text-gray-600">No patient selected</p>
+        )}
       </main>
     </>
   );
