@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Typography, Box } from "@mui/material";
 
+ //เพิ่มbrightness แก้เส้นลากจากจุดกลาง (หลังจากทำทุกอย่างครบค่อยมาโม)
+
 const ContrastPopup = () => {
   const [contrast, setContrast] = useState(0);
   const [image, setImage] = useState(null);
@@ -13,6 +15,8 @@ const ContrastPopup = () => {
       return 1 / (1 - value / 100) ; // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
   };
+  //เพิ่มbrightness
+
 
   // ฟังก์ชั่นอัปโหลดรูปภาพ
   const handleImageUpload = (event) => {
@@ -44,6 +48,8 @@ const ContrastPopup = () => {
       <label className="block text-gray-700 font-semibold mb-1">
         Contrast
       </label>
+
+      {/* แก้เส้นลากจากจุดกลาง */}
 
       <div className="flex items-center">
         <input

@@ -6,7 +6,7 @@ import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
 import Zoom from './pages/zoom';
-import Analysis from "./components/tools/analysis";
+import BoundingBox from "./components/tools/BoundingBox";
 
 function App() {
   const router = createBrowserRouter([
@@ -51,10 +51,10 @@ function App() {
       ),
     },
     {
-      path: "/Analysis",
+      path: "/BoundingBox",
       element: (
         <>
-          <Analysis />
+          <BoundingBox />
         </>
       ),
     }
