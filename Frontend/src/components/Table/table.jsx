@@ -1,17 +1,25 @@
-import axios from "axios";
 import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { toggleCaseSelection } from "../../redux/selectedCase";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
-import { useNavigate } from "react-router-dom";
+import Pagination from "./pagination";
+import usePagination from "../../hooks/usePagination";
+import useCaseImages from "../../hooks/useCaseImages";
 
 const Table = ({ patientCases, loading, patient }) => {
+  const dispatch = useDispatch();
+  const selectedCases = useSelector(
+    (state) => state.selectedCases.selectedCases
+  );
+
   const { patient_cases } = patientCases || {};
   const [checkedState, setCheckedState] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
   const navigate = useNavigate();
   // Common table cell styles
   const commonStyles = {
@@ -20,21 +28,17 @@ const Table = ({ patientCases, loading, patient }) => {
     button:
       "rounded-full border border-light-gray py-2 px-3 text-sm hover:bg-vivid-blue hover:text-white disabled:opacity-50",
   };
-  //pagination control
-  const totalCases = patient_cases?.length || 0;
-  const casesPerPage = 10;
-  const totalPages = Math.ceil(totalCases / casesPerPage);
-  //pagination control
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
-  };
-  // Get current page cases
-  const indexOfLastCase = currentPage * casesPerPage;
-  const indexOfFirstCase = indexOfLastCase - casesPerPage;
+  const { currentPage, totalPages, handlePageChange } = usePagination(
+    patient_cases?.length || 0,
+    10
+  );
+  const casesWithImages = useCaseImages(patient_cases);
+
+  const indexOfLastCase = currentPage * 10;
+  const indexOfFirstCase = indexOfLastCase - 10;
   const currentCases = Array.isArray(patient_cases)
     ? patient_cases.slice(indexOfFirstCase, indexOfLastCase)
     : [];
-
   // Status Component Selector
   const renderStatus = (status) => {
     if (status === "Completed") {
@@ -43,16 +47,6 @@ const Table = ({ patientCases, loading, patient }) => {
       return <StatusSchedule />;
     }
     return null;
-  };
-  // Handle checkbox change
-  const handleCheckboxChange = (caseId) => {
-    setCheckedState((prevCheckedState) => {
-      if (prevCheckedState.includes(caseId)) {
-        return prevCheckedState.filter((id) => id !== caseId);
-      } else {
-        return [...prevCheckedState, caseId];
-      }
-    });
   };
   // Skeleton Loader Row Component
   const SkeletonRow = () => (
@@ -69,46 +63,48 @@ const Table = ({ patientCases, loading, patient }) => {
         ))}
     </tr>
   );
-  //Fetch case images
-  const getCaseImage = async (an) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/images/${an}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
-    } catch (error) {
-      console.log(error);
-      return null;
+  const handleCheckboxChange = (e, caseId) => {
+    e.stopPropagation();
+    dispatch(toggleCaseSelection(caseId));
+  };
+  const handleRowClick = async (caseItem) => {
+    const selectedCase = casesWithImages.find((c) => c.an === caseItem.an);
+    if (selectedCase) {
+      dispatch(toggleCaseSelection(selectedCase));
+      navigate("/visualize", {
+        state: {
+          caseData: selectedCase,
+          allCases: casesWithImages,
+          patient,
+        },
+      });
+    } else {
+      console.error("Selected case not found");
     }
   };
-  const fetchAllCaseImages = async () => {
-    const casesWithImages = await Promise.all(
-      patient_cases.map(async (item) => {
-        const images = await getCaseImage(item.an);
-        return {
-          ...item,
-          case_images: images?.case_images || [],
-        };
-      })
-    );
-    return casesWithImages;
-  };
-  //handle row click
-  const handleRowClick = async (caseItem) => {
-    const allCasesWithImages = await fetchAllCaseImages();
-    const selectedCase = allCasesWithImages.find((c) => c.an === caseItem.an);
 
+  const handleMultipleClick = async () => {
+    if (selectedCases.length === 0) {
+      alert("กรุณาเลือกเคสก่อน");
+      return;
+    }
+
+    const selectedCasesWithImages = casesWithImages.filter((caseItem) =>
+      selectedCases.includes(caseItem.an)
+    );
     navigate("/visualize", {
-      state: { caseData: selectedCase, allCases: allCasesWithImages, patient },
+      state: {
+        selectedCases: selectedCasesWithImages,
+        allCases: casesWithImages,
+        patient,
+      },
     });
   };
-
   return (
     <>
       <div className="flex justify-between items-end w-full pb-1">
         <div className="2xl:text-2xl text-xl text-vivid-blue">Studies</div>
-        <ViewerButton />
+        <ViewerButton onClick={handleMultipleClick} />
       </div>
       <div className="relative overflow-auto shadow-md w-full rounded-md border-[1px] border-light-gray">
         <table className="w-full text-left text-sm table-auto">
@@ -161,8 +157,8 @@ const Table = ({ patientCases, loading, patient }) => {
                           type="checkbox"
                           className="peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
                           id={`check-${index}`}
-                          checked={checkedState.includes(caseItem.an)}
-                          onChange={() => handleCheckboxChange(caseItem.an)}
+                          checked={selectedCases.includes(caseItem.an)}
+                          onChange={(e) => handleCheckboxChange(e, caseItem.an)}
                         />
                         <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                           <svg
@@ -211,39 +207,16 @@ const Table = ({ patientCases, loading, patient }) => {
         </table>
       </div>
       <div className="flex justify-between mt-2">
-        <div className="text-vivid-blue">Total {totalCases} studies</div>
+        <div className="text-vivid-blue">
+          Total {patient_cases?.length || 0} studies
+        </div>
         {totalPages > 1 && (
-          <div className="flex space-x-1">
-            <button
-              className={commonStyles.button}
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-            >
-              Prev
-            </button>
-
-            {[...Array(totalPages)].map((_, i) => (
-              <button
-                key={i}
-                className={`min-w-9 rounded-full py-2 px-3 text-sm transition-all ${
-                  currentPage === i + 1
-                    ? "bg-vivid-blue text-white"
-                    : "border border-light-gray hover:bg-vivid-blue hover:text-white"
-                }`}
-                onClick={() => handlePageChange(i + 1)}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            <button
-              className={commonStyles.button}
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
-          </div>
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            handlePageChange={handlePageChange}
+            commonStyles={commonStyles}
+          />
         )}
       </div>
     </>

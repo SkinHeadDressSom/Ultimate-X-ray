@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
-import { SaveIcon, PrintIcon } from "../toolsdata"
-
+import { SaveIcon, PrintIcon } from "../toolsdata";
+import ReportPopup from "../Popup/reportPopup";
 const SystemTools = () => {
   const [activeId, setActiveId] = useState(null);
+  const [showReportPopup, setShowReportPopup] = useState(false);
 
   const buttons = [
     { id: "save", icon: SaveIcon },
@@ -12,16 +13,8 @@ const SystemTools = () => {
 
   const handleButtonClick = (id) => {
     setActiveId((prevId) => (prevId === id ? null : id));
-    // เพิ่ม logic การทำงานของแต่ละปุ่มตาม id
-    switch (id) {
-      case "save":
-        console.log("Save button clicked");
-        break;
-      case "print":
-        console.log("Print button clicked");
-        break;
-      default:
-        break;
+    if (id === "print") {
+      setShowReportPopup((prev) => !prev);
     }
   };
 
@@ -38,6 +31,14 @@ const SystemTools = () => {
           />
         ))}
       </div>
+      {showReportPopup && (
+        <ReportPopup
+          onClose={() => {
+            setShowReportPopup(false);
+            setActiveId(null);
+          }}
+        />
+      )}
     </div>
   );
 };
