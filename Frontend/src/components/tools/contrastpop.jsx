@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { Typography, Box } from "@mui/material";
 
- //เพิ่มbrightness แก้เส้นลากจากจุดกลาง (หลังจากทำทุกอย่างครบค่อยมาโม)
-
 const ContrastPopup = () => {
   const [contrast, setContrast] = useState(0);
+  const [brightness, setBrightness] = useState(100); // เพิ่มสถานะสำหรับ brightness
   const [image, setImage] = useState(null);
 
   // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
@@ -12,11 +11,14 @@ const ContrastPopup = () => {
     if (value >= 0) {
       return 1 + (value / 100) * 5; // ขยายค่าไปที่สูงสุดที่ 6 เมื่อ value = 100 และ หลัง * ต่ำกว่าค่าที่อยากได้ 1 หน่วยเสมอ
     } else {
-      return 1 / (1 - value / 100) ; // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
+      return 1 / (1 - value / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
   };
-  //เพิ่มbrightness
 
+  // ฟังก์ชั่นคำนวนปรับสีตามค่าBrightness
+  const calculateBrightness = (value) => {
+    return value / 100; // ปรับค่า brightness โดยใช้สเกล 0-2
+  };
 
   // ฟังก์ชั่นอัปโหลดรูปภาพ
   const handleImageUpload = (event) => {
@@ -38,7 +40,7 @@ const ContrastPopup = () => {
             maxWidth: "100%",
             maxHeight: 200,
             borderRadius: 8,
-            filter: `contrast(${calculateContrast(contrast)})`,
+            filter: `contrast(${calculateContrast(contrast)}) brightness(${calculateBrightness(brightness)})`,
           }}
         />
       )}
@@ -49,9 +51,7 @@ const ContrastPopup = () => {
         Contrast
       </label>
 
-      {/* แก้เส้นลากจากจุดกลาง */}
-
-      <div className="flex items-center">
+      <div className="flex items-center mb-4">
         <input
           type="range"
           min="-100"
@@ -59,6 +59,31 @@ const ContrastPopup = () => {
           value={contrast}
           onChange={(e) => setContrast(parseInt(e.target.value, 10))}
           className="w-full accent-blue-600"
+          style={{
+            background: `linear-gradient(to right, #ccc 0%, #007bff 50%, #ccc 100%)`,
+            backgroundSize: `${(contrast + 100) / 2}% 100%`,
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+      </div>
+
+      <label className="block text-gray-700 font-semibold mb-1">
+        Brightness
+      </label>
+
+      <div className="flex items-center">
+        <input
+          type="range"
+          min="0"
+          max="200"
+          value={brightness}
+          onChange={(e) => setBrightness(parseInt(e.target.value, 10))}
+          className="w-full accent-blue-600"
+          style={{
+            background: `linear-gradient(to right, #ccc 0%, #007bff 50%, #ccc 100%)`,
+            backgroundSize: `${brightness}% 100%`,
+            backgroundRepeat: "no-repeat",
+          }}
         />
       </div>
     </Box>
