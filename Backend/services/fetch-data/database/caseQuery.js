@@ -7,7 +7,7 @@ async function getCasebyHN(hn, order, status, page) {
 
   try {
     let query = `
-      SELECT m.an, m.status, m.description, m.created_at, p.hn
+      SELECT m.an, m.status, m.description, m.clinical_history, m.examination_details, m.created_at, p.hn
       FROM medicalrecords AS m
       INNER JOIN patients AS p
       ON m.patient_id = p.patient_id
@@ -22,14 +22,15 @@ async function getCasebyHN(hn, order, status, page) {
       params.push(status);
     }
 
+    const orderType = order.toLowerCase() === "asc" ? "ASC" : "DESC";
     // ordering and pagination
     query += `
-      ORDER BY m.created_at $${params.length + 1}
-      LIMIT $${params.length + 2}
-      OFFSET $${params.length + 3}
+      ORDER BY m.created_at ${orderType}
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
     `;
 
-    params.push(order === "asc" ? "ASC" : "DESC", limit, offset);
+    params.push(limit, offset);
 
     const results = await pool.query(query, params);
 
@@ -43,6 +44,8 @@ async function getCasebyHN(hn, order, status, page) {
       patient_cases: results.rows.map((row) => ({
         an: row.an,
         status: row.status,
+        clinical_history: row.clinical_history,
+        examination_details: row.examination_details,
         description: row.description,
         study_date: row.created_at,
       })),
