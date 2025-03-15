@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.svg";
 import { ReactComponent as CloseFill } from "../../../assets/topbar/closeFill.svg";
+import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.svg";
 
 function Thumbnail({
   item,
