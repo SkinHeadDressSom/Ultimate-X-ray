@@ -57,8 +57,7 @@ const Table = ({ patientCases, loading, patient }) => {
     })),
   }));
 
-  console.log("============================ annotatedCases", annotatedCases);
-
+  // console.log("====================== annotatedCases", annotatedCases);
   const indexOfLastCase = currentPage * 10;
   const indexOfFirstCase = indexOfLastCase - 10;
   const currentCases = Array.isArray(patient_cases)
