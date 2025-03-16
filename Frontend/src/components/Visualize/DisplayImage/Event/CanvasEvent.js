@@ -5,13 +5,8 @@ export const handleUndo = (canvas, undoStackRef, redoStackRef) => {
     if (undoStackRef.current.length > 0) {
       const lastObject = undoStackRef.current.pop();
       redoStackRef.current.push(lastObject);
-      console.log("Undo Stack Size before remove:", undoStackRef.current.length);
-      console.log("Redo Stack Size before remove:", redoStackRef.current.length);
       canvas.remove(lastObject);
       canvas.renderAll();
-      console.log("Undo performed");
-      console.log("Undo Stack Size after remove:", undoStackRef.current.length);
-      console.log("Redo Stack Size after remove:", redoStackRef.current.length);
     }
   };
 //redo
@@ -22,9 +17,6 @@ if (redoStackRef.current.length > 0) {
     undoStackRef.current.push(lastObject);
     canvas.add(lastObject);
     canvas.renderAll();
-    console.log("Redo performed");
-    console.log("Undo Stack Size:", undoStackRef.current.length);
-    console.log("Redo Stack Size:", redoStackRef.current.length);
 }
 };
 //highlight

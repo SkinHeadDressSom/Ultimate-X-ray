@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  imageUrls: [null],
+  imageUrls: [],
   layout: "layout1",
   selectedPosition: 0,
   selectedShape: null,

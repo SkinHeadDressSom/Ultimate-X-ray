@@ -91,60 +91,63 @@ const DisplayImage = ({ caseData, canvasRef }) => {
             }`}
           >
             {image ? (
-              <div
-                className={`w-full h-full overflow-hidden relative ${getBorderClasses(
-                  index
-                )}`}
-                onMouseDown={(e) => handleMouseDown(e, index)}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                <canvas ref={(el) => (canvasRef.current[index] = el)} />
-                <img
-                  src={image}
-                  alt={`x-ray-${index}`}
-                  className="w-full h-full object-contain rounded-none"
-                  style={{
-                    filter: `contrast(${contrastValue})`,
-                    zIndex: 0,
-                    transform: `translate(${position[index]?.x || 0}px, ${
-                      position[index]?.y || 0
-                    }px) scale(${scale[index] || 1})`,
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    cursor: isDragMode ? "grab" : "default",
-                  }}
-                />
-                <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
-                  <div className="flex flex-row justify-between">
-                    <div>
-                      <p>
-                        {patient.first_name} {patient.last_name}
-                      </p>
-                      <p>{patient.hn}</p>
-                      <p>
-                        {patient.age} / {patient.date_of_birth}
-                      </p>
-                      <p>{patient.sex}</p>
-                      <p>
-                        {patient.weight}kg / {patient.height}cm
-                      </p>
-                    </div>
-                    <div>
-                      <p>ABC Hospital</p>
-                      <p>{caseData.an}</p>
-                      <p>{caseData.study_date}</p>
-                      <p>{caseData.time}</p>
-                    </div>
+              <div className={`w-full h-full ${getBorderClasses(index)}`}>
+                <div className="w-full h-full flex justify-center items-center">
+                  <div
+                    className={`w-fit h-full overflow-hidden relative`}
+                    onMouseDown={(e) => handleMouseDown(e, index)}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                  >
+                    <canvas ref={(el) => (canvasRef.current[index] = el)} />
+                    <img
+                      src={image}
+                      alt={`x-ray-${index}`}
+                      className="w-full h-full object-contain rounded-none"
+                      style={{
+                        filter: `contrast(${contrastValue})`,
+                        zIndex: 0,
+                        transform: `translate(${position[index]?.x || 0}px, ${
+                          position[index]?.y || 0
+                        }px) scale(${scale[index] || 1})`,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        cursor: isDragMode ? "grab" : "default",
+                      }}
+                    />
                   </div>
-                  <div className="flex flex-col justify-end items-end">
-                    <p>
-                      Zoom:{" "}
-                      {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
-                    </p>
-                    <p>WL: 2244</p>
-                    <p>WW: 4400</p>
+
+                  <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
+                    <div className="flex flex-row justify-between">
+                      <div>
+                        <p>
+                          {patient.first_name} {patient.last_name}
+                        </p>
+                        <p>{patient.hn}</p>
+                        <p>
+                          {patient.age} / {patient.date_of_birth}
+                        </p>
+                        <p>{patient.sex}</p>
+                        <p>
+                          {patient.weight}kg / {patient.height}cm
+                        </p>
+                      </div>
+                      <div>
+                        <p>ABC Hospital</p>
+                        <p>{caseData.an}</p>
+                        <p>{caseData.study_date}</p>
+                        <p>{caseData.time}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-end items-end">
+                      <p>
+                        Zoom:{" "}
+                        {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
+                      </p>
+                      <p>WL: 2244</p>
+                      <p>WW: 4400</p>
+                    </div>
                   </div>
                 </div>
               </div>

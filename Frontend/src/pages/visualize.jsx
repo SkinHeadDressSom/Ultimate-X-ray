@@ -74,6 +74,7 @@ const Visualize = () => {
             onLayoutChange={handleLayoutChange}
             undo={undo}
             redo={redo}
+            canvasRef={canvasRef}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">

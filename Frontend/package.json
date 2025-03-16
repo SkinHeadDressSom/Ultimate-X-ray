@@ -14,13 +14,16 @@
     "cra-template": "1.2.0",
     "dicom-parser": "^1.8.21",
     "fabric": "^6.5.4",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.475.0",
     "preline": "^2.7.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.4.0",
     "react-router-dom": "^7.1.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "react-to-print": "^3.0.5",
+    "redux-persist": "^6.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

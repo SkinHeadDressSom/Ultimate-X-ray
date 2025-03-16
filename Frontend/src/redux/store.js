@@ -4,6 +4,8 @@ import storage from "redux-persist/lib/storage"; // defaults to localStorage for
 import authReducer from "./auth";
 import patientReducer from "./patient";
 import visualizeReducer from "./visualize";
+import selectedCasesReducer from "./selectedCase"
+import selectedImageReducer from "./selectedImage";
 
 const persistConfig = {
   key: "root",
@@ -18,6 +20,7 @@ const store = configureStore({
     auth: persistedAuthReducer,
     patient: persistedPatientReducer,
     visualize: visualizeReducer,
+    selectedImage: selectedImageReducer,
   },
 });
 
