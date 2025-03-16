@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.svg";
 import { ReactComponent as CloseFill } from "../../../assets/topbar/closeFill.svg";
 import { setSelectedImageId } from "../../../redux/selectedImage";
+import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.svg";
 
 function Thumbnail({ item, onClose, onImageSelect }) {
   const dispatch = useDispatch();
