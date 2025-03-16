@@ -14,11 +14,13 @@ const persistConfig = {
 
 const persistedAuthReducer = persistReducer(persistConfig, authReducer);
 const persistedPatientReducer = persistReducer(persistConfig, patientReducer);
+const persistedCasesReducer = persistReducer(persistConfig, selectedCasesReducer)
 
 const store = configureStore({
   reducer: {
     auth: persistedAuthReducer,
     patient: persistedPatientReducer,
+    selectedCases: persistedCasesReducer,
     visualize: visualizeReducer,
     selectedImage: selectedImageReducer,
   },

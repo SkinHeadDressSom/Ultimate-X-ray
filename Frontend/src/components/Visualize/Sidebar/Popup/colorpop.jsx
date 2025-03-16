@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import "./chart.css";
+import "../style/chart.css";
 
 const Colorpopup = ({
   onClose,

@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 import { getLayoutImages } from "../utils/layoutUtils";
 import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
+import { setSelectedCases } from "../redux/selectedCase";
 
 const Visualize = () => {
   const dispatch = useDispatch();
@@ -15,9 +16,18 @@ const Visualize = () => {
   );
 
   const location = useLocation();
-  const caseData = location.state?.caseData || {};
-  const allCases = location.state?.allCases || {};
+  const caseData = location.state?.caseData || []; //เลือกเคสเดียว
+  const allCases = location.state?.allCases || [];
+  const selectedCases = location.state?.selectedCases || []; //เลือกหบายเคส
+  useEffect(() => {
+    if (selectedCases.length > 0) {
+      dispatch(setSelectedCases(selectedCases));
+    } else if (caseData) {
+      dispatch(setSelectedCases([caseData]));
+    }
+  }, [dispatch, selectedCases, caseData]);
 
+  const casesToDisplay = selectedCases.length > 0 ? selectedCases : [caseData];
   // Create a ref for canvases
   const canvasRef = useRef([]);
   const { canvases, undo, redo } = useFabricCanvas(canvasRef);
@@ -64,7 +74,7 @@ const Visualize = () => {
       <div className="z-50 relative">
         <Topbar
           onImageSelect={handleImageSelect}
-          caseData={[caseData]}
+          caseData={casesToDisplay}
           allCases={allCases}
         />
       </div>

@@ -123,6 +123,14 @@ const SystemTools = ({ canvasRef }) => {
           />
         ))}
       </div>
+      {showReportPopup && (
+        <ReportPopup
+          onClose={() => {
+            setShowReportPopup(false);
+            setActiveId(null);
+          }}
+        />
+      )}
     </div>
   );
 };
