@@ -1,8 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
-
 //resize textarea ตามขนาดบรรทัด
-const AutoResizingTextarea = ({ defaultValue, className, placeHolder }) => {
+const AutoResizingTextarea = ({
+  defaultValue,
+  className,
+  placeHolder,
+  ref,
+}) => {
   const textareaRef = useRef(null);
 
   const resizeTextarea = () => {
@@ -19,7 +23,7 @@ const AutoResizingTextarea = ({ defaultValue, className, placeHolder }) => {
 
   return (
     <textarea
-      ref={textareaRef}
+      ref={ref || textareaRef}
       defaultValue={defaultValue}
       className={className}
       onInput={resizeTextarea}
@@ -31,7 +35,7 @@ const AutoResizingTextarea = ({ defaultValue, className, placeHolder }) => {
 //checkbox and image
 const CheckboxImage = ({ image, index }) => {
   return (
-    <li className="relative">
+    <li className="relative mt-2">
       <input type="checkbox" className="hidden" id={`check-${index}`} />
       <label htmlFor={`check-${index}`} className="cursor-pointer">
         <img
@@ -67,7 +71,13 @@ const CheckboxImage = ({ image, index }) => {
   );
 };
 //main component
-const Result = () => {
+const Result = ({
+  clinicalHistoryRef,
+  examinationDetailsRef,
+  findingRef,
+  impressionRef,
+  recommendationsRef,
+}) => {
   const selectedCases = useSelector(
     (state) => state.selectedCases.selectedCases[0]
   );
@@ -76,18 +86,35 @@ const Result = () => {
     "border border-light-gray rounded-md p-2 text-sm focus:border-none focus:ring-1 focus:ring-vivid-blue [appearance:textfield] outline-none";
 
   const sections = [
-    { label: "Clinical history", defaultValue: "", placeHolder: "" },
+    {
+      label: "Clinical history",
+      defaultValue: "",
+      placeHolder: "",
+      ref: clinicalHistoryRef,
+    },
     {
       label: "Examination Details",
       defaultValue: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
       placeHolder: "",
+      ref: examinationDetailsRef,
     },
-    { label: "Finding", defaultValue: "", placeHolder: "Enter finding" },
-    { label: "Impression", defaultValue: "", placeHolder: "Enter impression" },
+    {
+      label: "Finding",
+      defaultValue: "",
+      placeHolder: "Enter finding",
+      ref: findingRef,
+    },
+    {
+      label: "Impression",
+      defaultValue: "",
+      placeHolder: "Enter impression",
+      ref: impressionRef,
+    },
     {
       label: "Recommendations",
       defaultValue: "",
       placeHolder: "Enter recommendation",
+      ref: recommendationsRef,
     },
   ];
 
@@ -97,6 +124,7 @@ const Result = () => {
         <div key={index} className="flex flex-col">
           <label>{section.label}</label>
           <AutoResizingTextarea
+            ref={section.ref}
             defaultValue={section.defaultValue}
             placeHolder={section.placeHolder}
             className={CommonTextareaStyles}
