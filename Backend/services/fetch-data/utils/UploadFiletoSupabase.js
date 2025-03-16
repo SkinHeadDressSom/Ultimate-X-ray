@@ -16,6 +16,7 @@ async function UploadFiletoSupabase(image_file, file_name) {
     const { data, error } = await supabase.storage
       .from("pacs")
       .upload(file_name, image_file, {
+        contentType: "image/png",
         cacheControl: "3600",
         upsert: false,
       });
