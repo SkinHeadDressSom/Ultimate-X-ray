@@ -90,7 +90,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
   return (
     <div className="flex flex-row bg-wheat h-28 w-fit border-b-[1px] border-b-light-gray items-start">
       <div className="w-56 min-w-56 h-full border border-light-gray">
-        <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm ">
+        <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm z-50">
           <h1 className="text-darkest-blue font-medium">Studies</h1>
           <div className="flex gap-1">
             <Addfile
@@ -143,7 +143,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
           ))}
         </div>
       </div>
-      <div className="flex flex-row w-full h-full">
+      <div className="flex flex-row w-full h-full z-0">
         {/* เพิ่ม thumbnail รูปภาพตามเคสที่เลือก */}
         {sortedSelectedItems.map((item) => (
           <Thumbnail
