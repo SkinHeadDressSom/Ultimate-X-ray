@@ -1,16 +1,12 @@
 import { Skeleton } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-const PatientInformation = ({ patient,loading }) => {
-  const [getLoading, setLoading] = useState(loading);
+const PatientInformation = ({ patient, loading }) => {
   const [patientDetails, setPatientDetails] = useState(null);
 
   useEffect(() => {
     if (patient) {
       setPatientDetails(patient);
-      setTimeout(() => {
-        setLoading(false);
-      }, loading);
     }
   }, [patient]);
 
