@@ -5,6 +5,7 @@ import authReducer from "./auth";
 import patientReducer from "./patient";
 import visualizeReducer from "./visualize";
 import selectedCasesReducer from "./selectedCase"
+import selectedImageReducer from "./selectedImage";
 
 const persistConfig = {
   key: "root",
@@ -21,6 +22,7 @@ const store = configureStore({
     patient: persistedPatientReducer,
     selectedCases: persistedCasesReducer,
     visualize: visualizeReducer,
+    selectedImage: selectedImageReducer,
   },
 });
 

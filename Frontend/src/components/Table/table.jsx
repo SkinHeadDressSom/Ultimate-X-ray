@@ -1,16 +1,17 @@
 import { Skeleton } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import useAnnotationImages from "../../hooks/useAnnotationImages";
+import useCaseImages from "../../hooks/useCaseImages";
+import usePagination from "../../hooks/usePagination";
 import { toggleCaseSelection } from "../../redux/selectedCase";
+import ViewerButton from "../Button/viewerButton";
 import Dropdown from "./dropdown";
 import Filter from "./Filter";
+import Pagination from "./pagination";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
-import ViewerButton from "../Button/viewerButton";
-import Pagination from "./pagination";
-import usePagination from "../../hooks/usePagination";
-import useCaseImages from "../../hooks/useCaseImages";
 
 const Table = ({ patientCases, loading, patient }) => {
   const dispatch = useDispatch();
@@ -34,6 +35,33 @@ const Table = ({ patientCases, loading, patient }) => {
   );
   const casesWithImages = useCaseImages(patient_cases);
 
+  // 1. Gather all unique xn values from casesWithImages
+  const xnValues = useMemo(() => {
+    return casesWithImages.reduce((acc, caseItem) => {
+      caseItem.case_images.forEach((img) => {
+        if (!acc.includes(img.xn)) {
+          acc.push(img.xn);
+        }
+      });
+      return acc;
+    }, []);
+  }, [casesWithImages]);
+
+  // 2. Get the annotation images mapping using the batch hook
+  const annotationMap = useAnnotationImages(xnValues);
+
+  // 3. Create a new array with annotated cases (append annotation_image for each image)
+  const annotatedCases = useMemo(() => {
+    return casesWithImages.map((caseItem) => ({
+      ...caseItem,
+      case_images: caseItem.case_images.map((image) => ({
+        ...image,
+        annotation_image: annotationMap[image.xn] || null,
+      })),
+    }));
+  }, [casesWithImages, annotationMap]);
+
+  // console.log("====================== annotatedCases", annotatedCases);
   const indexOfLastCase = currentPage * 10;
   const indexOfFirstCase = indexOfLastCase - 10;
   const currentCases = Array.isArray(patient_cases)
@@ -67,14 +95,15 @@ const Table = ({ patientCases, loading, patient }) => {
     e.stopPropagation();
     dispatch(toggleCaseSelection(caseId));
   };
+
   const handleRowClick = async (caseItem) => {
-    const selectedCase = casesWithImages.find((c) => c.an === caseItem.an);
+    const selectedCase = annotatedCases.find((c) => c.an === caseItem.an);
     if (selectedCase) {
       dispatch(toggleCaseSelection(selectedCase));
       navigate("/visualize", {
         state: {
           caseData: selectedCase,
-          allCases: casesWithImages,
+          allCases: annotatedCases,
           patient,
         },
       });
@@ -89,13 +118,13 @@ const Table = ({ patientCases, loading, patient }) => {
       return;
     }
 
-    const selectedCasesWithImages = casesWithImages.filter((caseItem) =>
+    const selectedCasesWithImages = annotatedCases.filter((caseItem) =>
       selectedCases.includes(caseItem.an)
     );
     navigate("/visualize", {
       state: {
         selectedCases: selectedCasesWithImages,
-        allCases: casesWithImages,
+        allCases: annotatedCases,
         patient,
       },
     });
