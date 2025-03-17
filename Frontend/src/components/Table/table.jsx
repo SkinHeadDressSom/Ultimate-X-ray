@@ -1,5 +1,5 @@
 import { Skeleton } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useAnnotationImages from "../../hooks/useAnnotationImages";
@@ -36,26 +36,30 @@ const Table = ({ patientCases, loading, patient }) => {
   const casesWithImages = useCaseImages(patient_cases);
 
   // 1. Gather all unique xn values from casesWithImages
-  const xnValues = casesWithImages.reduce((acc, caseItem) => {
-    caseItem.case_images.forEach((img) => {
-      if (!acc.includes(img.xn)) {
-        acc.push(img.xn);
-      }
-    });
-    return acc;
-  }, []);
+  const xnValues = useMemo(() => {
+    return casesWithImages.reduce((acc, caseItem) => {
+      caseItem.case_images.forEach((img) => {
+        if (!acc.includes(img.xn)) {
+          acc.push(img.xn);
+        }
+      });
+      return acc;
+    }, []);
+  }, [casesWithImages]);
 
   // 2. Get the annotation images mapping using the batch hook
   const annotationMap = useAnnotationImages(xnValues);
 
   // 3. Create a new array with annotated cases (append annotation_image for each image)
-  const annotatedCases = casesWithImages.map((caseItem) => ({
-    ...caseItem,
-    case_images: caseItem.case_images.map((image) => ({
-      ...image,
-      annotation_image: annotationMap[image.xn] || null,
-    })),
-  }));
+  const annotatedCases = useMemo(() => {
+    return casesWithImages.map((caseItem) => ({
+      ...caseItem,
+      case_images: caseItem.case_images.map((image) => ({
+        ...image,
+        annotation_image: annotationMap[image.xn] || null,
+      })),
+    }));
+  }, [casesWithImages, annotationMap]);
 
   // console.log("====================== annotatedCases", annotatedCases);
   const indexOfLastCase = currentPage * 10;
