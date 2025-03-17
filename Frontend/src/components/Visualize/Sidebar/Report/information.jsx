@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+
 const DetailRow = ({ label, value }) => (
   <div className="flex w-full">
     <p className="font-medium w-28">{label}</p>
@@ -12,6 +13,7 @@ const Information = () => {
   const selectedCases = useSelector(
     (state) => state.selectedCases.selectedCases[0]
   );
+  const user = useSelector((state) => state.auth?.user);
   const Date_Time = new Date();
   const hours = Date_Time.getHours();
   const minutes = Date_Time.getMinutes().toString().padStart(2, "0");
@@ -50,7 +52,7 @@ const Information = () => {
       <div>
         <DetailRow label="Phone No." value={patient?.phone} />
         <DetailRow label="Accession No." value={selectedCases?.an} />
-        <DetailRow label="Report By" value="..." />
+        <DetailRow label="Report By" value={user.user.name} />
         <DetailRow
           label="Collection Date"
           value={`${selectedCases?.study_date} ${selectedCases?.time}`}

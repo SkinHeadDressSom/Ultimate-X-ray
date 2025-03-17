@@ -29,6 +29,17 @@ const DisplayImage = ({ caseData, canvasRef }) => {
       return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
   };
+  const getPatientInfoStyle = (layout, index) => {
+    if (layout === "layout3") {
+      return index === 0 ? "w-1/2 h-full" : "w-1/2 h-1/2";
+    }
+    const styles = {
+      layout1: "w-full h-full",
+      layout2: "w-1/2 h-full",
+      layout4: "w-1/2 h-1/2",
+    };
+    return styles[layout] || "w-full h-full";
+  };
 
   const gridStyles = {
     layout1: "grid-cols-1 grid-rows-1",
@@ -117,8 +128,12 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                       }}
                     />
                   </div>
-
-                  <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
+                  <div
+                    className={`patient-info flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute py-2 px-4 ${getPatientInfoStyle(
+                      layout,
+                      index
+                    )}`}
+                  >
                     <div className="flex flex-row justify-between">
                       <div>
                         <p>
@@ -126,7 +141,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                         </p>
                         <p>{patient.hn}</p>
                         <p>
-                          {patient.age} / {patient.date_of_birth}
+                          {patient.age} Years / {patient.date_of_birth}
                         </p>
                         <p>{patient.sex}</p>
                         <p>

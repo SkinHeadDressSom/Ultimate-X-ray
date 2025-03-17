@@ -2,41 +2,51 @@ import React, { useRef } from "react";
 import Information from "../Report/information";
 import Result from "../Report/result";
 import PrintButton from "../../../Button/printButton";
+import SaveButton from "../../../Button/saveButton";
+import "../style/report.css";
 
 const ReportPopup = ({ onClose }) => {
   const printableAreaRef = useRef();
-  const clinicalHistoryRef = useRef();
-  const examinationDetailsRef = useRef();
-  const findingRef = useRef();
-  const impressionRef = useRef();
-  const recommendationsRef = useRef();
-  const prepareDataForPrint = () => {
-    const clinicalHistory = clinicalHistoryRef.current.value.trim() || "-";
-    const examinationDetails =
-      examinationDetailsRef.current.value.trim() || "-";
-    const finding = findingRef.current.value.trim() || "-";
-    const impression = impressionRef.current.value.trim() || "-";
-    const recommendations = recommendationsRef.current.value.trim() || "-";
 
-    return {
-      clinicalHistory,
-      examinationDetails,
-      finding,
-      impression,
-      recommendations,
-    };
-  };
   const handlePrint = () => {
     const printableArea = printableAreaRef.current;
 
-    const printContents = printableArea.cloneNode(true);
-
-    const inputs = printContents.querySelectorAll("input, textarea");
-    inputs.forEach((input) => {
-      if (!input.value.trim()) {
-        input.value = "-";
+    //เปลี่ยน text-area เป็น <p>
+    const textareas = printableArea.querySelectorAll("textarea");
+    textareas.forEach((textarea) => {
+      const section = textarea.closest("div.flex-col");
+      if (section) {
+        const value = textarea.value.trim() || "-"; //ถ้าไม่ได้กรอกให้แสดง "-"
+        const p = document.createElement("p");
+        p.textContent = value;
+        p.classList.add("print-text");
+        textarea.replaceWith(p);
       }
     });
+
+    //เอา checkbox บนรูปออก
+    const checkboxes = printableArea.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((checkbox) => {
+      const listItem = checkbox.closest("li");
+      if (!checkbox.checked && listItem) {
+        listItem.remove();
+      } else if (listItem) {
+        checkbox.remove();
+        const span = listItem.querySelector("span");
+        if (span) {
+          span.replaceWith(...span.childNodes);
+        }
+      }
+    });
+
+    //ปรับขนาดรูป
+    const images = printableArea.querySelectorAll("img");
+    images.forEach((img) => {
+      img.classList.remove("w-28", "h-28"); //ลบขนาดเดิม
+      img.classList.add("w-40", "h-40"); //เพิ่มขนาดใหม่
+    });
+
+    const printContents = printableArea.cloneNode(true);
 
     document.body.innerHTML = printContents.innerHTML;
 
@@ -58,37 +68,39 @@ const ReportPopup = ({ onClose }) => {
           <CloseButton onClick={onClose} />
         </div>
         <div
-          ref={printableAreaRef} // ใช้ ref เพื่ออ้างอิงถึงส่วนนี้
-          className="printable-area bg-wheat rounded-b-lg py-4 px-6 flex flex-col gap-y-4 max-h-fit h-full overflow-y-scroll"
+          // ใช้ ref เพื่ออ้างอิงถึงส่วนนี้
+          className=" bg-wheat rounded-b-lg py-4 px-6 flex flex-col gap-y-4 max-h-fit h-full overflow-y-scroll"
         >
           {/* หัวกระดาษ (แสดงเฉพาะตอนพิมพ์) */}
-          <div className="print-header hidden print:block">
-            <div className="flex flex-row justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-center">ABC Hospital</h1>
-                <p>Address</p>
+          <div ref={printableAreaRef} className="printable-area">
+            <div className="print-header hidden print:block">
+              <div className="flex flex-row justify-between">
+                <div>
+                  <h1 className="text-3xl font-bold text-center">
+                    ABC Hospital
+                  </h1>
+                  <p>Address</p>
+                </div>
+                <div className="flex flex-col items-end">
+                  <p className="text-center">02-123-4567</p>
+                  <p className="text-center">abc@gmail.com</p>
+                  <p className="text-center">
+                    <a href="https://www.example.com" className="text-blue-500">
+                      www.example.com
+                    </a>
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-col items-end">
-                <p className="text-center">02-123-4567</p>
-                <p className="text-center">abc@gmail.com</p>
-                <p className="text-center">
-                  <a href="https://www.example.com" className="text-blue-500">
-                    www.example.com
-                  </a>
-                </p>
-              </div>
+              <hr className="my-2 border-t-1 border-gray-500" />{" "}
+              {/* เส้นกั้น */}
             </div>
-            <hr className="my-2 border-t-1 border-gray-500" /> {/* เส้นกั้น */}
+            <Information />
+            <Result />
           </div>
-          <Information />
-          <Result
-            clinicalHistoryRef={clinicalHistoryRef}
-            examinationDetailsRef={examinationDetailsRef}
-            findingRef={findingRef}
-            impressionRef={impressionRef}
-            recommendationsRef={recommendationsRef}
-          />
-          <PrintButton onClick={handlePrint} />
+          <div className="flex gap-2">
+            {/* <SaveButton /> */}
+            <PrintButton onClick={handlePrint} />
+          </div>
         </div>
       </div>
     </div>

@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import "../style/report.css";
 //resize textarea ตามขนาดบรรทัด
 const AutoResizingTextarea = ({
-  defaultValue,
+  value,
   className,
   placeHolder,
   ref,
+  onChange,
 }) => {
   const textareaRef = useRef(null);
 
@@ -19,25 +21,30 @@ const AutoResizingTextarea = ({
 
   useEffect(() => {
     resizeTextarea();
-  }, []);
+  }, [value]);
 
   return (
     <textarea
       ref={ref || textareaRef}
-      defaultValue={defaultValue}
-      className={className}
-      onInput={resizeTextarea}
+      value={value}
+      className={`${className} print-textarea`}
+      onInput={(e) => {
+        resizeTextarea();
+        onChange(e);
+      }}
       placeholder={placeHolder}
     />
   );
 };
 
 //checkbox and image
-const CheckboxImage = ({ image, index }) => {
+const CheckboxImage = ({ image, index, isAnnotation = false }) => {
+  const checkboxId = isAnnotation ? `annotation-${index}` : `image-${index}`;
+
   return (
     <li className="relative mt-2">
-      <input type="checkbox" className="hidden" id={`check-${index}`} />
-      <label htmlFor={`check-${index}`} className="cursor-pointer">
+      <input type="checkbox" className="hidden" id={checkboxId} />
+      <label htmlFor={checkboxId} className="cursor-pointer">
         <img
           src={image.file_path}
           alt={`Attached Image ${index + 1}`}
@@ -60,24 +67,19 @@ const CheckboxImage = ({ image, index }) => {
         </span>
       </label>
       <style jsx>{`
-        #check-${index}:checked + label img {
+        #${checkboxId}:checked + label img {
           border: 2px solid #0d42c9;
         }
-        #check-${index}:checked + label span svg {
+        #${checkboxId}:checked + label span svg {
           opacity: 1;
         }
       `}</style>
     </li>
   );
 };
+
 //main component
-const Result = ({
-  clinicalHistoryRef,
-  examinationDetailsRef,
-  findingRef,
-  impressionRef,
-  recommendationsRef,
-}) => {
+const Result = () => {
   const selectedCases = useSelector(
     (state) => state.selectedCases.selectedCases[0]
   );
@@ -85,57 +87,98 @@ const Result = ({
   const CommonTextareaStyles =
     "border border-light-gray rounded-md p-2 text-sm focus:border-none focus:ring-1 focus:ring-vivid-blue [appearance:textfield] outline-none";
 
+  const [sectionValues, setSectionValues] = React.useState({
+    clinicalHistory: selectedCases.clinical_history || "",
+    examinationDetails: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
+    finding: "",
+    impression: "",
+    recommendations: "",
+    actionComment: "",
+  });
+
+  const handleChange = (key, value) => {
+    setSectionValues((prev) => ({ ...prev, [key]: value }));
+  };
+
   const sections = [
     {
       label: "Clinical history",
-      defaultValue: "",
+      key: "clinicalHistory",
+      value: sectionValues.clinicalHistory,
       placeHolder: "",
-      ref: clinicalHistoryRef,
     },
     {
       label: "Examination Details",
-      defaultValue: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
+      key: "examinationDetails",
+      value: sectionValues.examinationDetails,
       placeHolder: "",
-      ref: examinationDetailsRef,
     },
     {
       label: "Finding",
-      defaultValue: "",
+      key: "finding",
+      value: sectionValues.finding,
       placeHolder: "Enter finding",
-      ref: findingRef,
     },
     {
       label: "Impression",
-      defaultValue: "",
+      key: "impression",
+      value: sectionValues.impression,
       placeHolder: "Enter impression",
-      ref: impressionRef,
     },
     {
       label: "Recommendations",
-      defaultValue: "",
+      key: "recommendations",
+      value: sectionValues.recommendations,
       placeHolder: "Enter recommendation",
-      ref: recommendationsRef,
+    },
+    {
+      label: "Action Comment",
+      key: "actionComment",
+      value: sectionValues.actionComment,
+      placeHolder: "Enter action Comment",
     },
   ];
 
   return (
-    <div className="flex flex-col gap-y-2 text-darkest-blue text-sm">
-      {sections.map((section, index) => (
-        <div key={index} className="flex flex-col">
-          <label>{section.label}</label>
-          <AutoResizingTextarea
-            ref={section.ref}
-            defaultValue={section.defaultValue}
-            placeHolder={section.placeHolder}
-            className={CommonTextareaStyles}
-          />
-        </div>
-      ))}
-      <div className="flex flex-col gap-y-2">
-        <label>Attached images</label>
-        <ul className="flex flex-wrap gap-2">
+    <div className="result flex flex-col gap-y-2 text-darkest-blue text-sm pt-3">
+      {sections.map((section, index) => {
+        const isEmpty = !section.value.trim();
+
+        return (
+          <div
+            key={index}
+            className={`flex flex-col ${isEmpty ? "print:hidden" : ""}`}
+          >
+            <label className="print-label">{section.label}</label>
+            <AutoResizingTextarea
+              value={section.value}
+              placeHolder={section.placeHolder}
+              className={CommonTextareaStyles}
+              onChange={(e) => handleChange(section.key, e.target.value)}
+            />
+          </div>
+        );
+      })}
+      <div className="flex flex-col">
+        <label className="print-label">Attached images</label>
+        <ul className="flex flex-wrap gap-x-2">
           {selectedCases.case_images?.map((image, index) => (
-            <CheckboxImage key={index} image={image} index={index} />
+            <>
+              <CheckboxImage
+                key={`image-${index}`}
+                image={image}
+                index={index}
+                isAnnotation={false}
+              />
+              {image.annotation_image && (
+                <CheckboxImage
+                  key={`annotation-${index}`}
+                  image={image.annotation_image}
+                  index={index}
+                  isAnnotation={true}
+                />
+              )}
+            </>
           ))}
         </ul>
       </div>
