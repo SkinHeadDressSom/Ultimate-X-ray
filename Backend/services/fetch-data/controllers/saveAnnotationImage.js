@@ -72,7 +72,7 @@ const saveAnnotationImage = async (req, res) => {
       return res.status(400).json({ message: "Uploaded file not found" });
     }
 
-    const file_name = `annotation-images/${user_id}_${xn}.png`;
+    const file_name = `annotation-images/${user_id}_${xn}_${new Date().toISOString().replace(/[-:.TZ]/g, '')}.png`;
     console.log("File_name :", file_name);
 
     // Upload annotation image to Supabase
