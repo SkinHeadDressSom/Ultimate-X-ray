@@ -8,7 +8,7 @@ const Colorpopup = ({
   popupPosition,
 }) => {
   const popupRef = useRef(null);
-  const defaultColors = ["#3498db", "#f1c40f", "#e74c3c", "#2ecc71", "#9b59b6"];
+  const defaultColors = ["#FFFF09", "#16EF0E", "#16F4FF", "#FF78FD", "#DC2626"];
 
   useEffect(() => {
     const handleClickOutside = (event) => {

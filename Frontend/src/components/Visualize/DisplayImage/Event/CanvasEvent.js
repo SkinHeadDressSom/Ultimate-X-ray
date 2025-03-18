@@ -193,7 +193,7 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
 
     //เส้นหลัก
     const line = new fabric.Line([startPoint.x, startPoint.y, startPoint.x, startPoint.y], {
-        stroke: "Yellow",
+        stroke: "#FFDE37",
         strokeWidth: 4,
         selectable: false,
         evented: false,
@@ -201,14 +201,14 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
 
     //ขีดปลายเส้น
     const startTick = new fabric.Line([startPoint.x, startPoint.y - 10, startPoint.x, startPoint.y + 10], {
-        stroke: "Yellow",
+        stroke: "#FFDE37",
         strokeWidth: 4,
         selectable: false,
         evented: false,
     });
 
     const endTick = new fabric.Line([startPoint.x, startPoint.y - 10, startPoint.x, startPoint.y + 10], {
-        stroke: "Yellow",
+        stroke: "#FFDE37",
         strokeWidth: 4,
         selectable: false,
         evented: false,
@@ -216,7 +216,7 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
 
     //ขีดกลางเส้น
     const tickMark = new fabric.Line([startPoint.x, startPoint.y - 5, startPoint.x, startPoint.y + 5], {
-        stroke: "Yellow",
+        stroke: "#FFDE37",
         strokeWidth: 3,
         selectable: false,
         evented: false,
@@ -227,7 +227,7 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
         left: startPoint.x,
         top: startPoint.y + 15, //อยู่ใต้เส้น
         fontSize: 25,
-        fill: "Yellow",
+        fill: "#FFDE37",
         backgroundColor: "black",
         padding: 5,
         width: 120, // กำหนดความกว้างให้พอเหมาะ
