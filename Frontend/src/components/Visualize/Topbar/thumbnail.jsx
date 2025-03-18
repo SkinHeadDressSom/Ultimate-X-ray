@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.svg";
 import { ReactComponent as CloseFill } from "../../../assets/topbar/closeFill.svg";
@@ -12,6 +12,38 @@ function Thumbnail({ item, onClose, onImageSelect }) {
     (state) => state.selectedImage.selectedImageId
   );
   const [selectedAnnotationId, setSelectedAnnotationId] = useState(null);
+  const [validImagePaths, setValidImagePaths] = useState({
+    annotation: {},
+    original: {},
+  });
+
+  //เช็คว่ามีไฟล์ภาพจริงๆไหม
+  const checkImageExist = (url) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => resolve(true);
+      img.onerror = () => resolve(false);
+      img.src = url;
+    });
+  };
+
+  useEffect(() => {
+    const checkImages = async () => {
+      const newValidPaths = { annotation: {}, original: {} };
+      for (const imageObj of item.case_images) {
+        const originalValid = await checkImageExist(imageObj.file_path);
+        newValidPaths.original[imageObj.xn] = originalValid;
+        if (imageObj.annotation_image) {
+          const annotationValid = await checkImageExist(
+            imageObj.annotation_image.file_path
+          );
+          newValidPaths.annotation[imageObj.xn] = annotationValid;
+        }
+      }
+      setValidImagePaths(newValidPaths);
+    };
+    checkImages();
+  }, [item]);
 
   return (
     <div className="w-full min-w-fit h-full border border-light-gray ">
@@ -36,44 +68,47 @@ function Thumbnail({ item, onClose, onImageSelect }) {
         {item.case_images.map((imageObj) => (
           <div key={imageObj.xn} className="relative flex flex-row gap-1">
             {/* original */}
-            <img
-              src={imageObj.file_path}
-              alt={imageObj.xn}
-              onClick={() => {
-                onImageSelect(imageObj.file_path);
-                dispatch(setSelectedImageId(imageObj.xn));
-                setSelectedAnnotationId(null);
-              }}
-              className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
-                selectedImageId === imageObj.xn
-                  ? "border-2 border-vivid-blue"
-                  : ""
-              }`}
-            />
-            {/*  annotation_image*/}
-            {imageObj.annotation_image && (
-              <div
+            {validImagePaths.original[imageObj.xn] && (
+              <img
+                src={imageObj.file_path}
+                alt={imageObj.xn}
                 onClick={() => {
-                  onImageSelect(imageObj.annotation_image.file_path);
-                  setSelectedAnnotationId(imageObj.xn);
-                  dispatch(setSelectedImageId(null));
+                  onImageSelect(imageObj.file_path);
+                  dispatch(setSelectedImageId(imageObj.xn));
+                  setSelectedAnnotationId(null);
                 }}
-              >
-                <img
-                  src={imageObj.annotation_image.file_path}
-                  alt="annotation"
-                  className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
-                    selectedAnnotationId === imageObj.xn
-                      ? "border-2 border-vivid-blue"
-                      : ""
-                  }`}
-                />
-                <MagicWand
-                  className="absolute w-6 h-6 right-0 top-0"
-                  fill="#FFFDFD"
-                />
-              </div>
+                className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
+                  selectedImageId === imageObj.xn
+                    ? "border-2 border-vivid-blue"
+                    : ""
+                }`}
+              />
             )}
+            {/*  annotation_image*/}
+            {imageObj.annotation_image &&
+              validImagePaths.annotation[imageObj.xn] && (
+                <div
+                  onClick={() => {
+                    onImageSelect(imageObj.annotation_image.file_path);
+                    setSelectedAnnotationId(imageObj.xn);
+                    dispatch(setSelectedImageId(null));
+                  }}
+                >
+                  <img
+                    src={imageObj.annotation_image.file_path}
+                    alt="annotation"
+                    className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
+                      selectedAnnotationId === imageObj.xn
+                        ? "border-2 border-vivid-blue"
+                        : ""
+                    }`}
+                  />
+                  <MagicWand
+                    className="absolute w-6 h-6 right-0 top-0"
+                    fill="#FFFDFD"
+                  />
+                </div>
+              )}
           </div>
         ))}
       </div>
