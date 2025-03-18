@@ -4,6 +4,9 @@ import Result from "../Report/result";
 import PrintButton from "../../../Button/printButton";
 import SaveButton from "../../../Button/saveButton";
 import "../style/report.css";
+import { ReactComponent as PinIcon } from "../../../../assets/report/pin.svg";
+import { ReactComponent as EmailIcon } from "../../../../assets/report/email.svg";
+import { ReactComponent as PhoneIcon } from "../../../../assets/report/phone.svg";
 
 const ReportPopup = ({ onClose }) => {
   const printableAreaRef = useRef();
@@ -43,7 +46,7 @@ const ReportPopup = ({ onClose }) => {
     const images = printableArea.querySelectorAll("img");
     images.forEach((img) => {
       img.classList.remove("w-28", "h-28"); //ลบขนาดเดิม
-      img.classList.add("w-40", "h-40"); //เพิ่มขนาดใหม่
+      img.classList.add("w-48", "h-48"); //เพิ่มขนาดใหม่
     });
 
     const printContents = printableArea.cloneNode(true);
@@ -56,7 +59,7 @@ const ReportPopup = ({ onClose }) => {
   };
 
   return (
-    <div className="absolute w-full flex justify-center h-5/6 max-h-fit z-50 top-14 left-0">
+    <div className="absolute w-full flex justify-center h-5/6 max-h-fit z-50 top-14 left-0 ">
       <div className="w-2/4 rounded-lg">
         <div className="bg-light-blue flex justify-between rounded-t-lg py-2 px-4">
           <h1 className="text-vivid-blue inline-flex gap-1 items-center">
@@ -67,34 +70,44 @@ const ReportPopup = ({ onClose }) => {
           </h1>
           <CloseButton onClick={onClose} />
         </div>
-        <div
-          // ใช้ ref เพื่ออ้างอิงถึงส่วนนี้
-          className=" bg-wheat rounded-b-lg py-4 px-6 flex flex-col gap-y-4 max-h-fit h-full overflow-y-scroll"
-        >
+        <div className=" bg-wheat rounded-b-lg py-4 px-6 flex flex-col gap-y-4 max-h-fit h-full overflow-y-scroll">
           {/* หัวกระดาษ (แสดงเฉพาะตอนพิมพ์) */}
           <div ref={printableAreaRef} className="printable-area">
             <div className="print-header hidden print:block">
               <div className="flex flex-row justify-between">
-                <div>
-                  <h1 className="text-3xl font-bold text-center">
-                    ABC Hospital
+                <div className="flex flex-col justify-between">
+                  <h1 className="text-3xl font-bold text-start">
+                    KMUTT Hospital
                   </h1>
-                  <p>Address</p>
+                  <p className="flex flex-row items-center gap-1">
+                    <span>
+                      <PinIcon className="w-4 h-auto icon" fill="#0D42C9" />
+                    </span>
+                    126 Pracha Uthit Rd., Bang Mod, Thung Khru, Bangkok 10140,
+                    Thailand
+                  </p>
                 </div>
-                <div className="flex flex-col items-end">
-                  <p className="text-center">02-123-4567</p>
-                  <p className="text-center">abc@gmail.com</p>
-                  <p className="text-center">
-                    <a href="https://www.example.com" className="text-blue-500">
-                      www.example.com
-                    </a>
+                <div className="flex flex-col items-end justify-end">
+                  <p className="flex flex-row items-center gap-1">
+                    +66 2470 8000
+                    <span>
+                      <PhoneIcon className="w-4 h-auto icon" fill="#0D42C9" />
+                    </span>
+                  </p>
+                  <p className="flex flex-row items-center gap-1">
+                    contact@kmutt.ac.th
+                    <span>
+                      <EmailIcon className="w-4 h-auto icon" fill="#0D42C9" />
+                    </span>
                   </p>
                 </div>
               </div>
-              <hr className="my-2 border-t-1 border-gray-500" />{" "}
+              <hr className="my-2 border-t-2 border-vivid-blue" />
               {/* เส้นกั้น */}
             </div>
             <Information />
+            <hr className="my-2 border-t-2 border-vivid-blue" />
+            {/* เส้นกั้น */}
             <Result />
           </div>
           <div className="flex gap-2">

@@ -114,7 +114,7 @@ const Result = () => {
       placeHolder: "",
     },
     {
-      label: "Finding",
+      label: "Findings",
       key: "finding",
       value: sectionValues.finding,
       placeHolder: "Enter finding",
@@ -140,7 +140,7 @@ const Result = () => {
   ];
 
   return (
-    <div className="result flex flex-col gap-y-2 text-darkest-blue text-sm pt-3">
+    <div className="result flex flex-col gap-y-3 text-darkest-blue text-sm pt-2">
       {sections.map((section, index) => {
         const isEmpty = !section.value.trim();
 
