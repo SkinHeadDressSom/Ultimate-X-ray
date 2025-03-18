@@ -59,4 +59,40 @@ async function getCasebyHN(hn, order, status, page) {
   }
 }
 
-module.exports = { getCasebyHN };
+async function updateRecordbyAN(
+  an,
+  findings,
+  impression,
+  recommendations,
+  action_comments
+) {
+  try {
+    const query = `UPDATE medicalrecords
+                SET findings = $1,impression = $2, recommendations = $3, action_comments = $4
+                WHERE an = $5`;
+    const result = await pool.query(query, [
+      findings,
+      impression,
+      recommendations,
+      action_comments,
+      an,
+    ]);
+    return result.rows.length === 0
+      ? null
+      : {
+          an: result.rows[0].an,
+          findings: result.rows[0].findings,
+          impression: result.rows[0].impression,
+          recommendations: result.rows[0].recommendations,
+          action_comments: result.rows[0].action_comments,
+        };
+  } catch (error) {
+    console.error("Database error in updateRecordbyAN:", error.message);
+    return {
+      error: error.message,
+      code: error.code || "UNKNOWN_ERROR",
+    };
+  }
+}
+
+module.exports = { getCasebyHN, updateRecordbyAN };
