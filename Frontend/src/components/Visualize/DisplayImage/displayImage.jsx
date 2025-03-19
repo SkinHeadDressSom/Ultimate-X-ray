@@ -12,6 +12,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     layout,
     selectedPosition,
     contrast,
+    brightness,
     scale,
     position,
     isDragMode,
@@ -28,6 +29,10 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     } else {
       return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
+  };
+  // ฟังก์ชั่นคำนวนปรับสีตามค่าBrightness
+  const calculateBrightness = (brightness) => {
+    return brightness / 100; // ปรับค่า brightness โดยใช้สเกล 0-2
   };
   const getPatientInfoStyle = (layout, index) => {
     if (layout === "layout3") {
@@ -93,6 +98,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
         const contrastValue = calculateContrast(contrast[image] || 0);
+        const brightnessValue = calculateBrightness(brightness[image] || 0);
         return (
           <div
             key={index}
@@ -117,7 +123,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                       alt={`x-ray-${index}`}
                       className="w-full h-full object-contain rounded-none"
                       style={{
-                        filter: `contrast(${contrastValue})`,
+                        filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
                         zIndex: 0,
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0

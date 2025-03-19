@@ -21,6 +21,7 @@ import {
   setIsDrawMode,
   setSelectedColor,
   setContrast,
+  setBrightness,
   setScale,
 } from "../../../../redux/visualize";
 
@@ -108,6 +109,10 @@ const ImageTools = ({ undo, redo }) => {
           onContrastChange={(value) => {
             const selectedImageUrl = imageUrls[selectedPosition];
             dispatch(setContrast({ imageUrl: selectedImageUrl, value }));
+          }}
+          onBrightnessChange={(value) => {
+            const selectedImageUrl = imageUrls[selectedPosition];
+            dispatch(setBrightness({ imageUrl: selectedImageUrl, value }));
           }}
         />
       )}

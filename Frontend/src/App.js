@@ -5,8 +5,6 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-import Analysis from "./components/tools/analysis";
-import Zoom from './pages/zoom';
 import BoundingBox from "./components/tools/BoundingBox";
 
 function App() {
@@ -44,25 +42,9 @@ function App() {
       ),
     },
     {
-      path: "/analysis",
-      element: (
-        <>
-          <Analysis />
-        </>
-      ),
-    },
-    {
       element: (
         <>
           <Visualize />
-        </>
-      ),
-    },
-    {
-      path: "/Zoom",
-      element: (
-        <>
-          <Zoom />
         </>
       ),
     },

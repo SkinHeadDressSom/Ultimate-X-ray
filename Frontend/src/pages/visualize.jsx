@@ -8,7 +8,7 @@ import { getLayoutImages } from "../utils/layoutUtils";
 import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
 import { setSelectedCases } from "../redux/selectedCase";
-import { resetContrast } from "../redux/visualize";
+import { resetContrast, resetBrightness } from "../redux/visualize";
 import { setSelectedImageId } from "../redux/selectedImage";
 const Visualize = () => {
   const dispatch = useDispatch();
@@ -67,6 +67,7 @@ const Visualize = () => {
     return () => {
       localStorage.removeItem("caseList");
       dispatch(resetContrast());
+      dispatch(resetBrightness());
       dispatch(setSelectedImageId(null));
     };
   }, [location]);
