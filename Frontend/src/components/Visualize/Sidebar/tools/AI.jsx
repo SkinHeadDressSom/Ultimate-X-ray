@@ -1,38 +1,49 @@
+import axios from "axios";
 import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
-import {AI} from "../toolsdata"
+import { AI } from "../toolsdata";
+import { setDetectionBoxes, setShowDetectionBoxes } from "../../../../redux/visualize";
 const API_URL = process.env.REACT_APP_AI_API;
 
 const AIButton = () => {
   const [activeId, setActiveId] = useState(null);
-  const [image, setImage] = useState(null);
+  const { imageUrls, showDetectionBoxes } = useSelector((state) => state.visualize);
+  const dispatch = useDispatch();
 
   const buttons = [
     { id: "AI", icon: AI },
   ];
 
-  const detectBbox = async (image) => {
+  const detectBbox = async (url) => {
     try {
-      const response = await axios.get(
-        `${API_URL}`,
-        { withCredentials: true }
-      );
-      return response.data.data;
+      const formData = new FormData();
+      formData.append("url", url);
+
+      const response = await axios.post(
+        `${API_URL}/detect/`,
+        formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          }
+      });
+      return response.data.detections;
     } catch (error) {
       console.log(error);
-      return null;
     }
   };
 
-  const handleButtonClick = (id) => {
-    setActiveId((prevId) => (prevId === id ? null : id));
-    // เพิ่ม logic การทำงานของแต่ละปุ่มตาม id
-    switch (id) {
-      case "AI":
-        console.log("AI button clicked");
-        break;
-      default:
-        break;
+  const handleButtonClick = async (id) => {
+    const isActive = activeId === id;
+    setActiveId(isActive ? null : id);
+
+    if (!isActive) {
+        const detections = await detectBbox(imageUrls[0]);
+        dispatch(setDetectionBoxes(detections));
+        dispatch(setShowDetectionBoxes(true));
+        console.log(detections);
+    } else {
+      dispatch(setShowDetectionBoxes(false));
     }
   };
 

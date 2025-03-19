@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./display.css";
 import { setSelectedPosition } from "../../../redux/visualize";
@@ -15,18 +15,30 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     scale,
     position,
     isDragMode,
+    detectionBoxes,
+    showDetectionBoxes,
   } = useSelector((state) => state.visualize);
 
   const patient = useSelector((state) => state.patient?.data || null);
 
   const { startDrag, onDrag, stopDrag, dragging } = useDragAndDrop(isDragMode);
 
-  // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
+  const [imageDimensions, setImageDimensions] = useState([]);
+
+  const handleImageLoad = (e, index) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    setImageDimensions((prev) => {
+      const newDimensions = [...prev];
+      newDimensions[index] = { naturalWidth, naturalHeight };
+      return newDimensions;
+    });
+  };
+
   const calculateContrast = (contrast) => {
     if (contrast >= 0) {
-      return 1 + (contrast / 100) * 5; // ขยายค่าไปที่สูงสุดที่ 6 เมื่อ value = 100 และ หลัง * ต่ำกว่าค่าที่อยากได้ 1 หน่วยเสมอ
+      return 1 + (contrast / 100) * 5;
     } else {
-      return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
+      return 1 / (1 - contrast / 100);
     }
   };
 
@@ -82,6 +94,10 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
         const contrastValue = calculateContrast(contrast[index] || 0);
+        const imageDimension = imageDimensions[index] || {};
+        const imageWidth = imageDimension.naturalWidth || 1;
+        const imageHeight = imageDimension.naturalHeight || 1;
+
         return (
           <div
             key={index}
@@ -115,7 +131,25 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                     maxHeight: "100%",
                     cursor: isDragMode ? "grab" : "default",
                   }}
+                  onLoad={(e) => handleImageLoad(e, index)}
                 />
+                {showDetectionBoxes &&
+                  detectionBoxes.map((box, i) => (
+                    <div
+                      key={i}
+                      className="absolute border-2 border-yellow-400"
+                      style={{
+                        left: `${(box.xmin / imageWidth) * 100}%`,
+                        top: `${(box.ymin / imageHeight) * 100}%`,
+                        width: `${((box.xmax - box.xmin) / imageWidth) * 100}%`,
+                        height: `${((box.ymax - box.ymin) / imageHeight) * 100}%`,
+                      }}
+                    >
+                      <span className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1">
+                        {box.class}
+                      </span>
+                    </div>
+                  ))}
                 <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
                   <div className="flex flex-row justify-between">
                     <div>
