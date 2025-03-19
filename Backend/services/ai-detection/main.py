@@ -71,7 +71,7 @@ async def detect(file: UploadFile = File(None), url: str = Form(None)):
         {
             "xmin": int(box[0] * scale_x), "ymin": int(box[1] * scale_y),
             "xmax": int(box[2] * scale_x), "ymax": int(box[3] * scale_y),
-            "confidence": float(box[4]),
+            "confidence": round(float(box[4]), 2),
             "class": model.names[int(box[5])]
         }
         for box in results[0].boxes.data.cpu().numpy()
