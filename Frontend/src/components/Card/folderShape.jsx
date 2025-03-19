@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Table from "../Table/table";
 import PatientInformation from "./patientInformation";
-const API_URL = import.meta.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const FolderShape = ({ patient }) => {
   const [patientCases, setPatientCases] = useState([]);

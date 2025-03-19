@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout, purgeStore } from "../../redux/auth";
-const API_URL = import.meta.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const LogoutButton = () => {
   const [error, setError] = useState("");

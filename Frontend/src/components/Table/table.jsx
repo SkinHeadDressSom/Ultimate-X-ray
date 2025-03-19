@@ -7,7 +7,7 @@ import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 import { useNavigate } from "react-router-dom";
-const API_URL = import.meta.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Table = ({ patientCases, loading, patient }) => {
   const { patient_cases } = patientCases || {};

@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
-const API_URL = import.meta.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Search = ({ onPatientDataFetched }) => {
   const [inputValue, setInputValue] = useState("");

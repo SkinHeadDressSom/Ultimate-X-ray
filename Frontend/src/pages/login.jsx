@@ -6,7 +6,7 @@ import { loginSuccess } from "../redux/auth";
 import eyeClosed from "../assets/eyeClose.svg";
 import eyeOpen from "../assets/eyeOpen.svg";
 import Logo from "../assets/logo.png";
-const API_URL = import.meta.env.BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 function Login() {
   const [username, setUsername] = useState("");
