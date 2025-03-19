@@ -13,7 +13,7 @@ const LogoutButton = () => {
   const postLogout = async () => {
     try {
       const response = await axios.post(
-        `${API_URL}http://localhost:8000/auth/api/logout`,
+        `${API_URL}/auth/api/logout`,
         {},
         { withCredentials: true }
       );
