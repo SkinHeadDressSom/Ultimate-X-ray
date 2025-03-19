@@ -1,15 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
 import "../style/report.css";
-//resize textarea ตามขนาดบรรทัด
-const AutoResizingTextarea = ({
-  value,
-  className,
-  placeHolder,
-  ref,
-  onChange,
-}) => {
-  const textareaRef = useRef(null);
+
+const AutoResizingTextarea = ({ value, className, placeHolder, onChange }) => {
+  const textareaRef = React.useRef(null);
 
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -19,13 +13,13 @@ const AutoResizingTextarea = ({
     }
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     resizeTextarea();
   }, [value]);
 
   return (
     <textarea
-      ref={ref || textareaRef}
+      ref={textareaRef}
       value={value}
       className={`${className} print-textarea`}
       onInput={(e) => {
@@ -37,7 +31,6 @@ const AutoResizingTextarea = ({
   );
 };
 
-//checkbox and image
 const CheckboxImage = ({ image, index, isAnnotation = false }) => {
   const checkboxId = isAnnotation ? `annotation-${index}` : `image-${index}`;
   const [isValid, setIsValid] = React.useState(true);
@@ -80,27 +73,13 @@ const CheckboxImage = ({ image, index, isAnnotation = false }) => {
   ) : null;
 };
 
-//main component
-const Result = () => {
+const Result = ({ sectionValues, handleChange }) => {
   const selectedCases = useSelector(
     (state) => state.selectedCases.selectedCases[0]
   );
 
   const CommonTextareaStyles =
     "border border-light-gray rounded-md p-2 text-sm focus:border-none focus:ring-1 focus:ring-vivid-blue [appearance:textfield] outline-none";
-
-  const [sectionValues, setSectionValues] = React.useState({
-    clinicalHistory: selectedCases.clinical_history || "",
-    examinationDetails: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
-    finding: "",
-    impression: "",
-    recommendations: "",
-    actionComment: "",
-  });
-
-  const handleChange = (key, value) => {
-    setSectionValues((prev) => ({ ...prev, [key]: value }));
-  };
 
   const sections = [
     {
@@ -153,7 +132,7 @@ const Result = () => {
           >
             <label className="print-label">{section.label}</label>
             <AutoResizingTextarea
-              value={section.value}
+              value={section.value || ""}
               placeHolder={section.placeHolder}
               className={CommonTextareaStyles}
               onChange={(e) => handleChange(section.key, e.target.value)}
