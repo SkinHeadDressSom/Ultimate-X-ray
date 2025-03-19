@@ -1,13 +1,28 @@
 import React, { useState } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import {AI} from "../toolsdata"
+const API_URL = process.env.REACT_APP_AI_API;
 
 const AIButton = () => {
   const [activeId, setActiveId] = useState(null);
+  const [image, setImage] = useState(null);
 
   const buttons = [
     { id: "AI", icon: AI },
   ];
+
+  const detectBbox = async (image) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}`,
+        { withCredentials: true }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+  };
 
   const handleButtonClick = (id) => {
     setActiveId((prevId) => (prevId === id ? null : id));
