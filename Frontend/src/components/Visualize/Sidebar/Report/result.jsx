@@ -40,8 +40,9 @@ const AutoResizingTextarea = ({
 //checkbox and image
 const CheckboxImage = ({ image, index, isAnnotation = false }) => {
   const checkboxId = isAnnotation ? `annotation-${index}` : `image-${index}`;
+  const [isValid, setIsValid] = React.useState(true);
 
-  return (
+  return isValid ? (
     <li className="relative mt-2">
       <input type="checkbox" className="hidden" id={checkboxId} />
       <label htmlFor={checkboxId} className="cursor-pointer">
@@ -49,6 +50,7 @@ const CheckboxImage = ({ image, index, isAnnotation = false }) => {
           src={image.file_path}
           alt={`Attached Image ${index + 1}`}
           className="w-28 h-28 object-cover rounded-md bg-black transition-all"
+          onError={() => setIsValid(false)}
         />
         <span className="absolute top-2 right-2 w-4 h-4 border-2 rounded-[5px] border-vivid-blue flex items-center justify-center">
           <svg
@@ -75,7 +77,7 @@ const CheckboxImage = ({ image, index, isAnnotation = false }) => {
         }
       `}</style>
     </li>
-  );
+  ) : null;
 };
 
 //main component

@@ -111,7 +111,7 @@ const ReportPopup = ({ onClose }) => {
             <Result />
           </div>
           <div className="flex gap-2">
-            {/* <SaveButton /> */}
+            <SaveButton />
             <PrintButton onClick={handlePrint} />
           </div>
         </div>
