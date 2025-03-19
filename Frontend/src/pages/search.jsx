@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setPatient } from "../redux/patient";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SearchPatient = () => {
   const [patientID, setPatientID] = useState("");
@@ -13,7 +14,7 @@ const SearchPatient = () => {
   const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
+        `${API_URL}/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       return response.data.data;

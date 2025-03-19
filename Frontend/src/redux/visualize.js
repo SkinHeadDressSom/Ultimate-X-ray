@@ -15,6 +15,8 @@ const initialState = {
   isDragMode: false,
   onPointerClick: true,
   isDrawMode: false,
+  detectionBoxes: [],
+  showDetectionBoxes: false,
 };
 
 const visualizeSlice = createSlice({
@@ -73,7 +75,13 @@ const visualizeSlice = createSlice({
       state.contrast = {}; //ใช้ reset contrast
     },
     resetBrightness: (state) => {
-      state.contrast = {}; //ใช้ reset contrast
+      state.brightness = {}; //ใช้ reset brightness
+    },
+    setDetectionBoxes: (state, action) => {
+      state.detectionBoxes = action.payload;
+    },
+    setShowDetectionBoxes: (state, action) => {
+      state.showDetectionBoxes = action.payload;
     },
   },
 });
@@ -95,6 +103,8 @@ export const {
   setIsDragMode,
   setOnPointerClick,
   setIsDrawMode,
+  setDetectionBoxes,
+  setShowDetectionBoxes,
 } = visualizeSlice.actions;
 
 export default visualizeSlice.reducer;

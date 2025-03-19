@@ -34,14 +34,6 @@ function App() {
       ),
     },
     {
-      path: "/visualize",
-      element: (
-        <>
-          <Visualize />
-        </>
-      ),
-    },
-    {
       element: (
         <>
           <Visualize />
@@ -56,7 +48,6 @@ function App() {
         </>
       ),
     }
-
   ]);
 
 
