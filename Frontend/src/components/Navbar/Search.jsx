@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
+const API_URL = import.meta.env.BACKEND_URL;
 
 const Search = ({ onPatientDataFetched }) => {
   const [inputValue, setInputValue] = useState("");
@@ -43,7 +44,7 @@ const Search = ({ onPatientDataFetched }) => {
   const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${hn}`,
+        `${API_URL}/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       console.log("API Response from HN search:", response.data);
@@ -56,7 +57,7 @@ const Search = ({ onPatientDataFetched }) => {
   const getPatientByName = async (name) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        `${API_URL}/fetch-data/api/patients/by-name/${name}`,
         { withCredentials: true }
       );
 
@@ -79,7 +80,7 @@ const Search = ({ onPatientDataFetched }) => {
   const getPatientSuggestions = async (name) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        `${API_URL}/fetch-data/api/patients/by-name/${name}`,
         { withCredentials: true }
       );
 

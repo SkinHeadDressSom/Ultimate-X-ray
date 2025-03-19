@@ -6,6 +6,7 @@ import { loginSuccess } from "../redux/auth";
 import eyeClosed from "../assets/eyeClose.svg";
 import eyeOpen from "../assets/eyeOpen.svg";
 import Logo from "../assets/logo.png";
+const API_URL = import.meta.env.BACKEND_URL;
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -17,7 +18,7 @@ function Login() {
   const postLogin = async (username, password) => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/auth/api/login",
+        `${API_URL}/auth/api/login`,
         { username, password },
         { withCredentials: true }
       );

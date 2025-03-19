@@ -7,6 +7,7 @@ import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import ViewerButton from "../Button/viewerButton";
 import { useNavigate } from "react-router-dom";
+const API_URL = import.meta.env.BACKEND_URL;
 
 const Table = ({ patientCases, loading, patient }) => {
   const { patient_cases } = patientCases || {};
@@ -73,7 +74,7 @@ const Table = ({ patientCases, loading, patient }) => {
   const getCaseImage = async (an) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/images/${an}`,
+        `${API_URL}/fetch-data/api/images/${an}`,
         { withCredentials: true }
       );
       return response.data.data;

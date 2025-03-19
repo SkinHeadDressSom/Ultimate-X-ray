@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Table from "../Table/table";
 import PatientInformation from "./patientInformation";
+const API_URL = import.meta.env.BACKEND_URL;
 
 const FolderShape = ({ patient }) => {
   const [patientCases, setPatientCases] = useState([]);
@@ -10,7 +11,7 @@ const FolderShape = ({ patient }) => {
   const getPatientCases = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/${hn}/cases`,
+        `${API_URL}/fetch-data/api/patients/${hn}/cases`,
         { withCredentials: true }
       );
 
