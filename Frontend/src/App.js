@@ -5,7 +5,7 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-import Analysis from "./components/tools/analysis";
+import BoundingBox from "./components/tools/BoundingBox";
 
 function App() {
   const router = createBrowserRouter([
@@ -42,10 +42,17 @@ function App() {
       ),
     },
     {
-      path: "/Analysis",
       element: (
         <>
-          <Analysis />
+          <Visualize />
+        </>
+      ),
+    },
+    {
+      path: "/BoundingBox",
+      element: (
+        <>
+          <BoundingBox />
         </>
       ),
     }

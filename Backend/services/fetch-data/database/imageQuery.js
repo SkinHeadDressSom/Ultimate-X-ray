@@ -27,7 +27,8 @@ async function getImagesbyAN(an) {
                     FROM images AS i
                     INNER JOIN medicalrecords AS m
                     ON i.record_id = m.record_id
-                    WHERE an = $1`;
+                    WHERE an = $1
+                    ORDER BY uploaded_at;`;
     const results = await pool.query(query, [an]);
 
     // check if query is empty

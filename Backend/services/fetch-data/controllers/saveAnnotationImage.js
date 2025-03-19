@@ -35,7 +35,6 @@ const saveAnnotationImage = async (req, res) => {
         error: image.error,
       });
     }
-
     if (!image) {
       return res.status(404).json({
         message: RESPONSE_MESSAGES.notFound,
@@ -57,19 +56,12 @@ const saveAnnotationImage = async (req, res) => {
         error: existed_annotation.error,
       });
     }
-    // if exist get its filepath and delete image [the createAnnotationImage will overwrite itself]
-    if (existed_annotation) {
-      const delete_image = await DeleteFilefromSupabase(
-        existed_annotation.file_path
-      );
 
-      if (delete_image.success) {
-        console.log(delete_image.message);
-      } else {
-        return res.status(500).json({
-          message: RESPONSE_MESSAGES.supabaseError,
-          error: existed_annotation.error,
-        });
+    // if exist get its filepath and delete image [the createAnnotationImage will overwrite itself]
+    if (existed_annotation && existed_annotation.file_path) {
+      const delete_image = await DeleteFilefromSupabase(existed_annotation.file_path);
+      if (!delete_image.success) {
+        return res.status(500).json({ message: RESPONSE_MESSAGES.supabaseError, error: delete_image.error });
       }
     }
 
@@ -77,14 +69,14 @@ const saveAnnotationImage = async (req, res) => {
     const image_file = req.file;
     // Check if file exists
     if (!image_file) {
-      return res.status(401).json({ message: "Uploaded file not found" });
+      return res.status(400).json({ message: "Uploaded file not found" });
     }
 
-    const file_name = `annotation-images/${req.file.originalname}`;
+    const file_name = `annotation-images/${user_id}_${xn}_${new Date().toISOString().replace(/[-:.TZ]/g, '')}.png`;
     console.log("File_name :", file_name);
 
     // Upload annotation image to Supabase
-    const public_url = await UploadFiletoSupabase(image_file, file_name);
+    const public_url = await UploadFiletoSupabase(req.file.buffer, file_name);
     if (public_url?.error) {
       return res.status(500).json({
         message: RESPONSE_MESSAGES.supabaseError,
@@ -106,7 +98,7 @@ const saveAnnotationImage = async (req, res) => {
     }
 
     return res.status(201).json({
-      message: RESPONSE_MESSAGES.taskSuccess,
+      message: RESPONSE_MESSAGES.taskSuccess, file_url: public_url
     });
   } catch (error) {
     console.error("Error in save annotation controller ->", error.message);

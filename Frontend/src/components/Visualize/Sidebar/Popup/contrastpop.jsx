@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
 
-const ContrastPopup = ({ onClose, onContrastChange }) => {
+const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
   const selectedPosition = useSelector(
     (state) => state.visualize.selectedPosition
   );
@@ -10,6 +10,7 @@ const ContrastPopup = ({ onClose, onContrastChange }) => {
     (state) => state.visualize.contrast[selectedPosition] || 0
   );
   const [contrast, setContrast] = useState(contrastFromRedux);
+  const [brightness, setBrightness] = useState(100); // เพิ่มสถานะสำหรับ brightness
   const popupRef = useRef(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const ContrastPopup = ({ onClose, onContrastChange }) => {
     }
     setContrast(value);
     onContrastChange(value);
+    onBrightnessChange(value);
   };
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -63,6 +65,30 @@ const ContrastPopup = ({ onClose, onContrastChange }) => {
           onChange={(e) => {
             setContrast(Number(e.target.value));
             onContrastChange(Number(e.target.value));
+          }}
+          className="w-full accent-blue-600 appearance-none rounded-full h-1 bg-gray"
+        />
+      </div>
+      <div className="flex flex-row justify-between items-center w-full">
+        <h1 className="text-lg font-semibold">Brightness</h1>
+        <input
+          type="number"
+          min="-100"
+          max="100"
+          value={brightness}
+          onChange={handleInputChange}
+          className="border-[1px] border-light-gray w-14 px-2 py-1 rounded-md text-sm text-center outline-none bg-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+        />
+      </div>
+      <div className="flex items-center w-full py-2">
+        <input
+          type="range"
+          min="0"
+          max="200"
+          value={brightness}
+          onChange={(e) => {
+            setBrightness(Number(e.target.value));
+            onBrightnessChange(Number(e.target.value));
           }}
           className="w-full accent-blue-600 appearance-none rounded-full h-1 bg-gray"
         />

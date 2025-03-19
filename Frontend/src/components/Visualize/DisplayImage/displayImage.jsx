@@ -12,6 +12,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     layout,
     selectedPosition,
     contrast,
+    brightness,
     scale,
     position,
     isDragMode,
@@ -28,6 +29,21 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     } else {
       return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
     }
+  };
+  // ฟังก์ชั่นคำนวนปรับสีตามค่าBrightness
+  const calculateBrightness = (brightness) => {
+    return brightness / 100; // ปรับค่า brightness โดยใช้สเกล 0-2
+  };
+  const getPatientInfoStyle = (layout, index) => {
+    if (layout === "layout3") {
+      return index === 0 ? "w-1/2 h-full" : "w-1/2 h-1/2";
+    }
+    const styles = {
+      layout1: "w-full h-full",
+      layout2: "w-1/2 h-full",
+      layout4: "w-1/2 h-1/2",
+    };
+    return styles[layout] || "w-full h-full";
   };
 
   const gridStyles = {
@@ -81,7 +97,8 @@ const DisplayImage = ({ caseData, canvasRef }) => {
   return (
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
-        const contrastValue = calculateContrast(contrast[index] || 0);
+        const contrastValue = calculateContrast(contrast[image] || 0);
+        const brightnessValue = calculateBrightness(brightness[image] || 0);
         return (
           <div
             key={index}
@@ -91,60 +108,67 @@ const DisplayImage = ({ caseData, canvasRef }) => {
             }`}
           >
             {image ? (
-              <div
-                className={`w-full h-full overflow-hidden relative ${getBorderClasses(
-                  index
-                )}`}
-                onMouseDown={(e) => handleMouseDown(e, index)}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-              >
-                <canvas ref={(el) => (canvasRef.current[index] = el)} />
-                <img
-                  src={image}
-                  alt={`x-ray-${index}`}
-                  className="w-full h-full object-contain rounded-none"
-                  style={{
-                    filter: `contrast(${contrastValue})`,
-                    zIndex: 0,
-                    transform: `translate(${position[index]?.x || 0}px, ${
-                      position[index]?.y || 0
-                    }px) scale(${scale[index] || 1})`,
-                    maxWidth: "100%",
-                    maxHeight: "100%",
-                    cursor: isDragMode ? "grab" : "default",
-                  }}
-                />
-                <div className="flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute top-0 left-0 py-2 px-4 w-full h-full ">
-                  <div className="flex flex-row justify-between">
-                    <div>
-                      <p>
-                        {patient.first_name} {patient.last_name}
-                      </p>
-                      <p>{patient.hn}</p>
-                      <p>
-                        {patient.age} / {patient.date_of_birth}
-                      </p>
-                      <p>{patient.sex}</p>
-                      <p>
-                        {patient.weight}kg / {patient.height}cm
-                      </p>
-                    </div>
-                    <div>
-                      <p>ABC Hospital</p>
-                      <p>{caseData.an}</p>
-                      <p>{caseData.study_date}</p>
-                      <p>{caseData.time}</p>
-                    </div>
+              <div className={`w-full h-full ${getBorderClasses(index)}`}>
+                <div className="w-full h-full flex justify-center items-center">
+                  <div
+                    className={`w-fit h-full overflow-hidden relative`}
+                    onMouseDown={(e) => handleMouseDown(e, index)}
+                    onMouseMove={handleMouseMove}
+                    onMouseUp={handleMouseUp}
+                    onMouseLeave={handleMouseUp}
+                  >
+                    <canvas ref={(el) => (canvasRef.current[index] = el)} />
+                    <img
+                      src={image}
+                      alt={`x-ray-${index}`}
+                      className="w-full h-full object-contain rounded-none"
+                      style={{
+                        filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
+                        zIndex: 0,
+                        transform: `translate(${position[index]?.x || 0}px, ${
+                          position[index]?.y || 0
+                        }px) scale(${scale[index] || 1})`,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                        cursor: isDragMode ? "grab" : "default",
+                      }}
+                    />
                   </div>
-                  <div className="flex flex-col justify-end items-end">
-                    <p>
-                      Zoom:{" "}
-                      {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
-                    </p>
-                    <p>WL: 2244</p>
-                    <p>WW: 4400</p>
+                  <div
+                    className={`patient-info flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute py-2 px-4 ${getPatientInfoStyle(
+                      layout,
+                      index
+                    )}`}
+                  >
+                    <div className="flex flex-row justify-between">
+                      <div>
+                        <p>
+                          {patient.first_name} {patient.last_name}
+                        </p>
+                        <p>{patient.hn}</p>
+                        <p>
+                          {patient.age} Years / {patient.date_of_birth}
+                        </p>
+                        <p>{patient.sex}</p>
+                        <p>
+                          {patient.weight}kg / {patient.height}cm
+                        </p>
+                      </div>
+                      <div>
+                        <p>ABC Hospital</p>
+                        <p>{caseData.an}</p>
+                        <p>{caseData.study_date}</p>
+                        <p>{caseData.time}</p>
+                      </div>
+                    </div>
+                    <div className="flex flex-col justify-end items-end">
+                      <p>
+                        Zoom:{" "}
+                        {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
+                      </p>
+                      <p>WL: 2244</p>
+                      <p>WW: 4400</p>
+                    </div>
                   </div>
                 </div>
               </div>
