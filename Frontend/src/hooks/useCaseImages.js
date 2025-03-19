@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const useCaseImages = (patient_cases) => {
   const [casesWithImages, setCasesWithImages] = useState([]);
@@ -26,7 +27,7 @@ const useCaseImages = (patient_cases) => {
   const getCaseImage = async (an) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/images/${an}`,
+        `${API_URL}/fetch-data/api/images/${an}`,
         { withCredentials: true }
       );
       return response.data.data;
