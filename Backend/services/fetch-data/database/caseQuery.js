@@ -7,7 +7,7 @@ async function getCasebyHN(hn, order, status, page) {
 
   try {
     let query = `
-      SELECT m.an, m.status, m.description, m.clinical_history, m.examination_details, m.created_at, p.hn
+      SELECT m.an, m.status, m.description, m.clinical_history, m.examination_details, m.findings, m.impression, m.recommendations, m.action_comments, m.created_at, p.hn
       FROM medicalrecords AS m
       INNER JOIN patients AS p
       ON m.patient_id = p.patient_id
@@ -44,9 +44,13 @@ async function getCasebyHN(hn, order, status, page) {
       patient_cases: results.rows.map((row) => ({
         an: row.an,
         status: row.status,
+        description: row.description,
         clinical_history: row.clinical_history,
         examination_details: row.examination_details,
-        description: row.description,
+        findings: row.findings,
+        impression: row.impression,
+        recommendations: row.recommendations,
+        action_comments: row.action_comments,
         study_date: row.created_at,
       })),
     };
