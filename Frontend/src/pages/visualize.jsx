@@ -9,6 +9,7 @@ import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
 import { setSelectedCases } from "../redux/selectedCase";
 import { resetContrast } from "../redux/visualize";
+import { setSelectedImageId } from "../redux/selectedImage";
 const Visualize = () => {
   const dispatch = useDispatch();
   const { imageUrls, selectedPosition } = useSelector(
@@ -65,8 +66,8 @@ const Visualize = () => {
   useEffect(() => {
     return () => {
       localStorage.removeItem("caseList");
-      localStorage.removeItem("selectedImageId");
       dispatch(resetContrast());
+      dispatch(setSelectedImageId(null));
     };
   }, [location]);
 
