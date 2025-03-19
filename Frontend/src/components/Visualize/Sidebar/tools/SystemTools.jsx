@@ -70,6 +70,8 @@ const SystemTools = ({ canvasRef }) => {
       tempCanvas.height = img.height;
       const scaleX = img.width / canvas.width;
       const scaleY = img.height / canvas.height;
+      //ผูกค่าcontrastกับรูป
+      const imageContrast = contrast[imageUrl] || 0;
       // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
       const calculateContrast = (contrast) => {
         if (contrast >= 0) {
@@ -78,7 +80,7 @@ const SystemTools = ({ canvasRef }) => {
           return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
         }
       };
-      const contrastValue = calculateContrast(contrast[selectedPosition] || 0);
+      const contrastValue = calculateContrast(imageContrast);
       tempCtx.filter = `contrast(${contrastValue})`;
       tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
 
