@@ -92,7 +92,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
   return (
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
-        const contrastValue = calculateContrast(contrast[index] || 0);
+        const contrastValue = calculateContrast(contrast[image] || 0);
         return (
           <div
             key={index}

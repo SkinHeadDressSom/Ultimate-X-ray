@@ -6,7 +6,7 @@ const initialState = {
   selectedPosition: 0,
   selectedShape: null,
   isTextMode: false,
-  contrast: [],
+  contrast: {},
   selectedColor: "white",
   isAnnotationHidden: false,
   scale: [],
@@ -36,10 +36,9 @@ const visualizeSlice = createSlice({
       state.isTextMode = action.payload;
     },
     setContrast: (state, action) => {
-      const { index, value } = action.payload;
-      state.contrast = [...state.contrast];
-      state.contrast[index] = value;
-    },    
+      const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
+      state.contrast = { ...state.contrast, [imageUrl]: value };
+    },   
     setSelectedColor: (state, action) => {
       state.selectedColor = action.payload;
     },
@@ -61,6 +60,9 @@ const visualizeSlice = createSlice({
     setIsDrawMode: (state, action) => {
       state.isDrawMode = action.payload;
     },
+    resetContrast: (state) => {
+      state.contrast = {}; //ใช้ reset contrast
+    },
   },
 });
 
@@ -71,6 +73,7 @@ export const {
   setSelectedShape,
   setIsTextMode,
   setContrast,
+  resetContrast,
   setSelectedColor,
   setIsAnnotationHidden,
   setScale,

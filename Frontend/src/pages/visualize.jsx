@@ -8,7 +8,7 @@ import { getLayoutImages } from "../utils/layoutUtils";
 import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
 import { setSelectedCases } from "../redux/selectedCase";
-
+import { resetContrast } from "../redux/visualize";
 const Visualize = () => {
   const dispatch = useDispatch();
   const { imageUrls, selectedPosition } = useSelector(
@@ -66,8 +66,9 @@ const Visualize = () => {
     return () => {
       localStorage.removeItem("caseList");
       localStorage.removeItem("selectedImageId");
+      dispatch(resetContrast());
     };
-  }, []);
+  }, [location]);
 
   return (
     <div className="w-screen max-h-lvh h-full">

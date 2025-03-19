@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import {
   UndoBtn,
@@ -26,9 +26,8 @@ import {
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const { isDragMode, selectedColor, scale, selectedPosition } = useSelector(
-    (state) => state.visualize
-  );
+  const { imageUrls, isDragMode, selectedColor, scale, selectedPosition } =
+    useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -106,9 +105,10 @@ const ImageTools = ({ undo, redo }) => {
       {showContrastPopup && (
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
-          onContrastChange={(value) =>
-            dispatch(setContrast({ index: selectedPosition, value }))
-          }
+          onContrastChange={(value) => {
+            const selectedImageUrl = imageUrls[selectedPosition];
+            dispatch(setContrast({ imageUrl: selectedImageUrl, value }));
+          }}
         />
       )}
       {showColorPopup && (

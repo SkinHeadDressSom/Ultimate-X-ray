@@ -15,6 +15,9 @@ const SystemTools = ({ canvasRef }) => {
   );
   //รับข้อมูลรูป
   const imageUrls = useSelector((state) => state.visualize.imageUrls);
+  const { selectedPosition, contrast } = useSelector(
+    (state) => state.visualize
+  );
   //รับiconของปุ่ม
   const buttons = [
     { id: "save", icon: SaveIcon },
@@ -67,7 +70,16 @@ const SystemTools = ({ canvasRef }) => {
       tempCanvas.height = img.height;
       const scaleX = img.width / canvas.width;
       const scaleY = img.height / canvas.height;
-
+      // ฟังก์ชั่นคำนวนปรับสีตามค่าContrast
+      const calculateContrast = (contrast) => {
+        if (contrast >= 0) {
+          return 1 + (contrast / 100) * 5; // ขยายค่าไปที่สูงสุดที่ 6 เมื่อ value = 100 และ หลัง * ต่ำกว่าค่าที่อยากได้ 1 หน่วยเสมอ
+        } else {
+          return 1 / (1 - contrast / 100); // ลดคอนทราสต์ลงแต่ไม่ให้ติดลบ
+        }
+      };
+      const contrastValue = calculateContrast(contrast[selectedPosition] || 0);
+      tempCtx.filter = `contrast(${contrastValue})`;
       tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
 
       tempCtx.scale(scaleX, scaleY);
