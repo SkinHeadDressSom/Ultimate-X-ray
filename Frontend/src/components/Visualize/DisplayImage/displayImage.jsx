@@ -113,10 +113,9 @@ const DisplayImage = ({ caseData, canvasRef }) => {
         const contrastValue = calculateContrast(contrast[image] || 0);
         const brightnessValue = calculateBrightness(brightness[image] || 0);
 
-        const contrastValue = calculateContrast(contrast[index] || 0);
         const imageDimension = imageDimensions[index] || {};
         const imageWidth = imageDimension.naturalWidth || 1;
-        const imageHeight = imageDimension.naturalHeight || 1;
+        const imageHeight = imageDimension.naturalHeight || 1;x
 
         return (
           <div
