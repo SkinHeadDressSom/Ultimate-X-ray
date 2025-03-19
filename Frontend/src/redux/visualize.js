@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  imageUrls: [null],
+  imageUrls: [],
   layout: "layout1",
   selectedPosition: 0,
   selectedShape: null,
   isTextMode: false,
-  contrast: [],
+  contrast: {},
+  brightness: {},
   selectedColor: "white",
   isAnnotationHidden: false,
   scale: [],
@@ -24,6 +25,10 @@ const visualizeSlice = createSlice({
   reducers: {
     setImageUrls: (state, action) => {
       state.imageUrls = action.payload;
+      state.brightness = action.payload.reduce((acc, imageUrl) => {
+        acc[imageUrl] = 100; //ค่าเริ่มต้น=100
+        return acc;
+      }, {});
     },
     setLayout: (state, action) => {
       state.layout = action.payload;
@@ -38,10 +43,13 @@ const visualizeSlice = createSlice({
       state.isTextMode = action.payload;
     },
     setContrast: (state, action) => {
-      const { index, value } = action.payload;
-      state.contrast = [...state.contrast];
-      state.contrast[index] = value;
-    },    
+      const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
+      state.contrast = { ...state.contrast, [imageUrl]: value };
+    },   
+    setBrightness: (state, action) => {
+      const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
+      state.brightness = { ...state.brightness, [imageUrl]: value };
+    },   
     setSelectedColor: (state, action) => {
       state.selectedColor = action.payload;
     },
@@ -63,6 +71,12 @@ const visualizeSlice = createSlice({
     setIsDrawMode: (state, action) => {
       state.isDrawMode = action.payload;
     },
+    resetContrast: (state) => {
+      state.contrast = {}; //ใช้ reset contrast
+    },
+    resetBrightness: (state) => {
+      state.brightness = {}; //ใช้ reset brightness
+    },
     setDetectionBoxes: (state, action) => {
       state.detectionBoxes = action.payload;
     },
@@ -79,6 +93,9 @@ export const {
   setSelectedShape,
   setIsTextMode,
   setContrast,
+  setBrightness,
+  resetContrast,
+  resetBrightness,
   setSelectedColor,
   setIsAnnotationHidden,
   setScale,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import {
   UndoBtn,
@@ -10,8 +10,8 @@ import {
   ContrastBtn,
   Highlight,
 } from "../toolsdata";
-import ContrastPopup from "./contrastpop";
-import Colorpopup from "./colorpop";
+import ContrastPopup from "../Popup/contrastpop";
+import Colorpopup from "../Popup/colorpop";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setIsDragMode,
@@ -21,17 +21,17 @@ import {
   setIsDrawMode,
   setSelectedColor,
   setContrast,
+  setBrightness,
   setScale,
 } from "../../../../redux/visualize";
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const { isDragMode, selectedColor, contrast, scale, selectedPosition } =
+  const { imageUrls, isDragMode, selectedColor, scale, selectedPosition } =
     useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
-  const [popupPosition, setPopupPosition] = useState("550px");
 
   const buttons = [
     { id: "undobtn", icon: UndoBtn },
@@ -78,7 +78,6 @@ const ImageTools = ({ undo, redo }) => {
         dispatch(setIsDragMode(!isDragMode));
       }
       if (id === "highlight") {
-        setPopupPosition("500px");
         dispatch(setIsDrawMode(true));
         dispatch(setSelectedShape(id));
         setShowColorPopup(true);
@@ -107,9 +106,14 @@ const ImageTools = ({ undo, redo }) => {
       {showContrastPopup && (
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
-          onContrastChange={(value) =>
-            dispatch(setContrast({ index: selectedPosition, value }))
-          }
+          onContrastChange={(value) => {
+            const selectedImageUrl = imageUrls[selectedPosition];
+            dispatch(setContrast({ imageUrl: selectedImageUrl, value }));
+          }}
+          onBrightnessChange={(value) => {
+            const selectedImageUrl = imageUrls[selectedPosition];
+            dispatch(setBrightness({ imageUrl: selectedImageUrl, value }));
+          }}
         />
       )}
       {showColorPopup && (
