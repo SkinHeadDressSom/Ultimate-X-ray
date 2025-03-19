@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Form
 import uvicorn
 import os
 import cv2
@@ -6,6 +6,7 @@ import pydicom
 import numpy as np
 from PIL import Image
 from ultralytics import YOLO
+import requests
 
 app = FastAPI()
 
@@ -27,13 +28,26 @@ def convert_dicom_to_png_and_resize(dicom_path):
     return temp_path, original_width, original_height
 
 @app.post("/detect/")
-async def detect(file: UploadFile = File(...)):
-    filename = file.filename
-    file_ext = filename.split(".")[-1].lower()
-    temp_path = f"temp_input.{file_ext}"
+async def detect(file: UploadFile = File(None), url: str = Form(None)):
+    if file:
+        filename = file.filename
+        file_ext = filename.split(".")[-1].lower()
+        temp_path = f"temp_input.{file_ext}"
 
-    with open(temp_path, "wb") as f:
-        f.write(await file.read())
+        with open(temp_path, "wb") as f:
+            f.write(await file.read())
+    elif url:
+        response = requests.get(url)
+        if response.status_code != 200:
+            return {"error": "Failed to download file"}
+        filename = url.split("/")[-1]
+        file_ext = filename.split(".")[-1].lower()
+        temp_path = f"temp_input.{file_ext}"
+
+        with open(temp_path, "wb") as f:
+            f.write(response.content)
+    else:
+        return {"error": "No file or URL provided"}
 
     if file_ext == "dcm" or file_ext == "dicom":
         temp_path, original_width, original_height = convert_dicom_to_png_and_resize(temp_path)
