@@ -1,4 +1,6 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
 import Information from "../Report/information";
 import Result from "../Report/result";
 import PrintButton from "../../../Button/printButton";
@@ -9,8 +11,57 @@ import { ReactComponent as EmailIcon } from "../../../../assets/report/email.svg
 import { ReactComponent as PhoneIcon } from "../../../../assets/report/phone.svg";
 
 const ReportPopup = ({ onClose }) => {
+  const selectedCases = useSelector(
+    (state) => state.selectedCases.selectedCases[0]
+  );
   const printableAreaRef = useRef();
 
+  //store section values
+  const [sectionValues, setSectionValues] = useState({
+    clinicalHistory: selectedCases.clinical_history || "",
+    examinationDetails: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
+    finding: selectedCases.findings || "",
+    impression: selectedCases.impression || "",
+    recommendations: selectedCases.recommendations || "",
+    actionComment: selectedCases.action_comments || "",
+  });
+
+  //update state
+  const handleChange = (key, value) => {
+    setSectionValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  //save report
+  const handleSave = async () => {
+    try {
+      const response = await axios.patch(
+        `http://localhost:8000/fetch-data/api/report/${selectedCases.an}/save`,
+        {
+          clinical_history: sectionValues.clinicalHistory,
+          examination_details: sectionValues.examinationDetails,
+          findings: sectionValues.finding,
+          impression: sectionValues.impression,
+          recommendations: sectionValues.recommendations,
+          action_comments: sectionValues.actionComment,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        console.error("Saved report successfully!");
+      } else {
+        console.error("Error saving report:", response);
+      }
+    } catch (error) {
+      console.error("Error saving report:", error);
+    }
+  };
+
+  //print report
   const handlePrint = () => {
     const printableArea = printableAreaRef.current;
 
@@ -108,10 +159,10 @@ const ReportPopup = ({ onClose }) => {
             <Information />
             <hr className="my-2 border-t-2 border-vivid-blue" />
             {/* เส้นกั้น */}
-            <Result />
+            <Result sectionValues={sectionValues} handleChange={handleChange} />
           </div>
           <div className="flex gap-2">
-            <SaveButton />
+            <SaveButton onSave={handleSave} />
             <PrintButton onClick={handlePrint} />
           </div>
         </div>
