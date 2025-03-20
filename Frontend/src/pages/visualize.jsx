@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
@@ -10,6 +10,7 @@ import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCan
 import { setSelectedCases } from "../redux/selectedCase";
 import { resetContrast, resetBrightness } from "../redux/visualize";
 import { setSelectedImageId } from "../redux/selectedImage";
+import useAnnotationImages from "../hooks/useAnnotationImages";
 const Visualize = () => {
   const dispatch = useDispatch();
   const { imageUrls, selectedPosition } = useSelector(
@@ -19,7 +20,7 @@ const Visualize = () => {
   const location = useLocation();
   const caseData = location.state?.caseData || []; //เลือกเคสเดียว
   const allCases = location.state?.allCases || [];
-  const selectedCases = location.state?.selectedCases || []; //เลือกหบายเคส
+  const selectedCases = location.state?.selectedCases || []; //เลือกหลายเคส
   useEffect(() => {
     if (selectedCases.length > 0) {
       dispatch(setSelectedCases(selectedCases));
@@ -29,6 +30,14 @@ const Visualize = () => {
   }, [dispatch, selectedCases, caseData]);
 
   const casesToDisplay = selectedCases.length > 0 ? selectedCases : [caseData];
+  const xnValues = useMemo(
+    () =>
+      casesToDisplay.flatMap((caseItem) =>
+        caseItem.case_images.map((img) => img.xn)
+      ),
+    [casesToDisplay]
+  );
+  const annotationMap = useAnnotationImages(xnValues);
   // Create a ref for canvases
   const canvasRef = useRef([]);
   const { canvases, undo, redo } = useFabricCanvas(canvasRef);
@@ -79,6 +88,7 @@ const Visualize = () => {
           onImageSelect={handleImageSelect}
           caseData={casesToDisplay}
           allCases={allCases}
+          annotationMap={annotationMap}
         />
       </div>
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>
