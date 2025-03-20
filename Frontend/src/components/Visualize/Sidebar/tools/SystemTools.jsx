@@ -4,6 +4,8 @@ import { useSelector } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { SaveIcon, PrintIcon } from "../toolsdata";
 import ReportPopup from "../Popup/reportPopup";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
+
 const SystemTools = ({ canvasRef }) => {
   const [activeId, setActiveId] = useState(null);
   const [showReportPopup, setShowReportPopup] = useState(false);
@@ -114,7 +116,7 @@ const SystemTools = ({ canvasRef }) => {
     );
     try {
       const response = await axios.post(
-        `http://localhost:8000/fetch-data/api/images/annotation/${selectedImageId}/save`,
+        `${API_URL}/fetch-data/api/images/annotation/${selectedImageId}/save`,
         formData,
         {
           headers: {
@@ -123,11 +125,11 @@ const SystemTools = ({ canvasRef }) => {
           withCredentials: true,
         }
       );
-      window.location.reload();
     } catch (error) {
       console.error("Error uploading image:", error);
     }
   };
+  
   //main component
   return (
     <div className="flex flex-col items-center justify-center bg-light-blue rounded-lg gap-y-2 p-2 w-full">

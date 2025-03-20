@@ -4,10 +4,9 @@ import { useSelector, useDispatch } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AI } from "../toolsdata";
 import { setDetectionBoxes, setShowDetectionBoxes } from "../../../../redux/visualize";
-const API_URL = process.env.REACT_APP_AI_API;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIButton = () => {
-  const [activeId, setActiveId] = useState(null);
   const { imageUrls, showDetectionBoxes } = useSelector((state) => state.visualize);
   const dispatch = useDispatch();
 
@@ -21,7 +20,7 @@ const AIButton = () => {
       formData.append("url", url);
 
       const response = await axios.post(
-        `${API_URL}/detect/`,
+        `${API_URL}/detect`,
         formData, {
           headers: {
             "Content-Type": "multipart/form-data",
@@ -34,14 +33,10 @@ const AIButton = () => {
   };
 
   const handleButtonClick = async (id) => {
-    const isActive = activeId === id;
-    setActiveId(isActive ? null : id);
-
-    if (!isActive) {
+    if (!showDetectionBoxes) {
+        dispatch(setShowDetectionBoxes(true));
         const detections = await detectBbox(imageUrls[0]);
         dispatch(setDetectionBoxes(detections));
-        dispatch(setShowDetectionBoxes(true));
-        console.log(detections);
     } else {
       dispatch(setShowDetectionBoxes(false));
     }
@@ -55,7 +50,7 @@ const AIButton = () => {
           <ButtonWithIcon
             key={button.id}
             icon={button.icon}
-            isActive={activeId === button.id}
+            isActive={showDetectionBoxes}
             onClick={() => handleButtonClick(button.id)}
           />
         ))}

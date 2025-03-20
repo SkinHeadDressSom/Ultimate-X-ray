@@ -4,6 +4,7 @@ import { ReactComponent as CloseLine } from "../../../assets/topbar/closeLine.sv
 import { ReactComponent as CloseFill } from "../../../assets/topbar/closeFill.svg";
 import { ReactComponent as MagicWand } from "../../../assets/topbar/magicwand.svg";
 import { setSelectedImageId } from "../../../redux/selectedImage";
+import { setShowDetectionBoxes } from "../../../redux/visualize";
 
 function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
   const dispatch = useDispatch();
@@ -11,6 +12,7 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
   const selectedImageId = useSelector(
     (state) => state.selectedImage.selectedImageId
   );
+  const { showDetectionBoxes } = useSelector((state) => state.visualize);
   const [selectedAnnotationId, setSelectedAnnotationId] = useState(null);
   const [validImagePaths, setValidImagePaths] = useState({
     annotation: {},
@@ -76,6 +78,7 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
                   onImageSelect(imageObj.file_path);
                   dispatch(setSelectedImageId(imageObj.xn));
                   setSelectedAnnotationId(null);
+                  dispatch(setShowDetectionBoxes(false));
                 }}
                 className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
                   selectedImageId === imageObj.xn
@@ -92,6 +95,7 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
                     onImageSelect(annotationMap[imageObj.xn].file_path);
                     setSelectedAnnotationId(imageObj.xn);
                     dispatch(setSelectedImageId(null));
+                    dispatch(setShowDetectionBoxes(false));
                   }}
                 >
                   <img
