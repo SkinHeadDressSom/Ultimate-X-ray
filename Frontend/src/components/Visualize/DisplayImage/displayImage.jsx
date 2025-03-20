@@ -115,7 +115,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
 
         const imageDimension = imageDimensions[index] || {};
         const imageWidth = imageDimension.naturalWidth || 1;
-        const imageHeight = imageDimension.naturalHeight || 1;x
+        const imageHeight = imageDimension.naturalHeight || 1;
 
         return (
           <div

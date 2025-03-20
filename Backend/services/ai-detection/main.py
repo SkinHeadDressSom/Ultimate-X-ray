@@ -70,7 +70,7 @@ async def detect(file: UploadFile = File(None), url: str = Form(None)):
         temp_path = "temp_image.png"
         resized_image.save(temp_path)
 
-    results = model.predict(source=temp_path, conf=0.05)
+    results = model.predict(source=temp_path, conf=0.4)
     os.remove(temp_path)
 
     scale_x = original_width / 640

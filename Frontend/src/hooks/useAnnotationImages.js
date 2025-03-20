@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const useAnnotationImages = (xnArray) => {
   const [annotations, setAnnotations] = useState({});
@@ -12,7 +13,7 @@ const useAnnotationImages = (xnArray) => {
         xnArray.map(async (xn) => {
           try {
             const response = await axios.get(
-              `http://localhost:8000/fetch-data/api/images/annotation/${xn}`,
+              `${API_URL}/fetch-data/api/images/annotation/${xn}`,
               { withCredentials: true }
             );
             return { xn, data: response.data.data };
