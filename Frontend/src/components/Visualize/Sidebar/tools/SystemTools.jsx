@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { SaveIcon, PrintIcon } from "../toolsdata";
 import ReportPopup from "../Popup/reportPopup";
-
 const SystemTools = ({ canvasRef }) => {
   const [activeId, setActiveId] = useState(null);
   const [showReportPopup, setShowReportPopup] = useState(false);
@@ -124,6 +123,7 @@ const SystemTools = ({ canvasRef }) => {
           withCredentials: true,
         }
       );
+      window.location.reload();
     } catch (error) {
       console.error("Error uploading image:", error);
     }

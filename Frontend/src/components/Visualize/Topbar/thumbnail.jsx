@@ -5,7 +5,7 @@ import { ReactComponent as CloseFill } from "../../../assets/topbar/closeFill.sv
 import { ReactComponent as MagicWand } from "../../../assets/topbar/magicwand.svg";
 import { setSelectedImageId } from "../../../redux/selectedImage";
 
-function Thumbnail({ item, onClose, onImageSelect }) {
+function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const selectedImageId = useSelector(
@@ -33,9 +33,9 @@ function Thumbnail({ item, onClose, onImageSelect }) {
       for (const imageObj of item.case_images) {
         const originalValid = await checkImageExist(imageObj.file_path);
         newValidPaths.original[imageObj.xn] = originalValid;
-        if (imageObj.annotation_image) {
+        if (annotationMap[imageObj.xn]) {
           const annotationValid = await checkImageExist(
-            imageObj.annotation_image.file_path
+            annotationMap[imageObj.xn].file_path
           );
           newValidPaths.annotation[imageObj.xn] = annotationValid;
         }
@@ -43,7 +43,7 @@ function Thumbnail({ item, onClose, onImageSelect }) {
       setValidImagePaths(newValidPaths);
     };
     checkImages();
-  }, [item]);
+  }, [item, annotationMap]);
 
   return (
     <div className="w-full min-w-fit h-full border border-light-gray ">
@@ -85,17 +85,17 @@ function Thumbnail({ item, onClose, onImageSelect }) {
               />
             )}
             {/*  annotation_image*/}
-            {imageObj.annotation_image &&
+            {annotationMap[imageObj.xn] &&
               validImagePaths.annotation[imageObj.xn] && (
                 <div
                   onClick={() => {
-                    onImageSelect(imageObj.annotation_image.file_path);
+                    onImageSelect(annotationMap[imageObj.xn].file_path);
                     setSelectedAnnotationId(imageObj.xn);
                     dispatch(setSelectedImageId(null));
                   }}
                 >
                   <img
-                    src={imageObj.annotation_image.file_path}
+                    src={annotationMap[imageObj.xn].file_path}
                     alt="annotation"
                     className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
                       selectedAnnotationId === imageObj.xn

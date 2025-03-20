@@ -1,13 +1,20 @@
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { useState, useEffect } from "react";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const useAnnotationImages = (xnArray) => {
   const [annotations, setAnnotations] = useState({});
+  const prevXnArrayRef = useRef([]);
 
   useEffect(() => {
-    if (xnArray.length === 0) return;
-
+    if (
+      xnArray.length === 0 ||
+      (prevXnArrayRef.current.length === xnArray.length &&
+        prevXnArrayRef.current.every((val, index) => val === xnArray[index]))
+    ) {
+      return;
+    }
+    prevXnArrayRef.current = xnArray;
     const fetchAnnotations = async () => {
       const results = await Promise.all(
         xnArray.map(async (xn) => {
@@ -23,7 +30,6 @@ const useAnnotationImages = (xnArray) => {
           }
         })
       );
-
       // Create a mapping of xn to its annotation data
       const annotationMap = {};
       results.forEach(({ xn, data }) => {
