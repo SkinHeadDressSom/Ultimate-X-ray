@@ -164,8 +164,15 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                             height: `${((box.ymax - box.ymin) / imageHeight) * 100}%`,
                           }}
                         >
-                          <span className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1">
-                            {box.class}
+                          <span
+                            className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1 whitespace-nowrap"
+                            style={{
+                              top: '-1.5em',
+                              left: '-2px',
+                              zIndex: 1,
+                            }}
+                          >
+                            {box.class} {box.confidence}
                           </span>
                         </div>
                       ))}

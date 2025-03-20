@@ -7,7 +7,6 @@ import { setDetectionBoxes, setShowDetectionBoxes } from "../../../../redux/visu
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIButton = () => {
-  const [activeId, setActiveId] = useState(null);
   const { imageUrls, showDetectionBoxes } = useSelector((state) => state.visualize);
   const dispatch = useDispatch();
 
@@ -34,14 +33,10 @@ const AIButton = () => {
   };
 
   const handleButtonClick = async (id) => {
-    const isActive = activeId === id;
-    setActiveId(isActive ? null : id);
-
-    if (!isActive) {
+    if (!showDetectionBoxes) {
+        dispatch(setShowDetectionBoxes(true));
         const detections = await detectBbox(imageUrls[0]);
         dispatch(setDetectionBoxes(detections));
-        dispatch(setShowDetectionBoxes(true));
-        console.log(detections);
     } else {
       dispatch(setShowDetectionBoxes(false));
     }
@@ -55,7 +50,7 @@ const AIButton = () => {
           <ButtonWithIcon
             key={button.id}
             icon={button.icon}
-            isActive={activeId === button.id}
+            isActive={showDetectionBoxes}
             onClick={() => handleButtonClick(button.id)}
           />
         ))}
