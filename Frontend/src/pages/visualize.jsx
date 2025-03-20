@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
@@ -7,7 +7,10 @@ import { useLocation } from "react-router-dom";
 import { getLayoutImages } from "../utils/layoutUtils";
 import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
-
+import { setSelectedCases } from "../redux/selectedCase";
+import { resetContrast, resetBrightness } from "../redux/visualize";
+import { setSelectedImageId } from "../redux/selectedImage";
+import useAnnotationImages from "../hooks/useAnnotationImages";
 const Visualize = () => {
   const dispatch = useDispatch();
   const { imageUrls, selectedPosition } = useSelector(
@@ -15,9 +18,26 @@ const Visualize = () => {
   );
 
   const location = useLocation();
-  const caseData = location.state?.caseData || {};
-  const allCases = location.state?.allCases || {};
+  const caseData = location.state?.caseData || []; //เลือกเคสเดียว
+  const allCases = location.state?.allCases || [];
+  const selectedCases = location.state?.selectedCases || []; //เลือกหลายเคส
+  useEffect(() => {
+    if (selectedCases.length > 0) {
+      dispatch(setSelectedCases(selectedCases));
+    } else if (caseData) {
+      dispatch(setSelectedCases([caseData]));
+    }
+  }, [dispatch, selectedCases, caseData]);
 
+  const casesToDisplay = selectedCases.length > 0 ? selectedCases : [caseData];
+  const xnValues = useMemo(
+    () =>
+      casesToDisplay.flatMap((caseItem) =>
+        caseItem.case_images.map((img) => img.xn)
+      ),
+    [casesToDisplay]
+  );
+  const annotationMap = useAnnotationImages(xnValues);
   // Create a ref for canvases
   const canvasRef = useRef([]);
   const { canvases, undo, redo } = useFabricCanvas(canvasRef);
@@ -55,17 +75,20 @@ const Visualize = () => {
   useEffect(() => {
     return () => {
       localStorage.removeItem("caseList");
-      localStorage.removeItem("selectedImageId");
+      dispatch(resetContrast());
+      dispatch(resetBrightness());
+      dispatch(setSelectedImageId(null));
     };
-  }, []);
+  }, [location]);
 
   return (
     <div className="w-screen max-h-lvh h-full">
       <div className="z-50 relative">
         <Topbar
           onImageSelect={handleImageSelect}
-          caseData={[caseData]}
+          caseData={casesToDisplay}
           allCases={allCases}
+          annotationMap={annotationMap}
         />
       </div>
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>
@@ -74,6 +97,7 @@ const Visualize = () => {
             onLayoutChange={handleLayoutChange}
             undo={undo}
             redo={redo}
+            canvasRef={canvasRef}
           />
         </aside>
         <main className="w-screen bg-black flex items-center justify-center">

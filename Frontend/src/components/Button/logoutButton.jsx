@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout, purgeStore } from "../../redux/auth";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const LogoutButton = () => {
   const [error, setError] = useState("");
@@ -12,7 +13,7 @@ const LogoutButton = () => {
   const postLogout = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/auth/api/logout",
+        `${API_URL}/auth/api/logout`,
         {},
         { withCredentials: true }
       );

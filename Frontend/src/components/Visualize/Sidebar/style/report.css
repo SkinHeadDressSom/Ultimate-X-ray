@@ -1,0 +1,35 @@
+@media print {
+  * {
+    color: black !important;
+  }
+
+  .icon,
+  img {
+    fill: #0d42c9 !important;
+    color: inherit !important;
+  }
+
+  .border-vivid-blue {
+    border-color: #0d42c9 !important;
+  }
+  .printable-area {
+    padding: 1rem;
+  }
+  .print-label {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+  .result {
+    padding-top: 0.5rem;
+  }
+  .print-text {
+    font-size: 1rem;
+    margin: 0;
+    padding-top: 0.5rem;
+    padding-bottom: 1rem;
+    white-space: pre-line;
+  }
+  .print-hidden {
+    display: none;
+  }
+}

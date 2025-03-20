@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
-import Colorpopup from "./colorpop";
+import Colorpopup from "../Popup/colorpop";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setSelectedShape,
