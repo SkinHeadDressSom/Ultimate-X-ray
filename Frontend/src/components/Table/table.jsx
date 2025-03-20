@@ -12,7 +12,6 @@ import Filter from "./Filter";
 import Pagination from "./pagination";
 import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
-const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const Table = ({ patientCases, loading, patient }) => {
   const dispatch = useDispatch();
