@@ -36,7 +36,7 @@ def convert_dicom_to_png_and_resize(dicom_path):
     resized_image.save(temp_path)
     return temp_path, original_width, original_height
 
-@app.post("/detect/")
+@app.post("/")
 async def detect(file: UploadFile = File(None), url: str = Form(None)):
     if file:
         filename = file.filename

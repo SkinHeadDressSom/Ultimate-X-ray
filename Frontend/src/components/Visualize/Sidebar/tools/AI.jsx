@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AI } from "../toolsdata";
 import { setDetectionBoxes, setShowDetectionBoxes } from "../../../../redux/visualize";
-const API_URL = process.env.REACT_APP_AI_API;
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIButton = () => {
   const [activeId, setActiveId] = useState(null);
@@ -21,7 +21,7 @@ const AIButton = () => {
       formData.append("url", url);
 
       const response = await axios.post(
-        `${API_URL}/detect/`,
+        `${API_URL}/detect`,
         formData, {
           headers: {
             "Content-Type": "multipart/form-data",

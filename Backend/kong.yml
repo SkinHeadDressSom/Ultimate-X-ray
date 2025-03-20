@@ -17,3 +17,11 @@ services:
         paths:
           - /fetch-data
         strip_path: true
+
+  - name: ai-detection-service
+    url: http://ai-detection-service:3010
+    routes:
+      - name: detect
+        paths:
+          - /detect
+        strip_path: true
