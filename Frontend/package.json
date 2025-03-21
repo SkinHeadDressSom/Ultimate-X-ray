@@ -11,7 +11,7 @@
     "@mui/system": "^6.4.2",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/postcss": "^4.0.6",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "cra-template": "1.2.0",
     "dicom-parser": "^1.8.21",
     "fabric": "^6.5.4",
