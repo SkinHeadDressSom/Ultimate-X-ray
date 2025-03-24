@@ -1,0 +1,21 @@
+@media print {
+  /* ซ่อนทุกอย่างยกเว้น .printable-area */
+  body * {
+    visibility: hidden;
+  }
+
+  .print-header {
+    display: block;
+  }
+
+  .printable-area,
+  .printable-area * {
+    visibility: visible;
+  }
+
+  /* ซ่อนปุ่มทั้งหมดที่อยู่ใน printable-area */
+  .printable-area button,
+  .printable-area .no-print {
+    display: none !important;
+  }
+}

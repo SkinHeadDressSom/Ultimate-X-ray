@@ -1,9 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "../redux/auth";
 import eyeClosed from "../assets/eyeClose.svg";
 import eyeOpen from "../assets/eyeOpen.svg";
 import Logo from "../assets/logo.png";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -11,29 +14,21 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const postLogin = async (username, password) => {
-    axios
-      .post(
-        "http://localhost:8000/auth/api/login",
-        {
-          username: username,
-          password: password,
-        },
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/api/login`,
+        { username, password },
         { withCredentials: true }
-      )
-      .then(function (response) {
-        console.log("Login successful:", response.data);
-
-        // Navigate to dashboard page after successful login
-        navigate("/search");
-      })
-      .catch(function (error) {
-        setError("Invalid username or password");
-        console.log(error);
-      });
+      );
+      dispatch(loginSuccess(response.data));
+      navigate("/search");
+    } catch (error) {
+      setError("Invalid username or password");
+      console.log(error);
+    }
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
     postLogin(username, password);

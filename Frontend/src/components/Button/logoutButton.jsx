@@ -1,27 +1,35 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout, purgeStore } from "../../redux/auth";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const LogoutButton = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const postLogout = async () => {
-    axios
-      .post(
-        "http://localhost:8000/auth/api/logout",
+    try {
+      const response = await axios.post(
+        `${API_URL}/auth/api/logout`,
         {},
         { withCredentials: true }
-      )
-      .then(function (response) {
-        console.log("Logout successful:", response.data);
-        navigate("/");
-      })
-      .catch(function (error) {
-        setError("Invalid cookie");
-        console.log(error);
-      });
+      );
+      console.log("Logout successful:", response.data);
+
+      dispatch(logout());
+
+      dispatch(purgeStore());
+
+      navigate("/");
+    } catch (error) {
+      setError("Invalid cookie");
+      console.log(error);
+    }
   };
+
   const handleLogout = (e) => {
     e.preventDefault();
     postLogout();
@@ -45,6 +53,7 @@ const LogoutButton = () => {
           <span className="2xl:text-lg font-medium text-base">Logout</span>
         </label>
       </button>
+      {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
     </>
   );
 };

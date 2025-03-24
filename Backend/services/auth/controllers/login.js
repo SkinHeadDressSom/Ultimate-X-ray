@@ -62,11 +62,15 @@ const login = async (req, res) => {
       sameSite: "Lax",
     });
 
+    console.log("============================ Query result", user.result);
+
     // Login succesfully
     return res.status(200).json({
       message: RESPONSE_MESSAGES.taskSuccess,
       user: {
-        username: user.username,
+        id: user.id || "Unknown",
+        name: user.name || "Unknown",
+        role: user.role || "Unknown",
       },
     });
   } catch (error) {

@@ -13,6 +13,8 @@ async function getUser(username) {
           id: result.rows[0].user_id,
           username: result.rows[0].username,
           password: result.rows[0].password_hash,
+          name: result.rows[0].name,
+          role: result.rows[0].role,
         };
   } catch (error) {
     console.error("Database error in getUser:", error.message);

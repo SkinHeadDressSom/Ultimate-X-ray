@@ -31,7 +31,8 @@ function App() {
           <Dashboard />
         </>
       ),
-    }, {
+    },
+    {
       path: "/visualize",
       element: (
         <>
@@ -39,9 +40,8 @@ function App() {
         </>
       ),
     },
-    
   ]);
-  
+
 
   return (
     <>

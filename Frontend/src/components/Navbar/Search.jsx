@@ -1,21 +1,16 @@
 import axios from "axios";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as ArrowDown } from "../../assets/arrowDown.svg";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
-const Search = ({ onPatientDataFetched = () => {} }) => {
+const Search = ({ onPatientDataFetched }) => {
   const [inputValue, setInputValue] = useState("");
-  const [patientData, setPatientData] = useState(null);
-  const [error, setError] = useState(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [inputPlaceholder, setInputPlaceholder] = useState("Enter patient ID");
   const [selectedMenuItem, setSelectedMenuItem] = useState("HN");
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
-
-  //mockup patient name
-  const suggestions = ["Alice", "David", "Tony", "Anthony", "Hanna"];
 
   // Reusable styles
   const commonCheckBoxStyles =
@@ -23,17 +18,20 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
   const commonFocusStyles =
     "focus:ring-1 focus:ring-vivid-blue focus:border-vivid-blue";
 
-  const handleChange = (event) => {
-    const inputValue = event.target.value;
-    setInputValue(inputValue);
+  // Menu placeholder text mapping
+  const menuItems = {
+    HN: "Enter patient ID",
+    Name: "Enter patient name",
+  };
 
-    if (inputValue.trim() === "") {
-      setFilteredSuggestions([]); // Hide dropdown when input is empty
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setInputValue(value);
+
+    if (value.trim() === "" || selectedMenuItem !== "Name") {
+      setFilteredSuggestions([]);
     } else {
-      const filteredSuggestions = suggestions.filter((suggestion) =>
-        suggestion.toLowerCase().includes(inputValue.toLowerCase())
-      );
-      setFilteredSuggestions(filteredSuggestions);
+      getPatientSuggestions(value);
     }
   };
   //select ชื่อคนไข้แล้วให้แสดงในช่อง search
@@ -43,80 +41,73 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
   };
 
   //Back-end
-  const getPatientByHN = async (HN) => {
+  const getPatient = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-hn/${HN}`,
+        `${API_URL}/fetch-data/api/patients/by-hn/${hn}`,
         { withCredentials: true }
       );
       console.log("API Response from HN search:", response.data);
-      setPatientData(response.data.data);
       onPatientDataFetched(response.data.data);
     } catch (err) {
-      console.error(
-        "API Error:",
-        err.response ? err.response.data : err.message
-      );
-      handleError("Patient not found");
+      console.error("API Error:", err.response?.data || err.message);
     }
   };
 
   const getPatientByName = async (name) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/by-name/${name}`,
+        `${API_URL}/fetch-data/api/patients/by-name/${name}`,
         { withCredentials: true }
       );
 
       console.log("API Response from name search:", response.data);
-      setPatientData(response.data.data);
-      onPatientDataFetched(response.data.data);
+      const patients = response.data.data;
+
+      if (patients.length === 1) {
+        onPatientDataFetched(patients[0]);
+      } else {
+        // If multiple results, let user select one from suggestions
+        setFilteredSuggestions(
+          patients.map((p) => `${p.first_name} ${p.last_name}`)
+        );
+      }
     } catch (err) {
-      console.error(
-        "API Error:",
-        err.response ? err.response.data : err.message
-      );
-      handleError("Patient not found");
+      console.error("API Error:", err.response?.data || err.message);
     }
   };
 
-  //handle error
-  const handleError = (message) => {
-    setError(message);
-    setPatientData(null);
+  const getPatientSuggestions = async (name) => {
+    try {
+      const response = await axios.get(
+        `${API_URL}/fetch-data/api/patients/by-name/${name}`,
+        { withCredentials: true }
+      );
+
+      const patients = response.data.data;
+      setFilteredSuggestions(
+        patients.map((patient) => `${patient.first_name} ${patient.last_name}`)
+      );
+    } catch (err) {
+      console.error("Error fetching patient suggestions:", err);
+      setFilteredSuggestions([]);
+    }
   };
   //handle search
   const handleSearch = (e) => {
     e.preventDefault();
+    if (inputValue.trim() === "") return;
 
-    if (inputValue.trim() === "") {
-      setError(
-        selectedMenuItem === "HN"
-          ? "Patient ID cannot be empty."
-          : "Patient name cannot be empty."
-      );
-      return;
-    }
-
-    if (selectedMenuItem === "HN") {
-      getPatientByHN(inputValue);
-    } else if (selectedMenuItem === "Name") {
-      getPatientByName(inputValue); // Create a separate function for name-based search
-    }
-  };
-
-  //เปลี่ยน input type ให้ HN=number
-  const inputType = selectedMenuItem === "HN" ? "number" : "text";
-
-  const menuItems = {
-    HN: "Enter patient ID",
-    Name: "Enter patient name",
+    selectedMenuItem === "HN"
+      ? getPatient(inputValue)
+      : getPatientByName(inputValue);
   };
   // handle choice ที่เลือก
   const handleMenuItemClick = (value) => {
-    setInputPlaceholder(menuItems[value]);
     setSelectedMenuItem(value);
     setIsOpen(false);
+    setInputValue("");
+    setFilteredSuggestions([]);
   };
   //เปิดปิด dropdown
   const toggleDropdown = () => setIsOpen((prev) => !prev);
@@ -148,7 +139,7 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
             {selectedMenuItem}
             <ArrowDown />
           </button>
-
+          {/* Dropdown */}
           {isOpen && (
             <div
               ref={dropdownRef}
@@ -158,7 +149,7 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
               aria-labelledby="menu-button"
             >
               <button className="py-1 font-normal text-darkest-blue">
-                {["HN", "Name"].map((item) => (
+                {Object.keys(menuItems).map((item) => (
                   <div
                     key={item}
                     className={commonCheckBoxStyles}
@@ -172,17 +163,18 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
               </button>
             </div>
           )}
-
+          {/* Search Input */}
           <div className="relative w-full">
             <input
               id="patientData"
-              type={inputType}
-              placeholder={inputPlaceholder}
+              type={selectedMenuItem === "HN" ? "number" : "text"}
+              placeholder={menuItems[selectedMenuItem]}
               value={inputValue}
               onChange={handleChange}
               required
-              className={`${commonFocusStyles} overflow-hidden w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base border-s-0 border-[1px] rounded-e-full rounded-s-light-gray rounded-s-0 text-vivid-blue border-light-gray leading-tight focus:border-s-[1px]`}
+              className={`${commonFocusStyles} overflow-hidden w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base border-s-0 border-[1px] rounded-e-full rounded-s-light-gray text-vivid-blue border-light-gray leading-tight`}
             />
+            {/* Suggestions */}
             {filteredSuggestions.length > 0 && (
               <ul className="absolute w-full left-0 top-10 p-1 z-50 rounded-md bg-wheat shadow-lg ring-1 ring-black/5 focus:outline-none">
                 {filteredSuggestions.map((suggestion, index) => (
@@ -196,6 +188,7 @@ const Search = ({ onPatientDataFetched = () => {} }) => {
                 ))}
               </ul>
             )}
+            {/* Search Button */}
             <button
               type="submit"
               className="absolute inset-y-0 right-0 text-sm flex items-center justify-center bg-light-blue hover:bg-vivid-blue text-vivid-blue hover:text-wheat duration-200 rounded-full w-auto p-2 m-[2px]"

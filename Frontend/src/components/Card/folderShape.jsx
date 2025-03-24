@@ -1,35 +1,37 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import PatientInformation from "./patientInformation";
 import Table from "../Table/table";
+import PatientInformation from "./patientInformation";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const FolderShape = ({ patient }) => {
-  const [patientData, setPatientData] = useState(patient);
   const [patientCases, setPatientCases] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const getPatientCases = async (HN) => {
+  const getPatientCases = async (hn) => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/fetch-data/api/patients/${HN}/cases`,
+        `${API_URL}/fetch-data/api/patients/${hn}/cases`,
         { withCredentials: true }
       );
-      setPatientCases(response.data.data);
-      setLoading(false);
+
+      if (response.data.data.length === 0) {
+        setPatientCases([]); // Clear old data if no cases found
+      } else {
+        setPatientCases(response.data.data);
+      }
     } catch (error) {
       console.log(error);
+      setPatientCases([]); // Reset on error
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (patientData && patientData.hn) {
-      getPatientCases(patientData.hn);
+    if (patient?.hn) {
+      getPatientCases(patient.hn);
     }
-  }, [patientData]);
-
-  useEffect(() => {
-    setPatientData(patient);
   }, [patient]);
 
   return (
@@ -51,10 +53,10 @@ const FolderShape = ({ patient }) => {
       <div className="flex flex-wrap bg-wheat w-full h-auto pb-32 mb-10 rounded-tr-lg rounded-br-lg rounded-bl-lg shadow-lg border-t-[1px] border-light-gray">
         <div className="flex flex-col xl:flex-row w-full py-5 px-5 gap-10 ">
           <aside className="w-5/12 xl:w-3/12 2xl:w-4/12 min-w-[300px] max-w-[400px]">
-            <PatientInformation patient={patientData} />
+            <PatientInformation patient={patient} />
           </aside>
           <main className="w-full">
-            <Table patientCases={patientCases} />
+            <Table patientCases={patientCases} patient={patient} />
           </main>
         </div>
       </div>

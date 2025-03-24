@@ -1,13 +1,13 @@
 -- Create Enum Type\
 CREATE TYPE status_type AS ENUM ('Scheduled', 'Completed');
-
+CREATE TYPE role_type AS ENUM ('Rediologist Technician', 'General Practitioner', 'Radiologist');
 -- Create Users Table
 CREATE TABLE Users (
     user_id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     username VARCHAR(50) NOT NULL,
     password_hash TEXT NOT NULL,
-    role VARCHAR(40),
+    role role_type,
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -35,9 +35,8 @@ CREATE TABLE MedicalRecords (
     examination_details TEXT,
     findings TEXT,
     impression TEXT,
-    recommendations TEXT,
-    action_comments TEXT,
-    created_by TEXT,
+    recommendations TEXT,                       -- recommendation for patient behavior ??
+    action_comments TEXT,                       -- action comment for doctors to proceed on ??,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
     status status_type DEFAULT 'Scheduled'
@@ -61,15 +60,9 @@ CREATE TABLE Annotations (
     user_id INT NOT NULL REFERENCES Users(user_id),
     file_path TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+    CONSTRAINT unique_image_user UNIQUE (image_id, user_id)
 );
 
--- Join table for attached image in report
-CREATE TABLE MedicalRecordAnnotations (
-    id SERIAL PRIMARY KEY,
-    record_id INT NOT NULL REFERENCES MedicalRecords(record_id) ON DELETE CASCADE,
-    annotation_id INT NOT NULL REFERENCES Annotations(annotation_id) ON DELETE CASCADE
-);
 
 -- Insert Users
 INSERT INTO Users ( name, username, password_hash, role) VALUES
@@ -84,26 +77,103 @@ INSERT INTO Patients (HN, first_name, last_name, date_of_birth, sex, height, wei
 (93800048, 'Davis', 'Hall', '1993-01-19', 'Female', 155, 50, '9012345678', '123 Walnut St');
 
 -- Insert MedicalRecords
-INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status) VALUES
-(134986, 1, 'Diabetes', 'Blood sugar check', 'Blood test', 'Normal levels', 'Stable', 'Continue medication', 'Monitor levels', 'Completed'),
-(134987, 1, 'Back pain', 'MRI scan', 'Spinal scan', 'Mild disc bulge', 'Requires physiotherapy', 'Under observation', 'Follow exercise routine', 'Scheduled'),
-(134988, 2, 'Heart disease', 'ECG', 'Heart function test', 'Mild arrhythmia', 'Monitor closely', 'Requires medication', 'Advised diet changes', 'Completed'),
-(134989, 2,'Allergy', 'Skin test', 'Allergic reaction', 'Positive for pollen', 'Avoid allergens', 'Mild symptoms', 'Use antihistamines', 'Scheduled'),
-(134990, 2, 'Flu', 'Physical exam', 'Routine check', 'Normal flu symptoms', 'Rest and hydrate', 'Mild illness', 'No issues', 'Completed');
+INSERT INTO MedicalRecords (AN, patient_id, clinical_history, examination_details, description, findings, impression, recommendations, action_comments, status, created_at, updated_at) VALUES
+(133986, 1, 'Chronic cough', 'Chest X-ray', 'Lung opacity', 'Mild infection', 'Needs antibiotics', 'Prescribed medication', 'Follow-up in 2 weeks', 'Completed','2015-02-01 08:30:00', '2015-02-03 10:15:00'),
+(133987, 1, 'Shortness of breath', 'Chest X-ray', 'Bilateral infiltrates', 'Early pneumonia', 'Monitor progression', 'Hydration and rest', 'Re-evaluate in 5 days', 'Scheduled','2020-02-01 08:30:00', '2020-02-03 10:15:00'),
+(133988, 1, 'Chest tightness', 'Chest X-ray', 'Hyperinflated lungs', 'Suggestive of COPD', 'Pulmonary rehab needed', 'Bronchodilators prescribed', 'Monitor symptoms', 'Completed','2020-05-01 08:30:00', '2020-05-03 10:15:00'),
+(133989, 1, 'Recurrent fever', 'Chest X-ray', 'Patchy consolidations', 'Bronchopneumonia', 'Needs antibiotics', 'Hospital admission suggested', 'Monitor closely', 'Scheduled','2020-05-01 10:30:00', '2020-05-03 12:15:00'),
+(133990, 1, 'Chronic bronchitis', 'Chest X-ray', 'Peribronchial thickening', 'Consistent with chronic bronchitis', 'Quit smoking advised', 'Cough management plan', 'Regular check-ups', 'Scheduled','2022-02-01 08:30:00', '2022-02-03 10:15:00'),
+(133991, 1, 'Fatigue', 'Chest X-ray', 'Mild cardiomegaly', 'Potential heart strain', 'Further cardiac testing', 'ECG and echocardiogram recommended', 'Pending specialist review', 'Scheduled','2023-02-01 08:30:00', '2023-02-03 10:15:00'),
+(133992, 1, 'Persistent dyspnea', 'Chest X-ray', 'Increased interstitial markings', 'Fibrosis suspected', 'High-resolution CT advised', 'Pulmonary consultation', 'Requires long-term follow-up', 'Scheduled','2024-02-01 08:30:00', '2024-02-03 10:15:00'),
+(133993, 1, 'Lung nodule', 'Chest X-ray', 'Solitary lung nodule', 'Benign features', 'Monitor every 6 months', 'No immediate intervention', 'Patient reassured', 'Completed','2024-02-01 08:31:00', '2024-02-03 10:16:00'),
+(133994, 1, 'Pleuritic chest pain', 'Chest X-ray', 'Pleural thickening', 'Possibly old infection', 'No urgent intervention', 'Symptom-based management', 'Advise return if worsens', 'Scheduled','2024-02-02 08:30:00', '2024-02-03 10:15:00'),
+(133995, 1, 'Smoking history', 'Chest X-ray', 'Subpleural scarring', 'Likely previous inflammation', 'Smoking cessation recommended', 'Monitor lung health', 'Scheduled follow-up', 'Scheduled','2024-02-03 08:30:00', '2024-02-04 10:15:00'),
+(133996, 1, 'Fatigue', 'Chest X-ray', 'Pleural thickening', 'Possibly old infection', 'No urgent intervention', 'Symptom-based management', 'Advise return if worsens', 'Scheduled','2025-02-01 08:30:00', '2024-02-03 10:15:00'),
+(133997, 1, 'Chronic cough', 'Chest X-ray', 'Subpleural scarring', 'Likely previous inflammation', 'Smoking cessation recommended', 'Monitor lung health', 'Scheduled follow-up', 'Scheduled','2025-02-01 08:30:01', '2025-02-03 10:15:01'),
+
+(134996, 2, 'Cough with blood', 'Chest X-ray', 'Upper lobe opacity', 'Possible tuberculosis', 'Requires sputum test', 'Refer to infectious disease specialist', 'Referral letter prepared', 'Scheduled','2015-02-01 08:30:00', '2015-02-03 10:15:00'),
+(134997, 2, 'Chest discomfort', 'Chest X-ray', 'Calcified granulomas', 'Old healed infection', 'No active disease', 'Routine check recommended', 'Patient reassured', 'Completed','2020-02-01 08:30:00', '2020-02-03 10:15:00'),
+(134998, 2, 'Difficulty breathing', 'Chest X-ray', 'Pleural effusion', 'Fluid accumulation', 'Needs drainage', 'Thoracentesis planned', 'Pre-op evaluation', 'Scheduled','2020-05-01 08:30:00', '2020-05-03 10:15:00'),
+(134999, 2, 'Unexplained weight loss', 'Chest X-ray', 'Hilar lymphadenopathy', 'Possible lymphoma', 'CT scan and biopsy needed', 'Oncology referral', 'Discussed with patient', 'Scheduled','2020-05-01 10:30:00', '2020-05-03 12:15:00'),
+(135000, 2, 'Chronic wheezing', 'Chest X-ray', 'Flattened diaphragm', 'Emphysema features', 'Pulmonary function tests advised', 'Smoking cessation required', 'Scheduled appointment', 'Scheduled','2022-02-01 08:30:00', '2022-02-03 10:15:00'),
+(135001, 2, 'Recurrent lung infections', 'Chest X-ray', 'Bronchiectasis signs', 'Chronic lung damage', 'Requires long-term antibiotics', 'Pulmonary rehab recommended', 'Prescription provided', 'Scheduled','2023-02-01 08:30:00', '2023-02-03 10:15:00'),
+(135002, 2, 'Night sweats', 'Chest X-ray', 'Patchy lung opacities', 'Active infection suspected', 'Blood cultures needed', 'Hospitalization suggested', 'Awaiting results', 'Scheduled','2024-02-01 08:30:00', '2024-02-03 10:15:00'),
+(135003, 2, 'Respiratory distress', 'Chest X-ray', 'Bilateral lung infiltrates', 'ARDS suspected', 'Critical care required', 'Mechanical ventilation prepared', 'Admitted to ICU', 'Completed','2024-02-01 08:31:00', '2024-02-03 10:16:00'),
+(135004, 2, 'Night sweats', 'Chest X-ray', 'Patchy lung opacities', 'Active infection suspected', 'Blood cultures needed', 'Hospitalization suggested', 'Awaiting results', 'Scheduled','2024-02-02 08:30:00', '2024-02-03 10:15:00'),
+(135005, 2, 'Respiratory distress', 'Chest X-ray', 'Bilateral lung infiltrates', 'ARDS suspected', 'Critical care required', 'Mechanical ventilation prepared', 'Admitted to ICU','Scheduled','2024-02-03 08:30:00', '2024-02-04 10:15:00'),
+(135006, 2, 'Chronic wheezing', 'Chest X-ray', 'Flattened diaphragm', 'Emphysema features', 'Pulmonary function tests advised', 'Smoking cessation required', 'Scheduled appointment', 'Scheduled','2025-02-01 08:30:00', '2024-02-03 10:15:00'),
+(135007, 2, 'Recurrent lung infections', 'Chest X-ray', 'Bronchiectasis signs', 'Chronic lung damage', 'Requires long-term antibiotics', 'Pulmonary rehab recommended', 'Prescription provided','Completed','2025-02-01 08:30:01', '2025-02-03 10:15:01' ),
+
+(136004, 3, 'Chest congestion', 'Chest X-ray', 'Mild peribronchial cuffing', 'Suggestive of viral infection', 'Symptomatic treatment advised', 'Monitor symptoms', 'Follow-up instructions given', 'Completed','2015-02-01 08:30:00', '2015-02-03 10:15:00'),
+(136005, 3, 'History of smoking', 'Chest X-ray', 'Emphysematous changes', 'Early-stage COPD', 'Pulmonary function test required', 'Smoking cessation essential', 'Scheduled PFT', 'Scheduled','2020-02-01 08:30:00', '2020-02-03 10:15:00'),
+(136006, 3, 'Chronic fatigue', 'Chest X-ray', 'Normal lung fields', 'No acute pathology', 'Reassure patient', 'Lifestyle modifications', 'Discussed healthy habits', 'Completed','2020-05-01 08:30:00', '2020-05-03 10:15:00'),
+(136007, 3, 'Asthma check-up', 'Chest X-ray', 'No acute findings', 'Asthma well-controlled', 'Continue current inhalers', 'Annual follow-up advised', 'Next appointment scheduled', 'Scheduled','2020-05-01 10:30:00', '2020-05-03 12:15:00'),
+(136008, 3, 'Wheezing', 'Chest X-ray', 'Bronchial wall thickening', 'Airway inflammation', 'Increase inhaler dosage', 'Avoid known triggers', 'Inhaler instructions reviewed', 'Scheduled','2022-02-01 08:30:00', '2022-02-03 10:15:00'),
+(136009, 3, 'Occupational exposure', 'Chest X-ray', 'Diffuse lung opacities', 'Possible pneumoconiosis', 'Further occupational health review', 'High-resolution CT required', 'Referral sent', 'Scheduled','2023-02-01 08:30:00', '2023-02-03 10:15:00'),
+(136010, 3, 'Lung pain', 'Chest X-ray', 'Pleural effusion', 'Moderate fluid accumulation', 'Evaluate for infection/malignancy', 'Thoracentesis planned', 'Consent obtained', 'Scheduled','2024-02-01 08:30:00', '2024-02-03 10:15:00'),
+(136011, 3, 'Occupational exposure', 'Chest X-ray', 'Diffuse lung opacities', 'Possible pneumoconiosis', 'Further occupational health review', 'High-resolution CT required', 'Referral sent', 'Scheduled','2024-02-01 08:31:00', '2024-02-03 10:16:00'),
+(136012, 3, 'Lung pain', 'Chest X-ray', 'Pleural effusion', 'Moderate fluid accumulation', 'Evaluate for infection/malignancy', 'Thoracentesis planned', 'Consent obtained', 'Scheduled','2024-02-02 08:30:00', '2024-02-03 10:15:00'),
+(136013, 3, 'Chronic fatigue', 'Chest X-ray', 'Normal lung fields', 'No acute pathology', 'Reassure patient', 'Lifestyle modifications', 'Discussed healthy habits', 'Completed','2024-02-03 08:30:00', '2024-02-04 10:15:00'),
+(136014, 3, 'Asthma check-up', 'Chest X-ray', 'No acute findings', 'Asthma well-controlled', 'Continue current inhalers', 'Annual follow-up advised', 'Next appointment scheduled', 'Scheduled','2025-02-01 08:30:00', '2024-02-03 10:15:00'),
+(136015, 3, 'Tuberculosis screening', 'Chest X-ray', 'Apical scarring', 'Old TB infection', 'Latent TB testing recommended', 'Monitor for reactivation', 'TB test ordered', 'Completed','2025-02-01 08:30:01', '2025-02-03 10:15:01');
+
+
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
-(782316, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/123.png', NOW(), NOW(), 'Normal'),
-(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/235.png', NOW(), NULL, 'Abnormal'),
-(782318, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/432.jpg', NOW(), NOW(), 'Abnormal'),
-(782319, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/984.jpg', NOW(), NOW(), 'Normal');
 
-
--- Insert Annotations
+(782317, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Abnormal'),
+(782318, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/8de1d1a853009572844969d046f99f6b.png', '2002-03-17 07:42:50', '2002-03-17 07:40:50', 'Abnormal'),
+(782319, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Normal'),
+(782320, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal'),
+(782321, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/71a5a3f60976a7b46875a26dfd7a669e.png', '2008-04-02 00:09:21', '2008-04-01 23:58:55', 'Abnormal'),
+(782322, 2, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '2111-12-06 00:17:24', '2111-12-06 21:28:15', 'Abnormal'),
+(782323, 3, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2001-08-25 08:51:31', '2001-08-24 12:01:11', 'Normal'),
+(782324, 3, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/71a5a3f60976a7b46875a26dfd7a669e.png', '1999-10-19 00:17:21', '1999-10-20 00:00:01', 'Abnormal'),
+(782325, 4, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2024-01-26 12:01:56', '2024-01-26 14:21:01', 'Normal'),
+(782326, 4, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '2022-02-11 18:11:47', '2022-02-11 23:49:52', 'Abnormal'),
+(782327, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2001-08-25 08:51:31', '2001-08-24 12:01:11', 'Normal'),
+(782328, 5, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/71a5a3f60976a7b46875a26dfd7a669e.png', '1999-10-19 00:17:21', '1999-10-20 00:00:01', 'Abnormal'),
+(782329, 6, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Abnormal'),
+(782330, 6, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/8de1d1a853009572844969d046f99f6b.png', '2002-03-17 07:42:50', '2002-03-17 07:40:50', 'Abnormal'),
+(782331, 7, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Normal'),
+(782332, 7, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal'),
+(782333, 8, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/71a5a3f60976a7b46875a26dfd7a669e.png', '2008-04-02 00:09:21', '2008-04-01 23:58:55', 'Abnormal'),
+(782334, 8, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '2111-12-06 00:17:24', '2111-12-06 21:28:15', 'Abnormal'),
+(782335, 9, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2001-08-25 08:51:31', '2001-08-24 12:01:11', 'Normal'),
+(782336, 9, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/71a5a3f60976a7b46875a26dfd7a669e.png', '1999-10-19 00:17:21', '1999-10-20 00:00:01', 'Abnormal'),
+(782337, 10, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2024-01-26 12:01:56', '2024-01-26 14:21:01', 'Normal'),
+(782338, 10, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/15b164c54f0bf0baac308b47a45a1468.png', '2022-02-11 18:11:47', '2022-02-11 23:49:52', 'Abnormal'),
+(782339, 11, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1982-07-22 14:23:45', '1982-07-22 13:55:12', 'Abnormal'),
+(782340, 11, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/8de1d1a853009572844969d046f99f6b.png', '2002-03-17 07:42:50', '2002-03-17 07:40:50', 'Abnormal'),
+(782341, 12, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/c6c19cc8f966c6353e663a4e299d9a39.png', '1689-09-16 21:45:10', '1689-09-16 21:11:38', 'Normal'),
+(782342, 12, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/original-images/ff924bcbd38f123aec723aa7040d7e43.png', '2016-12-08 05:37:55', '2016-12-08 05:09:21', 'Normal');
+-- Insert Annotation Images
 INSERT INTO Annotations (image_id, user_id, file_path, created_at) VALUES
-(1, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(2, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(3, 1, '/annotations/patient3_scan1.jpg', NOW()),
-(4, 1, '/annotations/patient3_scan1.jpg', NOW());
 
-
+(1, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(2, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(3, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(4, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(5, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(6, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(7, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(8, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(9, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(10, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(11, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(12, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(13, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(14, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(15, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(16, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(17, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(18, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(19, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(20, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(21, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(22, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30'),
+(23, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/e652b2cebae0a6c74e292b3112d29e6e.png', '1689-09-16 22:02:10'),
+(24, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/ab11a974837f5313912804939bfae79e.png', '2016-12-08 00:15:21'),
+(25, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/778592c49dc5b2bd4f4d4f415e174b5c.png', '1982-07-22 14:35:45'),
+(26, 1, 'https://iweidiuzppeplwhnvedr.supabase.co/storage/v1/object/public/pacs/annotation-images/77f4f19048695b17ba4194ae3b9bea8a.png', '2002-03-17 08:20:30');
