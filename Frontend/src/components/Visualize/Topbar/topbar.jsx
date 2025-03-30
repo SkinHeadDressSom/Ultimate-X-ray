@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Thumbnail from "./thumbnail";
 import Addfile from "./addfile";
 import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
+import { setSelectedImageId } from "../../../redux/selectedImage";
 
-const Topbar = ({ onImageSelect, caseData, allCases }) => {
+const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
+  const dispatch = useDispatch();
+  const selectedImageId = useSelector(
+    (state) => state.selectedImage.selectedImageId
+  ); //ดึงselectedImageId
+
   const [caseList, setCaseList] = useState(() => {
     const savedCases = localStorage.getItem("caseList");
     return savedCases ? JSON.parse(savedCases) : [...caseData];
   });
   const [selectedItems, setSelectedItems] = useState([...caseList]);
   const [isDelete, setIsDelete] = useState(false);
-  const [selectedImageId, setSelectedImageId] = useState(null);
 
   //เอาเคสที่เพิ่มมาเก็บไว้ใน storage
   useEffect(() => {
@@ -41,12 +47,11 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
             ) || latestCase.case_images[0]
           : latestCase.case_images[0];
 
-        setSelectedImageId(firstImage.xn);
+        dispatch(setSelectedImageId(firstImage.xn)); //update selectedImageId
         onImageSelect(firstImage.file_path);
-        localStorage.setItem("selectedImageId", firstImage.xn);
       }
     }
-  }, []);
+  }, [caseList, dispatch]);
 
   //กดเลือกดูเคสให้แสดงที่ thumbnail
   const handleCheckbox = (item) => {
@@ -85,12 +90,12 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
     localStorage.setItem("caseList", JSON.stringify(updatedCaseList));
   };
   // sort thumbnail ตามเลข an
-  const sortedSelectedItems = [...selectedItems].sort((a, b) => a.an - b.an);
+  const sortedSelectedItems = [...selectedItems].sort((a, b) => b.an - a.an);
 
   return (
     <div className="flex flex-row bg-wheat h-28 w-fit border-b-[1px] border-b-light-gray items-start">
       <div className="w-56 min-w-56 h-full border border-light-gray">
-        <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm ">
+        <div className="sticky flex justify-between w-full bg-light-blue border-b border-b-light-gray px-2 p-0.5 text-sm z-50">
           <h1 className="text-darkest-blue font-medium">Studies</h1>
           <div className="flex gap-1">
             <Addfile
@@ -143,7 +148,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
           ))}
         </div>
       </div>
-      <div className="flex flex-row w-full h-full">
+      <div className="flex flex-row w-full h-full z-0">
         {/* เพิ่ม thumbnail รูปภาพตามเคสที่เลือก */}
         {sortedSelectedItems.map((item) => (
           <Thumbnail
@@ -152,7 +157,7 @@ const Topbar = ({ onImageSelect, caseData, allCases }) => {
             onClose={handleCloseSection}
             onImageSelect={onImageSelect}
             selectedImageId={selectedImageId}
-            setSelectedImageId={setSelectedImageId}
+            annotationMap={annotationMap}
           />
         ))}
       </div>

@@ -5,7 +5,6 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-import Analysis from "./components/tools/analysis";
 
 function App() {
   const router = createBrowserRouter([
@@ -41,15 +40,6 @@ function App() {
         </>
       ),
     },
-    {
-      path: "/Analysis",
-      element: (
-        <>
-          <Analysis />
-        </>
-      ),
-    }
-
   ]);
 
 
