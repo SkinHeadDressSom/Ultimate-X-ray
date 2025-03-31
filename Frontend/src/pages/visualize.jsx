@@ -5,17 +5,18 @@ import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
 import { useLocation } from "react-router-dom";
 import { getLayoutImages } from "../utils/layoutUtils";
-import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
 import { setSelectedCases } from "../redux/selectedCase";
-import { resetContrast, resetBrightness } from "../redux/visualize";
 import { setSelectedImageId } from "../redux/selectedImage";
 import useAnnotationImages from "../hooks/useAnnotationImages";
-import { setAnnotationMap } from "../redux/visualize";
+import { setImageUrls, setLayout, resetContrast, resetBrightness, setAnnotationMap } from "../redux/visualize";
+import CircularProgress from "@mui/material/CircularProgress";
+import Backdrop from "@mui/material/Backdrop";
+
 
 const Visualize = () => {
   const dispatch = useDispatch();
-  const { imageUrls, selectedPosition, annotationMap } = useSelector(
+  const { imageUrls, selectedPosition, annotationMap, isLoading } = useSelector(
     (state) => state.visualize
   );
 
@@ -89,8 +90,25 @@ const Visualize = () => {
     };
   }, [location]);
 
+  useEffect(() => {
+    console.log("isLoading state changed:", isLoading);
+  }, [isLoading]);
+
   return (
     <div className="w-screen max-h-lvh h-full">
+      {/* Backdrop with CircularProgress */}
+      {isLoading && (
+        <Backdrop
+          open={true}
+          style={{
+            zIndex: 1000, // Ensure it appears above other elements
+            color: "#fff",
+          }}
+        >
+          <CircularProgress />
+        </Backdrop>
+      )}
+
       <div className="z-50 relative">
         <Topbar
           onImageSelect={handleImageSelect}
