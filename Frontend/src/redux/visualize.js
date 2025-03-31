@@ -17,6 +17,8 @@ const initialState = {
   isDrawMode: false,
   detectionBoxes: [],
   showDetectionBoxes: false,
+  annotationMap: {},
+  isLoading: false,
 };
 
 const visualizeSlice = createSlice({
@@ -83,6 +85,12 @@ const visualizeSlice = createSlice({
     setShowDetectionBoxes: (state, action) => {
       state.showDetectionBoxes = action.payload;
     },
+    setAnnotationMap: (state, action) => {
+      state.annotationMap = action.payload;
+    },
+    setIsLoading: (state, action) => {
+      state.isLoading = action.payload;
+    },
   },
 });
 
@@ -105,6 +113,8 @@ export const {
   setIsDrawMode,
   setDetectionBoxes,
   setShowDetectionBoxes,
+  setAnnotationMap,
+  setIsLoading,
 } = visualizeSlice.actions;
 
 export default visualizeSlice.reducer;

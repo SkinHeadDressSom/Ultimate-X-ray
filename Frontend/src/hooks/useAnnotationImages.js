@@ -1,20 +1,35 @@
 import { useState, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
 import axios from "axios";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const useAnnotationImages = (xnArray) => {
   const [annotations, setAnnotations] = useState({});
   const prevXnArrayRef = useRef([]);
+  const { isLoading } = useSelector((state) => state.visualize);
+  const prevIsLoadingRef = useRef(false);
 
   useEffect(() => {
+    const wasLoading = prevIsLoadingRef.current;
+    const prevXnArray = prevXnArrayRef.current;
+
+    prevIsLoadingRef.current = isLoading;
+    prevXnArrayRef.current = xnArray;
+
+    const hasXnArrayChanged =
+      prevXnArray.length !== xnArray.length ||
+      !prevXnArray.every((val, index) => val === xnArray[index]);
+
     if (
-      xnArray.length === 0 ||
-      (prevXnArrayRef.current.length === xnArray.length &&
-        prevXnArrayRef.current.every((val, index) => val === xnArray[index]))
+      xnArray.length === 0
     ) {
       return;
     }
-    prevXnArrayRef.current = xnArray;
+
+    if (!hasXnArrayChanged && !(wasLoading && !isLoading)) {
+      return;
+    }
+
     const fetchAnnotations = async () => {
       const results = await Promise.all(
         xnArray.map(async (xn) => {
@@ -30,6 +45,7 @@ const useAnnotationImages = (xnArray) => {
           }
         })
       );
+
       // Create a mapping of xn to its annotation data
       const annotationMap = {};
       results.forEach(({ xn, data }) => {
@@ -39,8 +55,14 @@ const useAnnotationImages = (xnArray) => {
       setAnnotations(annotationMap);
     };
 
-    fetchAnnotations();
-  }, [xnArray]);
+    fetchAnnotations()
+      .then(() => {
+        console.log("Fetched annotations successfully");
+      })
+      .catch((error) => {
+        console.error("Error fetching annotations:", error);
+      });
+  }, [xnArray, isLoading]);
 
   return annotations;
 };
