@@ -16,8 +16,7 @@ const SystemTools = ({ canvasRef }) => {
     (state) => state.selectedImage.selectedImageId
   );
   //รับข้อมูลรูป
-  const imageUrls = useSelector((state) => state.visualize.imageUrls);
-  const { selectedPosition, contrast, brightness, isLoading } = useSelector(
+  const { imageUrls, selectedPosition, contrast, brightness, isLoading } = useSelector(
     (state) => state.visualize
   );
   //รับiconของปุ่ม

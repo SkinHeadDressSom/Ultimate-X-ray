@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useMemo } from "react";
+import React, { useCallback, useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
@@ -24,6 +24,7 @@ const Visualize = () => {
   const caseData = location.state?.caseData || []; //เลือกเคสเดียว
   const allCases = location.state?.allCases || [];
   const selectedCases = location.state?.selectedCases || []; //เลือกหลายเคส
+  
   useEffect(() => {
     if (selectedCases.length > 0) {
       dispatch(setSelectedCases(selectedCases));
@@ -45,7 +46,7 @@ const Visualize = () => {
   
   useEffect(() => {
     dispatch(setAnnotationMap(annotations));
-  }, [xnValues, dispatch]);
+  }, [xnValues, annotations, dispatch]);
 
   // Create a ref for canvases
   const canvasRef = useRef([]);
@@ -89,10 +90,6 @@ const Visualize = () => {
       dispatch(setSelectedImageId(null));
     };
   }, [location]);
-
-  useEffect(() => {
-    console.log("isLoading state changed:", isLoading);
-  }, [isLoading]);
 
   return (
     <div className="w-screen max-h-lvh h-full">
