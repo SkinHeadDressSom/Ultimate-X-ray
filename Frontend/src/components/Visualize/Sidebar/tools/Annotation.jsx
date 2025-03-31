@@ -1,64 +1,66 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AddText, Arrow, Circle, Hide, Ruler, Square } from "../toolsdata";
 import Colorpopup from "../Popup/colorpop";
-import { useDispatch, useSelector } from "react-redux";
 import {
   setSelectedShape,
   setIsTextMode,
   setSelectedColor,
   setIsAnnotationHidden,
   setOnPointerClick,
+  setIsDragMode,
 } from "../../../../redux/visualize";
 
-const Annotaion = () => {
+const buttons = [
+  { id: "arrow", icon: Arrow },
+  { id: "circle", icon: Circle },
+  { id: "square", icon: Square },
+  { id: "text", icon: AddText },
+  { id: "measurement", icon: Ruler },
+  { id: "hide", icon: Hide },
+];
+
+const Annotation = () => {
   const dispatch = useDispatch();
-  const { selectedColor, isAnnotationHidden, onPointerClick } = useSelector(
-    (state) => state.visualize
-  );
+  const { selectedColor, isAnnotationHidden, onPointerClick, isDragMode } =
+    useSelector((state) => state.visualize);
 
   const [activeId, setActiveId] = useState(null);
   const [showColorPopup, setShowColorPopup] = useState(false);
 
-  const buttons = [
-    { id: "arrow", icon: Arrow },
-    { id: "circle", icon: Circle },
-    { id: "square", icon: Square },
-    { id: "text", icon: AddText },
-    { id: "measurement", icon: Ruler },
-    { id: "hide", icon: Hide },
-  ];
+  const handleButtonClick = useCallback(
+    (id) => {
+      dispatch(setOnPointerClick(false));
+      dispatch(setIsDragMode(false));
+      if (id === "hide") {
+        dispatch(setIsAnnotationHidden(!isAnnotationHidden));
+        setActiveId(isAnnotationHidden ? null : "hide");
+      } else {
+        setActiveId(id);
+        dispatch(setSelectedShape(id));
 
-  const handleButtonClick = (id) => {
-    if (id === "pointer") {
-      setActiveId(null);
-      dispatch(setSelectedShape(null));
-      dispatch(setIsTextMode(false));
-      setShowColorPopup(false);
-      dispatch(setIsAnnotationHidden(false));
-      dispatch(setOnPointerClick(false));
-    } else if (id === "hide") {
-      dispatch(setOnPointerClick(false));
-      dispatch(setIsAnnotationHidden(!isAnnotationHidden));
-      setActiveId((prev) => (!prev || !isAnnotationHidden ? "hide" : null));
-    } else {
-      setActiveId(id);
-      dispatch(setOnPointerClick(false));
-      dispatch(setSelectedShape(id));
-      if (id === "text") {
-        dispatch(setIsTextMode(true));
-        setShowColorPopup((prev) => !prev);
-      } else if (id === "arrow" || id === "circle" || id === "square") {
-        setShowColorPopup((prev) => !prev);
+        if (id === "text") {
+          dispatch(setIsTextMode(true));
+          setShowColorPopup(true);
+        } else if (["arrow", "circle", "square"].includes(id)) {
+          setShowColorPopup(true);
+        }
       }
-    }
-  };
+    },
+    [dispatch, isAnnotationHidden]
+  );
 
   useEffect(() => {
-    if (onPointerClick === true) {
+    if (onPointerClick || isDragMode) {
       setActiveId(null);
+      setShowColorPopup(false);
+      dispatch(setSelectedShape(null));
+      dispatch(setIsTextMode(false));
+      dispatch(setIsAnnotationHidden(false));
+      dispatch(setOnPointerClick(false));
     }
-  }, [onPointerClick]);
+  }, [onPointerClick, isDragMode, dispatch]);
 
   return (
     <div className="flex flex-col items-center justify-center bg-light-blue rounded-lg gap-y-2 p-2 w-full">
@@ -84,4 +86,4 @@ const Annotaion = () => {
   );
 };
 
-export default Annotaion;
+export default Annotation;

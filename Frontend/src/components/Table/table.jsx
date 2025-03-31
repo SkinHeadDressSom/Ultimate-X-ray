@@ -21,6 +21,10 @@ const Table = ({ patientCases, loading, patient }) => {
 
   const { patient_cases } = patientCases || {};
   const [checkedState, setCheckedState] = useState([]);
+  //sorting cases and filtering cases
+  const [sortOrder, setSortOrder] = useState(null);
+  const [statusFilter, setStatusFilter] = useState([]);
+
   const navigate = useNavigate();
   // Common table cell styles
   const commonStyles = {
@@ -33,6 +37,8 @@ const Table = ({ patientCases, loading, patient }) => {
     patient_cases?.length || 0,
     10
   );
+  const indexOfLastCase = currentPage * 10;
+  const indexOfFirstCase = indexOfLastCase - 10;
   const casesWithImages = useCaseImages(patient_cases);
 
   // 1. Gather all unique xn values from casesWithImages
@@ -61,12 +67,6 @@ const Table = ({ patientCases, loading, patient }) => {
     }));
   }, [casesWithImages, annotationMap]);
 
-  // console.log("====================== annotatedCases", annotatedCases);
-  const indexOfLastCase = currentPage * 10;
-  const indexOfFirstCase = indexOfLastCase - 10;
-  const currentCases = Array.isArray(patient_cases)
-    ? patient_cases.slice(indexOfFirstCase, indexOfLastCase)
-    : [];
   // Status Component Selector
   const renderStatus = (status) => {
     if (status === "Completed") {
@@ -76,6 +76,37 @@ const Table = ({ patientCases, loading, patient }) => {
     }
     return null;
   };
+  //ฟังก์ชัน filter/sort
+  const sortedAndFilteredCases = useMemo(() => {
+    if (!patient_cases) return [];
+    let filtered = [...patient_cases];
+    if (statusFilter.length > 0) {
+      filtered = filtered.filter((caseItem) =>
+        statusFilter.includes(caseItem.status)
+      );
+    }
+    return filtered.sort((a, b) => {
+      if (sortOrder === "asc") {
+        return (
+          new Date(a.study_date + " " + a.time) -
+          new Date(b.study_date + " " + b.time)
+        );
+      } else if (sortOrder === "desc") {
+        return (
+          new Date(b.study_date + " " + b.time) -
+          new Date(a.study_date + " " + a.time)
+        );
+      }
+      return 0;
+    });
+  }, [patient_cases, sortOrder, statusFilter]);
+
+  const handleStatusFilterChange = (selectedStatuses) => {
+    setStatusFilter(selectedStatuses);
+  };
+  const currentCases = Array.isArray(sortedAndFilteredCases)
+    ? sortedAndFilteredCases.slice(indexOfFirstCase, indexOfLastCase)
+    : [];
   // Skeleton Loader Row Component
   const SkeletonRow = () => (
     <tr className="even:bg-extra-light-blue odd:bg-wheat">
@@ -152,11 +183,11 @@ const Table = ({ patientCases, loading, patient }) => {
               </th>
               <th className={commonStyles.tableHead}>No.</th>
               <th className={commonStyles.tableHead}>
-                <Filter />
+                <Filter onStatusFilterChange={handleStatusFilterChange} />
               </th>
               <th className={commonStyles.tableHead}>Description</th>
               <th className={commonStyles.tableHead}>
-                <Dropdown />
+                <Dropdown setSortOrder={setSortOrder} />
               </th>
               <th className={commonStyles.tableHead}>Time</th>
               <th className={commonStyles.tableHead}>Accession No.</th>
@@ -168,8 +199,8 @@ const Table = ({ patientCases, loading, patient }) => {
               Array(2)
                 .fill(0)
                 .map((_, index) => <SkeletonRow key={index} />)
-            ) : Array.isArray(patient_cases) && patient_cases.length > 0 ? (
-              patient_cases.map((caseItem, index) => (
+            ) : Array.isArray(currentCases) && currentCases.length > 0 ? (
+              currentCases.map((caseItem, index) => (
                 <tr
                   key={caseItem.an}
                   className="even:bg-extra-light-blue odd:bg-wheat hover:bg-lightest-blue hover:cursor-pointer"
@@ -238,7 +269,7 @@ const Table = ({ patientCases, loading, patient }) => {
       </div>
       <div className="flex justify-between mt-2">
         <div className="text-vivid-blue">
-          Total {patient_cases?.length || 0} studies
+          Total {sortedAndFilteredCases?.length || 0} studies
         </div>
         {totalPages > 1 && (
           <Pagination

@@ -3,11 +3,12 @@ import { ReactComponent as Assending } from "../../assets/ascending.svg";
 import { ReactComponent as Desending } from "../../assets/decending.svg";
 import { ReactComponent as ExpandUD } from "../../assets/expandUpDown.svg";
 
-const Dropdown = () => {
+const Dropdown = ({ setSortOrder }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const buttonRef = useRef(null);
-
+  const handleSortAscending = () => setSortOrder("asc");
+  const handleSortDescending = () => setSortOrder("desc");
   const commonItemContainerStyles =
     "inline-flex w-full items-center px-2 py-2 gap-2 rounded-md hover:bg-light-blue hover:cursor-pointer";
 
@@ -50,14 +51,20 @@ const Dropdown = () => {
         >
           <div className="py-1 px-2 font-normal text-darkest-blue">
             {/* Sort ascending */}
-            <div className={commonItemContainerStyles}>
+            <div
+              className={commonItemContainerStyles}
+              onClick={handleSortAscending}
+            >
               <Assending />
               <p role="menuitem" tabIndex="-1">
                 Sort ascending
               </p>
             </div>
             {/* Sort descending */}
-            <div className={commonItemContainerStyles}>
+            <div
+              className={commonItemContainerStyles}
+              onClick={handleSortDescending}
+            >
               <Desending />
               <p role="menuitem" tabIndex="-1">
                 Sort descending
