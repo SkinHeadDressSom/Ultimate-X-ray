@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { SaveIcon, PrintIcon } from "../toolsdata";
 import ReportPopup from "../Popup/reportPopup";
+import { setIsSaving } from "../../../../redux/visualize";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const SystemTools = ({ canvasRef }) => {
+  const dispatch = useDispatch();
   const [activeId, setActiveId] = useState(null);
   const [showReportPopup, setShowReportPopup] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   //รับxn
   const selectedImageId = useSelector(
     (state) => state.selectedImage.selectedImageId
   );
   //รับข้อมูลรูป
   const imageUrls = useSelector((state) => state.visualize.imageUrls);
-  const { selectedPosition, contrast, brightness } = useSelector(
+  const { selectedPosition, contrast, brightness, isSaving } = useSelector(
     (state) => state.visualize
   );
   //รับiconของปุ่ม
@@ -35,7 +36,7 @@ const SystemTools = ({ canvasRef }) => {
       } catch (error) {
         console.error("Error saving canvas:", error);
       } finally {
-        setIsSaving(false);
+        dispatch(setIsSaving(false));
       }
     }
   };
@@ -46,13 +47,13 @@ const SystemTools = ({ canvasRef }) => {
       canvasRef.current.length > 0 &&
       imageUrls.length > 0
     ) {
-      setIsSaving(true);
+      dispatch(setIsSaving(true));
       const selectedCanvas = canvasRef.current[0];
       const imageUrl = imageUrls[0];
       await combineXRayAndAnnotation(selectedCanvas, imageUrl, "combined.png");
-      setIsSaving(false);
+      dispatch(setIsSaving(false));
     } else {
-      setIsSaving(false);
+      dispatch(setIsSaving(false));
     }
   };
   //รวมรูปX-rayกับAnnotation

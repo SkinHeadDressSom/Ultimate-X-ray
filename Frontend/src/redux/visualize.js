@@ -18,6 +18,7 @@ const initialState = {
   detectionBoxes: [],
   showDetectionBoxes: false,
   annotationMap: {},
+  isSaving: false,
 };
 
 const visualizeSlice = createSlice({
@@ -86,7 +87,10 @@ const visualizeSlice = createSlice({
     },
     setAnnotationMap: (state, action) => {
       state.annotationMap = action.payload;
-    }
+    },
+    setIsSaving: (state, action) => {
+      state.isSaving = action.payload;
+    },
   },
 });
 
@@ -110,6 +114,7 @@ export const {
   setDetectionBoxes,
   setShowDetectionBoxes,
   setAnnotationMap,
+  setIsSaving,
 } = visualizeSlice.actions;
 
 export default visualizeSlice.reducer;
