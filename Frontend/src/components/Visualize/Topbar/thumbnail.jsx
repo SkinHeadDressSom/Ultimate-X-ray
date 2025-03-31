@@ -18,7 +18,7 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
     annotation: {},
     original: {},
   });
-
+  const [loading, setLoading] = useState(true);
   //เช็คว่ามีไฟล์ภาพจริงๆไหม
   const checkImageExist = (url) => {
     return new Promise((resolve) => {
@@ -43,6 +43,7 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
         }
       }
       setValidImagePaths(newValidPaths);
+      setLoading(false);
     };
     checkImages();
   }, [item, annotationMap]);
@@ -70,49 +71,57 @@ function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
         {item.case_images.map((imageObj) => (
           <div key={imageObj.xn} className="relative flex flex-row gap-1">
             {/* original */}
-            {validImagePaths.original[imageObj.xn] && (
-              <img
-                src={imageObj.file_path}
-                alt={imageObj.xn}
-                onClick={() => {
-                  onImageSelect(imageObj.file_path);
-                  dispatch(setSelectedImageId(imageObj.xn));
-                  setSelectedAnnotationId(null);
-                  dispatch(setShowDetectionBoxes(false));
-                }}
-                className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
-                  selectedImageId === imageObj.xn
-                    ? "border-2 border-vivid-blue"
-                    : ""
-                }`}
-              />
+            {loading ? (
+              <div className="w-20 h-20 bg-gray animate-pulse rounded-md" />
+            ) : (
+              validImagePaths.original[imageObj.xn] && (
+                <img
+                  src={imageObj.file_path}
+                  alt={imageObj.xn}
+                  onClick={() => {
+                    onImageSelect(imageObj.file_path);
+                    dispatch(setSelectedImageId(imageObj.xn));
+                    setSelectedAnnotationId(null);
+                    dispatch(setShowDetectionBoxes(false));
+                  }}
+                  className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
+                    selectedImageId === imageObj.xn
+                      ? "border-2 border-vivid-blue"
+                      : ""
+                  }`}
+                />
+              )
             )}
             {/*  annotation_image*/}
             {annotationMap[imageObj.xn] &&
-              validImagePaths.annotation[imageObj.xn] && (
-                <div
-                  onClick={() => {
-                    onImageSelect(annotationMap[imageObj.xn].file_path);
-                    setSelectedAnnotationId(imageObj.xn);
-                    dispatch(setSelectedImageId(null));
-                    dispatch(setShowDetectionBoxes(false));
-                  }}
-                >
-                  <img
-                    src={annotationMap[imageObj.xn].file_path}
-                    alt="annotation"
-                    className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
-                      selectedAnnotationId === imageObj.xn
-                        ? "border-2 border-vivid-blue"
-                        : ""
-                    }`}
-                  />
-                  <MagicWand
-                    className="absolute w-6 h-6 right-0 top-0"
-                    fill="#FFFDFD"
-                  />
-                </div>
-              )}
+              (loading ? (
+                <div className="w-20 h-20 bg-gray animate-pulse rounded-md" />
+              ) : (
+                validImagePaths.annotation[imageObj.xn] && (
+                  <div
+                    onClick={() => {
+                      onImageSelect(annotationMap[imageObj.xn].file_path);
+                      setSelectedAnnotationId(imageObj.xn);
+                      dispatch(setSelectedImageId(null));
+                      dispatch(setShowDetectionBoxes(false));
+                    }}
+                  >
+                    <img
+                      src={annotationMap[imageObj.xn].file_path}
+                      alt="annotation"
+                      className={`w-20 h-20 object-cover rounded-md hover:cursor-pointer ${
+                        selectedAnnotationId === imageObj.xn
+                          ? "border-2 border-vivid-blue"
+                          : ""
+                      }`}
+                    />
+                    <MagicWand
+                      className="absolute w-6 h-6 right-0 top-0"
+                      fill="#FFFDFD"
+                    />
+                  </div>
+                )
+              ))}
           </div>
         ))}
       </div>
