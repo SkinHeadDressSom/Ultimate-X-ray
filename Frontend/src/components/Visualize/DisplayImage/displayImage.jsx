@@ -109,7 +109,6 @@ const DisplayImage = ({ caseData, canvasRef }) => {
   return (
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
-
         const contrastValue = calculateContrast(contrast[image] || 0);
         const brightnessValue = calculateBrightness(brightness[image] || 0);
 
@@ -135,7 +134,17 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                   >
-                    <canvas ref={(el) => (canvasRef.current[index] = el)} />
+                    <canvas
+                      ref={(el) => (canvasRef.current[index] = el)}
+                      style={{
+                        zIndex: 1,
+                        transform: `translate(${position[index]?.x || 0}px, ${
+                          position[index]?.y || 0
+                        }px) scale(${scale[index] || 1})`,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
                     <img
                       src={image}
                       alt={`x-ray-${index}`}
@@ -160,15 +169,19 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                           style={{
                             left: `${(box.xmin / imageWidth) * 100}%`,
                             top: `${(box.ymin / imageHeight) * 100}%`,
-                            width: `${((box.xmax - box.xmin) / imageWidth) * 100}%`,
-                            height: `${((box.ymax - box.ymin) / imageHeight) * 100}%`,
+                            width: `${
+                              ((box.xmax - box.xmin) / imageWidth) * 100
+                            }%`,
+                            height: `${
+                              ((box.ymax - box.ymin) / imageHeight) * 100
+                            }%`,
                           }}
                         >
                           <span
                             className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1 whitespace-nowrap"
                             style={{
-                              top: '-1.5em',
-                              left: '-2px',
+                              top: "-1.5em",
+                              left: "-2px",
                               zIndex: 1,
                             }}
                           >
