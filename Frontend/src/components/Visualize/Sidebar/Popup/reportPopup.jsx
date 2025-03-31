@@ -9,6 +9,7 @@ import "../style/report.css";
 import { ReactComponent as PinIcon } from "../../../../assets/report/pin.svg";
 import { ReactComponent as EmailIcon } from "../../../../assets/report/email.svg";
 import { ReactComponent as PhoneIcon } from "../../../../assets/report/phone.svg";
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ReportPopup = ({ onClose }) => {
   const selectedCases = useSelector(
@@ -35,7 +36,7 @@ const ReportPopup = ({ onClose }) => {
   const handleSave = async () => {
     try {
       const response = await axios.patch(
-        `http://localhost:8000/fetch-data/api/report/${selectedCases.an}/save`,
+        `${API_URL}/fetch-data/api/report/${selectedCases.an}/save`,
         {
           clinical_history: sectionValues.clinicalHistory,
           examination_details: sectionValues.examinationDetails,

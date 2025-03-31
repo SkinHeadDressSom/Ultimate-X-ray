@@ -6,7 +6,7 @@ import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
 import { setSelectedImageId } from "../../../redux/selectedImage";
 
-const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
+const Topbar = ({ onImageSelect, caseData, allCases }) => {
   const dispatch = useDispatch();
   const selectedImageId = useSelector(
     (state) => state.selectedImage.selectedImageId
@@ -157,7 +157,6 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
             onClose={handleCloseSection}
             onImageSelect={onImageSelect}
             selectedImageId={selectedImageId}
-            annotationMap={annotationMap}
           />
         ))}
       </div>
