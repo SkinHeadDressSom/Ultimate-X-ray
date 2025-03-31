@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./display.css";
-import { setSelectedPosition } from "../../../redux/visualize";
+import { setSelectedPosition, setPosition } from "../../../redux/visualize";
 import useDragAndDrop from "../../../hooks/useDragAndDrop.js";
 
 const DisplayImage = ({ caseData, canvasRef }) => {
@@ -105,7 +105,10 @@ const DisplayImage = ({ caseData, canvasRef }) => {
       stopDrag();
     }
   };
-
+  useEffect(() => {
+    // รีเซ็ตตำแหน่งทั้งหมดเมื่อ layout เปลี่ยน
+    dispatch(setPosition(imageUrls.map(() => ({ x: 0, y: 0 }))));
+  }, [layout, dispatch, imageUrls]);
   return (
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
@@ -125,10 +128,15 @@ const DisplayImage = ({ caseData, canvasRef }) => {
             }`}
           >
             {image ? (
-              <div className={`w-full h-full ${getBorderClasses(index)}`}>
+              <div
+                className={`w-full h-full overflow-hidden ${getBorderClasses(
+                  index
+                )}`}
+                id={`container-${index}`}
+              >
                 <div className="w-full h-full flex justify-center items-center">
                   <div
-                    className={`w-fit h-full overflow-hidden relative`}
+                    className="w-fit h-full relative"
                     onMouseDown={(e) => handleMouseDown(e, index)}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
@@ -141,14 +149,13 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0
                         }px) scale(${scale[index] || 1})`,
-                        maxWidth: "100%",
-                        maxHeight: "100%",
                       }}
                     />
                     <img
                       src={image}
                       alt={`x-ray-${index}`}
                       className="w-full h-full object-contain rounded-none"
+                      id="image-container"
                       style={{
                         filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
                         zIndex: 0,
