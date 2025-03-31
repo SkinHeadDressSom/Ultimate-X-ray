@@ -11,9 +11,11 @@ import { setSelectedCases } from "../redux/selectedCase";
 import { resetContrast, resetBrightness } from "../redux/visualize";
 import { setSelectedImageId } from "../redux/selectedImage";
 import useAnnotationImages from "../hooks/useAnnotationImages";
+import { setAnnotationMap } from "../redux/visualize";
+
 const Visualize = () => {
   const dispatch = useDispatch();
-  const { imageUrls, selectedPosition } = useSelector(
+  const { imageUrls, selectedPosition, annotationMap } = useSelector(
     (state) => state.visualize
   );
 
@@ -37,7 +39,13 @@ const Visualize = () => {
       ),
     [casesToDisplay]
   );
-  const annotationMap = useAnnotationImages(xnValues);
+  
+  const annotations = useAnnotationImages(xnValues);
+  
+  useEffect(() => {
+    dispatch(setAnnotationMap(annotations));
+  }, [xnValues, dispatch]);
+
   // Create a ref for canvases
   const canvasRef = useRef([]);
   const { canvases, undo, redo } = useFabricCanvas(canvasRef);
@@ -88,7 +96,6 @@ const Visualize = () => {
           onImageSelect={handleImageSelect}
           caseData={casesToDisplay}
           allCases={allCases}
-          annotationMap={annotationMap}
         />
       </div>
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>

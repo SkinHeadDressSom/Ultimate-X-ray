@@ -6,13 +6,15 @@ import { ReactComponent as MagicWand } from "../../../assets/topbar/magicwand.sv
 import { setSelectedImageId } from "../../../redux/selectedImage";
 import { setShowDetectionBoxes } from "../../../redux/visualize";
 
-function Thumbnail({ item, onClose, onImageSelect, annotationMap }) {
+function Thumbnail({ item, onClose, onImageSelect }) {
   const dispatch = useDispatch();
   const [isHovered, setIsHovered] = useState(false);
   const selectedImageId = useSelector(
     (state) => state.selectedImage.selectedImageId
   );
-  const { showDetectionBoxes } = useSelector((state) => state.visualize);
+  const { showDetectionBoxes, annotationMap } = useSelector(
+    (state) => state.visualize
+  );
   const [selectedAnnotationId, setSelectedAnnotationId] = useState(null);
   const [validImagePaths, setValidImagePaths] = useState({
     annotation: {},
