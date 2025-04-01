@@ -65,6 +65,7 @@ function Login() {
               placeholder="Enter your username"
               className="flex w-full overflow-hidden appearance-none border-[1px] rounded-full text-vivid-blue border-light-gray leading-tight items-center focus:border-vivid-blue focus:ring-1 focus:ring-vivid-blue py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-base focus:outline-none"
               required
+              autoFocus
             />
           </div>
 

@@ -261,6 +261,14 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
     const stopMeasurement = () => {
         canvas.off("mouse:move", updateMeasurement);
         canvas.off("mouse:up", stopMeasurement);
+        //grouping
+        const measurementGroup = new fabric.Group([line, startTick, endTick, tickMark, text], {
+            selectable: true,
+            evented: true,
+        });
+
+        canvas.remove(line, startTick, endTick, tickMark, text);
+        canvas.add(measurementGroup);
     };
     
     canvas.on("mouse:move", updateMeasurement);

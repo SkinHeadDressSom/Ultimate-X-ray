@@ -66,6 +66,7 @@ const SearchPatient = () => {
               placeholder="Enter patient ID"
               value={patientID}
               onChange={handleChange}
+              autoFocus
               className="overflow-hidden w-full outline-none bg-transparent py-2 px-3 placeholder:font-light 2xl:placeholder:text-lg placeholder:text-sm border-[1px] rounded-full text-vivid-blue border-light-gray leading-tight items-center focus:border-vivid-blue focus:ring-1 focus:ring-vivid-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <button
