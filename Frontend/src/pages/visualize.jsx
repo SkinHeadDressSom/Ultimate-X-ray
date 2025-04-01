@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useRef, useMemo } from "react";
+import React, { useCallback, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Topbar from "../components/Visualize/Topbar/topbar";
 import Toolbar from "../components/Visualize/Sidebar/ToolBar";
@@ -6,13 +6,18 @@ import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
 import { useLocation } from "react-router-dom";
 import { getLayoutImages } from "../utils/layoutUtils";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
-import { setSelectedCases } from "../redux/selectedCase";
+import { setSelectedCases, resetSelectedAN } from "../redux/selectedCase";
 import { setSelectedImageId } from "../redux/selectedImage";
 import useAnnotationImages from "../hooks/useAnnotationImages";
-import { setImageUrls, setLayout, resetContrast, resetBrightness, setAnnotationMap } from "../redux/visualize";
+import {
+  setImageUrls,
+  setLayout,
+  resetContrast,
+  resetBrightness,
+  setAnnotationMap,
+} from "../redux/visualize";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
-
 
 const Visualize = () => {
   const dispatch = useDispatch();
@@ -24,7 +29,7 @@ const Visualize = () => {
   const caseData = location.state?.caseData || []; //เลือกเคสเดียว
   const allCases = location.state?.allCases || [];
   const selectedCases = location.state?.selectedCases || []; //เลือกหลายเคส
-  
+
   useEffect(() => {
     if (selectedCases.length > 0) {
       dispatch(setSelectedCases(selectedCases));
@@ -41,9 +46,9 @@ const Visualize = () => {
       ),
     [casesToDisplay]
   );
-  
+
   const annotations = useAnnotationImages(xnValues);
-  
+
   useEffect(() => {
     dispatch(setAnnotationMap(annotations));
   }, [xnValues, annotations, dispatch]);
@@ -88,6 +93,7 @@ const Visualize = () => {
       dispatch(resetContrast());
       dispatch(resetBrightness());
       dispatch(setSelectedImageId(null));
+      dispatch(resetSelectedAN());
     };
   }, [location]);
 
