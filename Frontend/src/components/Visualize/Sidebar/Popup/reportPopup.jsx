@@ -14,10 +14,21 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 const ReportPopup = ({ onClose }) => {
   //ดึงเลข hn
   const patientHN = useSelector((state) => state.patient?.data.hn);
+  //ดึงเลข AN ที่เลือก
+  const selectedAN = useSelector((state) => state.selectedCases.selectedAN);
   //ดึงเคสที่เลือก
-  const selectedCases = useSelector(
-    (state) => state.selectedCases.selectedCases[0]
-  );
+  const [selectedCases, setSelectedCase] = useState(null);
+
+  useEffect(() => {
+    const storedCases = localStorage.getItem("caseList");
+    if (storedCases) {
+      const parsedCases = JSON.parse(storedCases);
+      const matchedCase = parsedCases.find((c) => c.an === selectedAN);
+      if (matchedCase) {
+        setSelectedCase(matchedCase);
+      }
+    }
+  }, [selectedAN]);
   //ดึงข้อมูลเคส
   const [caseData, setCaseData] = useState(null);
   const printableAreaRef = useRef();
