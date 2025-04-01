@@ -25,6 +25,12 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
   useEffect(() => {
     localStorage.setItem("caseList", JSON.stringify(caseList));
   }, [caseList]);
+  //ถ้ายังไม่มี selectedAN ให้เลือกเคสแรกสุด
+  useEffect(() => {
+    if (!selectedAN && caseList.length > 0) {
+      dispatch(setSelectedAN(caseList[0].an));
+    }
+  }, [caseList, selectedAN, dispatch]);
 
   //ภาพแรกสุดของเคสล่าสุดให้เปิดรอไว้
   useEffect(() => {
