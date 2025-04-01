@@ -10,10 +10,10 @@ const DetailRow = ({ label, value }) => (
 );
 const Information = () => {
   const patient = useSelector((state) => state.patient?.data);
-  const selectedCases = useSelector(
-    (state) => state.selectedCases.selectedCases[0]
-  );
+  const selectedAN = useSelector((state) => state.selectedCases.selectedAN);
   const user = useSelector((state) => state.auth?.user);
+  const storedCases = JSON.parse(localStorage.getItem("caseList")) || [];
+  const selectedCases = storedCases.find((c) => c.an === selectedAN) || {};
   const Date_Time = new Date();
   const hours = Date_Time.getHours();
   const minutes = Date_Time.getMinutes().toString().padStart(2, "0");

@@ -35,6 +35,7 @@ const Annotation = () => {
       dispatch(setIsDragMode(false));
       if (id === "hide") {
         dispatch(setIsAnnotationHidden(!isAnnotationHidden));
+        dispatch(setSelectedShape(null));
         setActiveId(isAnnotationHidden ? null : "hide");
       } else {
         setActiveId(id);

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import Information from "../Report/information";
@@ -12,26 +12,76 @@ import { ReactComponent as PhoneIcon } from "../../../../assets/report/phone.svg
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const ReportPopup = ({ onClose }) => {
-  const selectedCases = useSelector(
-    (state) => state.selectedCases.selectedCases[0]
-  );
+  //ดึงเลข hn
+  const patientHN = useSelector((state) => state.patient?.data.hn);
+  //ดึงเลข AN ที่เลือก
+  const selectedAN = useSelector((state) => state.selectedCases.selectedAN);
+  //ดึงเคสที่เลือก
+  const [selectedCases, setSelectedCase] = useState(null);
+
+  useEffect(() => {
+    const storedCases = localStorage.getItem("caseList");
+    if (storedCases) {
+      const parsedCases = JSON.parse(storedCases);
+      const matchedCase = parsedCases.find((c) => c.an === selectedAN);
+      if (matchedCase) {
+        setSelectedCase(matchedCase);
+      }
+    }
+  }, [selectedAN]);
+  //ดึงข้อมูลเคส
+  const [caseData, setCaseData] = useState(null);
   const printableAreaRef = useRef();
-
-  //store section values
+  //fetch ข้อมูลเคส
+  useEffect(() => {
+    const fetchCases = async () => {
+      try {
+        const response = await axios.get(
+          `${API_URL}/fetch-data/api/patients/${patientHN}/cases`,
+          { withCredentials: true }
+        );
+        if (response.data && response.data.data.patient_cases) {
+          const foundCase = response.data.data.patient_cases.find(
+            (c) => c.an === selectedCases.an
+          );
+          if (foundCase) {
+            setCaseData(foundCase);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching cases:", error);
+      }
+    };
+    if (patientHN && selectedCases) {
+      fetchCases();
+    }
+  }, [patientHN, selectedCases]);
+  //สร้าง state เก็บข้อมูลในแต่ละส่วนของรายงาน
   const [sectionValues, setSectionValues] = useState({
-    clinicalHistory: selectedCases.clinical_history || "",
-    examinationDetails: `Type of Study: Chest X-Ray (${selectedCases.description})\nImaging Technique: Digital Radiography`,
-    finding: selectedCases.findings || "",
-    impression: selectedCases.impression || "",
-    recommendations: selectedCases.recommendations || "",
-    actionComment: selectedCases.action_comments || "",
+    clinicalHistory: "",
+    examinationDetails: "",
+    finding: "",
+    impression: "",
+    recommendations: "",
+    actionComment: "",
   });
-
-  //update state
+  //เซ็ตค่าในแต่ละส่วนของreport
+  useEffect(() => {
+    if (caseData) {
+      setSectionValues({
+        clinicalHistory: caseData.clinical_history || "",
+        examinationDetails: `Type of Study: Chest X-Ray (${caseData.description})\nImaging Technique: Digital Radiography`,
+        finding: caseData.findings || "",
+        impression: caseData.impression || "",
+        recommendations: caseData.recommendations || "",
+        actionComment: caseData.action_comments || "",
+      });
+    }
+  }, [caseData]);
+  //เปลี่ยนค่าในแต่ละส่วนของรายงาน
   const handleChange = (key, value) => {
     setSectionValues((prev) => ({ ...prev, [key]: value }));
   };
-
   //save report
   const handleSave = async () => {
     try {
