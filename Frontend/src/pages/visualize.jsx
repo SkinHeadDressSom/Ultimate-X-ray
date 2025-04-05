@@ -104,7 +104,7 @@ const Visualize = () => {
         <Backdrop
           open={true}
           style={{
-            zIndex: 1000, // Ensure it appears above other elements
+            zIndex: 1000,
             color: "#fff",
           }}
         >
