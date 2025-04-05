@@ -18,6 +18,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     isDragMode,
     detectionBoxes,
     showDetectionBoxes,
+    isLoading,
   } = useSelector((state) => state.visualize);
 
   const patient = useSelector((state) => state.patient?.data || null);
@@ -169,6 +170,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                       onLoad={(e) => handleImageLoad(e, index)}
                     />
                     {showDetectionBoxes &&
+                      !isLoading &&
                       detectionBoxes.map((box, i) => (
                         <div
                           key={i}

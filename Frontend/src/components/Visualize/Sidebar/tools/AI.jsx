@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
 import { AI } from "../toolsdata";
-import { setDetectionBoxes, setShowDetectionBoxes } from "../../../../redux/visualize";
+import { setDetectionBoxes, setShowDetectionBoxes, setIsLoading } from "../../../../redux/visualize";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const AIButton = () => {
@@ -36,8 +36,10 @@ const AIButton = () => {
   const handleButtonClick = async (id) => {
     if (!showDetectionBoxes) {
         dispatch(setShowDetectionBoxes(true));
+        dispatch(setIsLoading(true));
         const detections = await detectBbox(imageUrls[0]);
         dispatch(setDetectionBoxes(detections));
+        dispatch(setIsLoading(false));
     } else {
       dispatch(setShowDetectionBoxes(false));
     }
