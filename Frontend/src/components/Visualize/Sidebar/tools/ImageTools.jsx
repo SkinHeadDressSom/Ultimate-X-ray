@@ -13,6 +13,7 @@ import {
   setContrast,
   setBrightness,
   setScale,
+  setPosition,
 } from "../../../../redux/visualize";
 import {
   UndoBtn,
@@ -27,7 +28,7 @@ import {
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const { imageUrls, isDragMode, selectedColor, scale, selectedPosition } =
+  const { imageUrls, isDragMode, selectedColor, scale, position, selectedPosition } =
     useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
@@ -51,6 +52,7 @@ const ImageTools = ({ undo, redo }) => {
   const handleZoom = useCallback(
     (zoomFactor) => {
       const newScale = [...scale];
+      const newPosition = [...position];
       if (selectedPosition !== null) {
         const currentScale = newScale[selectedPosition] || 1;
         const updatedScale = currentScale * zoomFactor;
