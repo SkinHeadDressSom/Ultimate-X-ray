@@ -17,6 +17,7 @@ const initialState = {
   isDrawMode: false,
   detectionBoxes: [],
   showDetectionBoxes: false,
+  boxColors: {},
   annotationMap: {},
   isLoading: false,
 };
@@ -90,6 +91,9 @@ const visualizeSlice = createSlice({
     setShowDetectionBoxes: (state, action) => {
       state.showDetectionBoxes = action.payload;
     },
+    setBoxColors: (state, action) => {
+      state.boxColors = { ...state.boxColors, ...action.payload };
+    },    
     setAnnotationMap: (state, action) => {
       state.annotationMap = action.payload;
     },
@@ -118,6 +122,7 @@ export const {
   setIsDrawMode,
   setDetectionBoxes,
   setShowDetectionBoxes,
+  setBoxColors,
   setAnnotationMap,
   setIsLoading,
 } = visualizeSlice.actions;

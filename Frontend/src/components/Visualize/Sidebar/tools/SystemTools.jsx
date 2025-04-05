@@ -20,8 +20,14 @@ const SystemTools = ({ canvasRef }) => {
     (state) => state.selectedImage.selectedImageId
   );
   //รับข้อมูลรูป
-  const { imageUrls, selectedPosition, contrast, brightness, isLoading } =
-    useSelector((state) => state.visualize);
+  const {
+    imageUrls,
+    selectedPosition,
+    contrast,
+    brightness,
+    isLoading,
+    boxColors,
+  } = useSelector((state) => state.visualize);
   //รับiconของปุ่ม
   const buttons = [
     { id: "save", icon: SaveIcon },
@@ -54,8 +60,9 @@ const SystemTools = ({ canvasRef }) => {
       const imageUrl = imageUrls[0];
       try {
         await combineXRayAndAnnotation(
-          selectedCanvas,
+          canvasRef.current[selectedPosition],
           imageUrl,
+          boxColors,
           "combined.png"
         );
       } catch (error) {
@@ -69,7 +76,7 @@ const SystemTools = ({ canvasRef }) => {
     }
   };
   //รวมรูปX-rayกับAnnotation
-  const combineXRayAndAnnotation = (canvas, imageUrl) => {
+  const combineXRayAndAnnotation = (canvas, imageUrl, boxColors) => {
     return new Promise((resolve, reject) => {
       if (!canvas || !imageUrl) {
         reject("Canvas or imageUrl is missing");
@@ -105,14 +112,15 @@ const SystemTools = ({ canvasRef }) => {
         tempCtx.setTransform(1, 0, 0, 1, 0, 0);
         //Bounding Box
         if (detectionBoxes?.length > 0 && showDetectionBoxes) {
-          tempCtx.strokeStyle = "yellow"; //สีกรอบ
-          tempCtx.lineWidth = 8; //ความหนาของกรอบ
-
-          const fontSize = 50; //ขนาดฟอนต์
-          const padding = 35; //padding
-          tempCtx.font = `${fontSize}px Arial`;
           //กำหนดตำแหน่งlabel
           detectionBoxes.forEach((box) => {
+            const classColor = boxColors?.[box.class] || "yellow";
+            tempCtx.strokeStyle = classColor; //สีกรอบ
+            tempCtx.lineWidth = 8; //ความหนาของกรอบ
+
+            const fontSize = 50; //ขนาดฟอนต์
+            const padding = 35; //padding
+            tempCtx.font = `${fontSize}px Arial`;
             const x = box.xmin;
             const y = box.ymin;
             const width = box.xmax - box.xmin;
@@ -136,7 +144,7 @@ const SystemTools = ({ canvasRef }) => {
             const textY = y - textHeight - padding;
 
             //พื้นหลังข้อความ
-            tempCtx.fillStyle = "yellow";
+            tempCtx.fillStyle = classColor;
             tempCtx.fillRect(
               textX,
               textY,
