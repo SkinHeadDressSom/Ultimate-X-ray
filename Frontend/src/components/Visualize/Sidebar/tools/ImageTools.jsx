@@ -52,10 +52,13 @@ const ImageTools = ({ undo, redo }) => {
     (zoomFactor) => {
       const newScale = [...scale];
       if (selectedPosition !== null) {
-        newScale[selectedPosition] =
-          (newScale[selectedPosition] || 1) * zoomFactor;
+        const currentScale = newScale[selectedPosition] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[selectedPosition] = Math.max(updatedScale, 1);
       } else {
-        newScale[0] = (newScale[0] || 1) * zoomFactor;
+        const currentScale = newScale[0] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[0] = Math.max(updatedScale, 1);
       }
       dispatch(setScale(newScale));
     },
