@@ -5,7 +5,7 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-
+import BoundingBox from ".Visualize/DisplayImage/RGBbox.jsx"
 function App() {
   const router = createBrowserRouter([
     {
@@ -39,7 +39,14 @@ function App() {
           <Visualize />
         </>
       ),
-    },
+    }, {
+      path: "/BoundingBox",
+      element: (
+        <>
+          <BoundingBox />
+        </>
+      ),
+    }
   ]);
 
 
