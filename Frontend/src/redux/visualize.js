@@ -27,11 +27,16 @@ const visualizeSlice = createSlice({
   reducers: {
     setImageUrls: (state, action) => {
       state.imageUrls = action.payload;
-      state.brightness = action.payload.reduce((acc, imageUrl) => {
-        acc[imageUrl] = 100; //ค่าเริ่มต้น=100
-        return acc;
-      }, {});
-    },
+    
+      action.payload.forEach((imageUrl) => {
+        if (!(imageUrl in state.contrast)) {
+          state.contrast[imageUrl] = 0;
+        }
+        if (!(imageUrl in state.brightness)) {
+          state.brightness[imageUrl] = 100;
+        }
+      });
+    },    
     setLayout: (state, action) => {
       state.layout = action.payload;
     },
