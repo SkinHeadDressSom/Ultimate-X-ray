@@ -103,6 +103,8 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
         fill: "transparent",
         stroke: selectedColor,
         strokeWidth: 4,
+        evented: false,
+        selectable: false,
         });
     } else if (selectedShape === "square") {
         shape = new fabric.Rect({
@@ -113,6 +115,8 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
         fill: "transparent",
         stroke: selectedColor,
         strokeWidth: 4,
+        evented: false,
+        selectable: false,
         });
     } else if (selectedShape === "arrow") {
         shape = new fabric.Line([startPoint.x, startPoint.y, x, y], {
@@ -120,7 +124,6 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
         strokeWidth: 4,
         evented: false,
         selectable: false,
-        hoverCursor: "move",
         });
     }
 
@@ -158,7 +161,6 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
         });
     }else if (selectedShape === "arrow") {
         shape = createArrow(startPoint, { x, y }, selectedColor);
-
       }
 
     if (shape) {

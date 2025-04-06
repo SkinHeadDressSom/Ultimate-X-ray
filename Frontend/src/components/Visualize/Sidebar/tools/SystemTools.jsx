@@ -140,14 +140,23 @@ const SystemTools = ({ canvasRef }) => {
               textMetrics.actualBoundingBoxDescent;
 
             //ตำแหน่งพื้นหลังข้อความ
-            const textX = x;
+            let textX = x;
+            //เช็คว่าlabelจะเกินภาพมั้ย
+            if (textX + textWidth + padding > tempCanvas.width) {
+              //ถ้าออกนอกภาพให้ align ขวา
+              textX = x + width - textWidth - padding;
+              if (textX < 0) textX = 0;
+            }
+
             const textY = y - textHeight - padding;
+            const backgroundX = textX;
+            const backgroundY = textY;
 
             //พื้นหลังข้อความ
             tempCtx.fillStyle = classColor;
             tempCtx.fillRect(
-              textX,
-              textY,
+              backgroundX,
+              backgroundY,
               textWidth + padding,
               textHeight + padding
             );
