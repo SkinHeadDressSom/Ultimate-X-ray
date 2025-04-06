@@ -38,8 +38,17 @@ export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
       const highlightColorWithOpacity = `rgba(${hexToRgb(selectedColor)}, 0.4)`;
       canvas.freeDrawingBrush.color = highlightColorWithOpacity;
       canvas.freeDrawingBrush.width = 50;
+
+      const onPathCreated = (e) =>{
+        e.path.selectable = false;
+        e.path.evented = false;
+        canvas.renderAll();
+      }
+      canvas.off("path:created");
+      canvas.on("path:created", onPathCreated);
     } else {
       canvas.isDrawingMode = false;
+      canvas.off("path:created");
     }
   };
 //คลิ๊กที่ canvas แล้วเพิ่มข้อความ
@@ -61,6 +70,9 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
       borderColor: "blue",
       cornerColor: "red",
       cornerSize: 10,
+      hasBorders: false,
+      hasControls: false,
+      hoverCursor: "move",
     });
   
     canvas.add(text);
@@ -108,6 +120,7 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
         strokeWidth: 4,
         evented: false,
         selectable: false,
+        hoverCursor: "move",
         });
     }
 
@@ -149,6 +162,11 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
       }
 
     if (shape) {
+        shape.set({
+            hasControls: false,
+            hasBorders: false,
+            hoverCursor: "move",
+        });
         canvas.add(shape);
         canvas.renderAll();
     }
@@ -181,6 +199,9 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
     // รวมเส้นและหัวลูกศรเป็นกลุ่ม
     const arrow = new fabric.Group([line, arrowHead], {
         selectable: true,
+        hasControls: false,
+        hasBorders: false,
+        hoverCursor: "move",
     });
     return arrow;
 };
@@ -265,6 +286,9 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
         const measurementGroup = new fabric.Group([line, startTick, endTick, tickMark, text], {
             selectable: true,
             evented: true,
+            hasControls: false,
+            hasBorders: false,
+            hoverCursor: "move",
         });
 
         canvas.remove(line, startTick, endTick, tickMark, text);
