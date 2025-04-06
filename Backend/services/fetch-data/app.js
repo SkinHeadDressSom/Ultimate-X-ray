@@ -5,7 +5,6 @@ const cookieParser = require("cookie-parser");
 const fetchRoute = require("./routes/fetchRoute");
 const pool = require("./database/postgres-config");
 const cors = require("cors");
-const lusca = require("lusca");
 
 dotenv.config();
 
@@ -32,7 +31,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(lusca.csrf());
 // Routes
 app.use("/api", fetchRoute);
 

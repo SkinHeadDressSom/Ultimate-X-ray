@@ -1,5 +1,6 @@
 // app.js
 const express = require("express");
+const session = require("express-session");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const lusca = require("lusca");
@@ -23,15 +24,27 @@ pool
   });
 
 // Middleware
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+  allowedHeaders: ["Content-Type", "csrf-token"],
+}));
 app.use(cookieParser());
 app.use(express.json());
+
 app.use(
-  cors({
-    origin: "http://localhost:3000",
-    credentials: true,
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
   })
 );
-// CSRF Protection
+
 app.use(lusca.csrf());
 
 // Routes

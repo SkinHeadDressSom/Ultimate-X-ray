@@ -4,6 +4,7 @@ const { getUser } = require("../database/userQuery");
 const { RESPONSE_MESSAGES } = require("../utils/ErrorMessages");
 
 const login = async (req, res) => {
+  console.log("Headers received in login request:", req.headers);
   RESPONSE_MESSAGES.taskError = "An error occurred at login";
   RESPONSE_MESSAGES.taskSuccess = "Login successfully";
   try {

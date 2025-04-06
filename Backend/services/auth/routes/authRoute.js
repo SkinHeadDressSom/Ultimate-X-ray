@@ -9,4 +9,9 @@ router.post("/login", loginController.login);
 router.post("/register", registerController.register);
 router.post("/logout", checkToken, logoutController.logout);
 
+router.get("/csrf-token", (req, res) => {
+  console.log("Generated CSRF Token:", req.csrfToken());
+  res.json({ csrfToken: req.csrfToken() });
+});
+
 module.exports = router;
