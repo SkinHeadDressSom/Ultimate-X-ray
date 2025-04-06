@@ -163,9 +163,9 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
 
     if (shape) {
         shape.set({
+            evented: false,
             hasControls: false,
             hasBorders: false,
-            hoverCursor: "move",
         });
         canvas.add(shape);
         canvas.renderAll();
@@ -285,7 +285,7 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
         //grouping
         const measurementGroup = new fabric.Group([line, startTick, endTick, tickMark, text], {
             selectable: true,
-            evented: true,
+            evented: false,
             hasControls: false,
             hasBorders: false,
             hoverCursor: "move",
