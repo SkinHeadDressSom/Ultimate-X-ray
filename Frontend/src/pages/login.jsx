@@ -15,12 +15,35 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  // Fetch CSRF token from the server
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/auth/api/csrf-token`, {
+        withCredentials: true,
+      });
+      return response.data.csrfToken;
+    } catch (error) {
+      console.error("Failed to fetch CSRF token:", error);
+      throw new Error("CSRF token fetch failed");
+    }
+  };
+
   const postLogin = async (username, password) => {
     try {
+      // Fetch CSRF token before making the login request
+      const csrfToken = await fetchCsrfToken();
+      console.log("CSRF Token:", csrfToken); // Debugging line
+
       const response = await axios.post(
         `${API_URL}/auth/api/login`,
         { username, password },
-        { withCredentials: true }
+        {
+          headers: {
+            "X-CSRF-Token": csrfToken, // Include CSRF token in headers
+          },
+          withCredentials: true,
+        }
       );
       dispatch(loginSuccess(response.data));
       navigate("/search");
