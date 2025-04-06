@@ -2,6 +2,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
+const lusca = require("lusca");
 const authRoute = require("./routes/authRoute");
 const pool = require("./database/postgres-config");
 const cors = require("cors");
@@ -30,6 +31,9 @@ app.use(
     credentials: true,
   })
 );
+// CSRF Protection
+app.use(lusca.csrf());
+
 // Routes
 app.use("/api", authRoute);
 
