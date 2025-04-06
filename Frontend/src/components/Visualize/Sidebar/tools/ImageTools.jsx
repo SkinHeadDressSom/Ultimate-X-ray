@@ -16,6 +16,7 @@ import {
   setBrightness,
   setScale,
   setIsAnnotationHidden,
+  setPosition,
 } from "../../../../redux/visualize";
 import {
   UndoBtn,
@@ -30,17 +31,9 @@ import {
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const {
-    selectedShape,
-    imageUrls,
-    isDragMode,
-    selectedColor,
-    scale,
-    selectedPosition,
-    isAnnotationHidden,
-    isAIMode,
-  } = useSelector((state) => state.visualize);
 
+  const { selectedShape, imageUrls, isDragMode, selectedColor, scale, position, selectedPosition,isAnnotationHidden,isAIMode } =
+    useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -67,11 +60,15 @@ const ImageTools = ({ undo, redo }) => {
   const handleZoom = useCallback(
     (zoomFactor) => {
       const newScale = [...scale];
+      const newPosition = [...position];
       if (selectedPosition !== null) {
-        newScale[selectedPosition] =
-          (newScale[selectedPosition] || 1) * zoomFactor;
+        const currentScale = newScale[selectedPosition] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[selectedPosition] = Math.max(updatedScale, 1);
       } else {
-        newScale[0] = (newScale[0] || 1) * zoomFactor;
+        const currentScale = newScale[0] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[0] = Math.max(updatedScale, 1);
       }
       dispatch(setScale(newScale));
       dispatch(setIsZoomMode(true));
