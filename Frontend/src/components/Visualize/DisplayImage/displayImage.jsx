@@ -182,54 +182,74 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                         height: "100%",
                       }}
                     />
-                    <img
-                      src={image}
-                      alt={`x-ray-${index}`}
-                      className="w-full h-full object-contain rounded-none"
-                      id="image-container"
+                    <div
+                      className="w-full h-full"
                       style={{
-                        filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
-                        zIndex: 0,
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0
                         }px) scale(${scale[index] || 1})`,
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                        cursor: isDragMode ? "grab" : "default",
                       }}
-                      onLoad={(e) => handleImageLoad(e, index)}
-                    />
-                    {showDetectionBoxes &&
-                      !isLoading &&
-                      detectionBoxes.map((box, i) => (
-                        <div
-                          key={i}
-                          className="absolute border-2"
-                          style={{
-                            borderColor: boxColors[box.class],
-                            left: `${(box.xmin / imageWidth) * 100}%`,
-                            top: `${(box.ymin / imageHeight) * 100}%`,
-                            width: `${
-                              ((box.xmax - box.xmin) / imageWidth) * 100
-                            }%`,
-                            height: `${
-                              ((box.ymax - box.ymin) / imageHeight) * 100
-                            }%`,
-                          }}
-                        >
-                          <span
-                            className="absolute top-0 left-0  text-black text-xs px-1 whitespace-nowrap"
-                            style={{
-                              backgroundColor: boxColors[box.class],
-                              top: "-1.5em",
-                              left: "-2px",
-                              zIndex: 1,
-                            }}
-                          >
-                            {box.class} {box.confidence}
-                          </span>
-                        </div>
-                      ))}
+                    >
+                      <img
+                        src={image}
+                        alt={`x-ray-${index}`}
+                        className="w-22 h-full object-contain rounded-none"
+                        id="image-container"
+                        style={{
+                          filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
+                          zIndex: 0,
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          cursor: isDragMode ? "grab" : "default",
+                        }}
+                        onLoad={(e) => handleImageLoad(e, index)}
+                      />
+                      {showDetectionBoxes &&
+                        !isLoading &&
+                        detectionBoxes.map((box, i) => {
+                          //คำนวณขนาดของกรอบ
+                          const boxLeft = (box.xmin / imageWidth) * 100;
+                          const boxWidth =
+                            ((box.xmax - box.xmin) / imageWidth) * 100;
+                          //label styles
+                          const labelStyle = {
+                            backgroundColor: boxColors[box.class],
+                            top: "-1.5em",
+                            zIndex: 1,
+                            whiteSpace: "nowrap",
+                          };
+
+                          //ถ้าlabelออกนอกภาพให้ align ขวา
+                          if (boxLeft + boxWidth > 90) {
+                            labelStyle.right = "0px"; //ชิดขวา
+                          } else {
+                            labelStyle.left = "-2px"; //ชิดซ้าย
+                          }
+
+                          return (
+                            <div
+                              key={i}
+                              className="absolute border-2"
+                              style={{
+                                borderColor: boxColors[box.class],
+                                left: `${boxLeft}%`,
+                                top: `${(box.ymin / imageHeight) * 100}%`,
+                                width: `${boxWidth}%`,
+                                height: `${
+                                  ((box.ymax - box.ymin) / imageHeight) * 100
+                                }%`,
+                              }}
+                            >
+                              <span
+                                className="absolute top-0 text-black text-xs px-1"
+                                style={labelStyle}
+                              >
+                                {box.class} {box.confidence}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
                   <div
                     className={`patient-info flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute py-2 px-4 ${getPatientInfoStyle(

@@ -6,6 +6,9 @@ const initialState = {
   selectedPosition: 0,
   selectedShape: null,
   isTextMode: false,
+  isContrastMode: false,
+  isZoomMode: false,
+  isAIMode: false,
   contrast: {},
   brightness: {},
   selectedColor: "white",
@@ -50,6 +53,15 @@ const visualizeSlice = createSlice({
     },
     setIsTextMode: (state, action) => {
       state.isTextMode = action.payload;
+    },
+    setIsContrastMode: (state, action) => {
+      state.isContrastMode = action.payload;
+    },
+    setIsZoomMode: (state, action) => {
+      state.isZoomMode = action.payload;
+    },
+    setIsAIMode: (state, action) => {
+      state.isAIMode = action.payload;
     },
     setContrast: (state, action) => {
       const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
@@ -114,6 +126,9 @@ export const {
   setSelectedPosition,
   setSelectedShape,
   setIsTextMode,
+  setIsContrastMode,
+  setIsZoomMode,
+  setIsAIMode,
   setContrast,
   setBrightness,
   resetContrast,

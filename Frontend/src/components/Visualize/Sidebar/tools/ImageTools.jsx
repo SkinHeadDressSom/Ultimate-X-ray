@@ -7,12 +7,15 @@ import {
   setIsDragMode,
   setSelectedShape,
   setIsTextMode,
+  setIsZoomMode,
+  setIsContrastMode,
   setOnPointerClick,
   setIsDrawMode,
   setSelectedColor,
   setContrast,
   setBrightness,
   setScale,
+  setIsAnnotationHidden,
   setPosition,
 } from "../../../../redux/visualize";
 import {
@@ -23,12 +26,13 @@ import {
   Zoomin,
   Zoomout,
   ContrastBtn,
-  Highlight,
+  Hide,
 } from "../toolsdata";
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const { imageUrls, isDragMode, selectedColor, scale, position, selectedPosition } =
+
+  const { selectedShape, imageUrls, isDragMode, selectedColor, scale, position, selectedPosition,isAnnotationHidden,isAIMode } =
     useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
@@ -44,9 +48,13 @@ const ImageTools = ({ undo, redo }) => {
     {
       id: "contrastbtn",
       icon: ContrastBtn,
-      action: () => setShowContrastPopup((prev) => !prev),
+      action: () => {
+        setShowContrastPopup((prev) => !prev);
+        dispatch(setIsContrastMode(true));
+      },
     },
-    { id: "highlight", icon: Highlight, action: () => handleHighlight() },
+
+    { id: "hide", icon: Hide },
   ];
 
   const handleZoom = useCallback(
@@ -63,41 +71,51 @@ const ImageTools = ({ undo, redo }) => {
         newScale[0] = Math.max(updatedScale, 1);
       }
       dispatch(setScale(newScale));
+      dispatch(setIsZoomMode(true));
     },
     [scale, selectedPosition, dispatch]
   );
 
-  const handleHighlight = useCallback(() => {
-    dispatch(setIsDrawMode(true));
-    dispatch(setSelectedShape("highlight"));
-    setShowColorPopup(true);
+  const resetToolsState = useCallback(() => {
+    dispatch(setSelectedShape(null));
+    dispatch(setIsTextMode(false));
+    dispatch(setIsDrawMode(false));
+    dispatch(setIsZoomMode(false));
+    dispatch(setIsContrastMode(false));
+    setShowContrastPopup(false);
+    setShowColorPopup(false);
+  }, [dispatch]);
+  const resetIsDragMode = useCallback(() => {
     dispatch(setIsDragMode(false));
   }, [dispatch]);
 
   const handleButtonClick = (id) => {
     setActiveId(id);
     dispatch(setOnPointerClick(id === "pointer"));
+    resetIsDragMode();
     const button = buttons.find((btn) => btn.id === id);
     if (button?.action) {
       button.action();
       return;
     }
-    dispatch(setIsDragMode(id === "drag"));
-    if (id === "pointer") {
-      dispatch(setSelectedShape(null));
-      dispatch(setIsTextMode(false));
-      dispatch(setIsDrawMode(false));
-      setShowContrastPopup(false);
-      setShowColorPopup(false);
+    if (id === "drag") {
+      dispatch(setIsDragMode(true));
+    } else if (id === "pointer") {
+      resetToolsState();
+    } else if (id === "hide") {
+      dispatch(setIsAnnotationHidden(!isAnnotationHidden));
+      resetToolsState();
+      setActiveId(isAnnotationHidden ? null : "hide");
     }
   };
 
   useEffect(() => {
     if (isDragMode) {
-      dispatch(setSelectedShape(null));
-      dispatch(setIsTextMode(false));
+      resetToolsState();
+    } else if (selectedShape || isAIMode) {
+      setActiveId(null);
     }
-  }, [isDragMode, dispatch]);
+  }, [isDragMode, selectedShape, resetToolsState]);
 
   return (
     <div className="flex flex-col items-center justify-center bg-light-blue rounded-lg gap-y-2 p-2 w-full">
