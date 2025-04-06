@@ -34,30 +34,12 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
 
   //ภาพแรกสุดของเคสล่าสุดให้เปิดรอไว้
   useEffect(() => {
-    const storedSelectedImageId = localStorage.getItem("selectedImageId");
-    if (caseList.length > 0) {
-      let latestCase;
-      if (storedSelectedImageId) {
-        latestCase = caseList.find((caseItem) =>
-          caseItem.case_images.some((img) => img.xn === storedSelectedImageId)
-        );
-      }
-      if (!latestCase) {
-        latestCase =
-          caseList.length === 1
-            ? caseList[0]
-            : [...caseList].sort((a, b) => b.an - a.an)[0];
-      }
-      if (latestCase?.case_images?.length > 0) {
-        const firstImage = storedSelectedImageId
-          ? latestCase.case_images.find(
-              (img) => img.xn === storedSelectedImageId
-            ) || latestCase.case_images[0]
-          : latestCase.case_images[0];
-
-        dispatch(setSelectedImageId(firstImage.xn)); //update selectedImageId
-        onImageSelect(firstImage.file_path);
-      }
+    if (caseList.length === 0) return;
+    const latestCase = [...caseList].sort((a, b) => b.an - a.an)[0];
+    if (latestCase?.case_images?.length > 0) {
+      const firstImage = latestCase.case_images[0];
+      dispatch(setSelectedImageId(firstImage.xn));
+      onImageSelect(firstImage.file_path);
     }
   }, [caseList, dispatch]);
 

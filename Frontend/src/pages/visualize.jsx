@@ -15,6 +15,7 @@ import {
   resetContrast,
   resetBrightness,
   setAnnotationMap,
+  setStoreAnnotation,
 } from "../redux/visualize";
 import CircularProgress from "@mui/material/CircularProgress";
 import Backdrop from "@mui/material/Backdrop";
@@ -94,6 +95,7 @@ const Visualize = () => {
       dispatch(resetBrightness());
       dispatch(setSelectedImageId(null));
       dispatch(resetSelectedAN());
+      dispatch(setStoreAnnotation({}));
     };
   }, [location]);
 

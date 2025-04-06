@@ -5,7 +5,6 @@ import Dashboard from "./pages/dashboard";
 import Login from "./pages/login";
 import SearchPatient from "./pages/search";
 import Visualize from "./pages/visualize";
-
 function App() {
   const router = createBrowserRouter([
     {
