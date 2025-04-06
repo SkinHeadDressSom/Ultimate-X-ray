@@ -171,12 +171,15 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                     onMouseLeave={handleMouseUp}
                   >
                     <canvas
+                      key={index}
                       ref={(el) => (canvasRef.current[index] = el)}
                       style={{
                         zIndex: 1,
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0
                         }px) scale(${scale[index] || 1})`,
+                        width: "100%",
+                        height: "100%",
                       }}
                     />
                     <img

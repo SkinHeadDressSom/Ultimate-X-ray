@@ -20,6 +20,7 @@ const initialState = {
   boxColors: {},
   annotationMap: {},
   isLoading: false,
+  storeAnnotation: {},
 };
 
 const visualizeSlice = createSlice({
@@ -100,6 +101,10 @@ const visualizeSlice = createSlice({
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
+    setStoreAnnotation: (state, action) => {
+      const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
+      state.storeAnnotation = { ...state.storeAnnotation, [imageUrl]: value };
+    },  
   },
 });
 
@@ -125,6 +130,7 @@ export const {
   setBoxColors,
   setAnnotationMap,
   setIsLoading,
+  setStoreAnnotation,
 } = visualizeSlice.actions;
 
 export default visualizeSlice.reducer;
