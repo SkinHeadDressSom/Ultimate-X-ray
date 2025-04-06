@@ -17,8 +17,10 @@ const initialState = {
   isDrawMode: false,
   detectionBoxes: [],
   showDetectionBoxes: false,
+  boxColors: {},
   annotationMap: {},
   isLoading: false,
+  storeAnnotation: {},
 };
 
 const visualizeSlice = createSlice({
@@ -27,11 +29,16 @@ const visualizeSlice = createSlice({
   reducers: {
     setImageUrls: (state, action) => {
       state.imageUrls = action.payload;
-      state.brightness = action.payload.reduce((acc, imageUrl) => {
-        acc[imageUrl] = 100; //ค่าเริ่มต้น=100
-        return acc;
-      }, {});
-    },
+    
+      action.payload.forEach((imageUrl) => {
+        if (!(imageUrl in state.contrast)) {
+          state.contrast[imageUrl] = 0;
+        }
+        if (!(imageUrl in state.brightness)) {
+          state.brightness[imageUrl] = 100;
+        }
+      });
+    },    
     setLayout: (state, action) => {
       state.layout = action.payload;
     },
@@ -85,12 +92,19 @@ const visualizeSlice = createSlice({
     setShowDetectionBoxes: (state, action) => {
       state.showDetectionBoxes = action.payload;
     },
+    setBoxColors: (state, action) => {
+      state.boxColors = { ...state.boxColors, ...action.payload };
+    },    
     setAnnotationMap: (state, action) => {
       state.annotationMap = action.payload;
     },
     setIsLoading: (state, action) => {
       state.isLoading = action.payload;
     },
+    setStoreAnnotation: (state, action) => {
+      const { imageUrl, value } = action.payload; //ใช้ imageUrls เป็นคีย์
+      state.storeAnnotation = { ...state.storeAnnotation, [imageUrl]: value };
+    },  
   },
 });
 
@@ -113,8 +127,10 @@ export const {
   setIsDrawMode,
   setDetectionBoxes,
   setShowDetectionBoxes,
+  setBoxColors,
   setAnnotationMap,
   setIsLoading,
+  setStoreAnnotation,
 } = visualizeSlice.actions;
 
 export default visualizeSlice.reducer;

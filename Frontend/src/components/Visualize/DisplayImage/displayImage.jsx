@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./display.css";
-import { setSelectedPosition, setPosition } from "../../../redux/visualize";
+import {
+  setSelectedPosition,
+  setPosition,
+  setBoxColors,
+} from "../../../redux/visualize";
 import useDragAndDrop from "../../../hooks/useDragAndDrop.js";
 
 const DisplayImage = ({ caseData, canvasRef }) => {
@@ -19,6 +23,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     detectionBoxes,
     showDetectionBoxes,
     isLoading,
+    boxColors,
   } = useSelector((state) => state.visualize);
 
   const patient = useSelector((state) => state.patient?.data || null);
@@ -47,6 +52,28 @@ const DisplayImage = ({ caseData, canvasRef }) => {
   const calculateBrightness = (brightness) => {
     return brightness / 100; // ปรับค่า brightness โดยใช้สเกล 0-2
   };
+
+  const getRandomLightColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = 70 + Math.random() * 30;
+    const lightness = 70 + Math.random() * 20;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+  useEffect(() => {
+    const newColors = {};
+
+    detectionBoxes.forEach((box) => {
+      const className = box.class;
+      if (!boxColors[className]) {
+        newColors[className] = getRandomLightColor();
+      }
+    });
+
+    if (Object.keys(newColors).length > 0) {
+      dispatch(setBoxColors(newColors));
+    }
+  }, [detectionBoxes, boxColors, dispatch]);
+
   const getPatientInfoStyle = (layout, index) => {
     if (layout === "layout3") {
       return index === 0 ? "w-1/2 h-full" : "w-1/2 h-1/2";
@@ -144,12 +171,15 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                     onMouseLeave={handleMouseUp}
                   >
                     <canvas
+                      key={index}
                       ref={(el) => (canvasRef.current[index] = el)}
                       style={{
                         zIndex: 1,
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0
                         }px) scale(${scale[index] || 1})`,
+                        width: "100%",
+                        height: "100%",
                       }}
                     />
                     <img
@@ -174,8 +204,9 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                       detectionBoxes.map((box, i) => (
                         <div
                           key={i}
-                          className="absolute border-2 border-yellow-400"
+                          className="absolute border-2"
                           style={{
+                            borderColor: boxColors[box.class],
                             left: `${(box.xmin / imageWidth) * 100}%`,
                             top: `${(box.ymin / imageHeight) * 100}%`,
                             width: `${
@@ -187,8 +218,9 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                           }}
                         >
                           <span
-                            className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1 whitespace-nowrap"
+                            className="absolute top-0 left-0  text-black text-xs px-1 whitespace-nowrap"
                             style={{
+                              backgroundColor: boxColors[box.class],
                               top: "-1.5em",
                               left: "-2px",
                               zIndex: 1,

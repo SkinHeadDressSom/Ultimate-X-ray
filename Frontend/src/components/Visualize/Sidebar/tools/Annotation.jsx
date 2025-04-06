@@ -23,8 +23,13 @@ const buttons = [
 
 const Annotation = () => {
   const dispatch = useDispatch();
-  const { selectedColor, isAnnotationHidden, onPointerClick, isDragMode } =
-    useSelector((state) => state.visualize);
+  const {
+    selectedColor,
+    isAnnotationHidden,
+    onPointerClick,
+    isDragMode,
+    isDrawMode,
+  } = useSelector((state) => state.visualize);
 
   const [activeId, setActiveId] = useState(null);
   const [showColorPopup, setShowColorPopup] = useState(false);
@@ -53,7 +58,7 @@ const Annotation = () => {
   );
 
   useEffect(() => {
-    if (onPointerClick || isDragMode) {
+    if (onPointerClick || isDragMode || !isDrawMode) {
       setActiveId(null);
       setShowColorPopup(false);
       dispatch(setSelectedShape(null));

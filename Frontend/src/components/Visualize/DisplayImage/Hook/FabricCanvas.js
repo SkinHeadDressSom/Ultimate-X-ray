@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef,useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -11,7 +11,7 @@ import {
   handleUndo,
   handleHighlight
 } from "../Event/CanvasEvent.js";
-import { setIsTextMode } from "../../../../redux/visualize";
+import { setIsTextMode,setStoreAnnotation } from "../../../../redux/visualize";
 
 const useFabricCanvas = (canvasRef) => {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ const useFabricCanvas = (canvasRef) => {
     isTextMode,
     isDrawMode,
     isAnnotationHidden,
+    storeAnnotation,
   } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
@@ -37,7 +38,6 @@ const useFabricCanvas = (canvasRef) => {
     if (undoStackRef.current.length === 0 || undoStackRef.current[undoStackRef.current.length - 1] !== lastObject) {
       undoStackRef.current.push(lastObject);
       redoStackRef.current = [];
-      console.log("Undo Stack Size:", undoStackRef.current.length);
     }
   };
   //delete redo undo
@@ -65,35 +65,74 @@ const useFabricCanvas = (canvasRef) => {
       document.removeEventListener("keydown", handleKeyDownEvent);
     };
   }, [canvases]);
+  //save obj ในแคนวาสเข้า redux
+  const saveCanvasToStore = (canvas, imageUrl) => {
+    const json = canvas.toJSON();
+    dispatch(setStoreAnnotation({ imageUrl, value: json }));
+  };
+  //load obj ในแคนวาสจาก redux
+  const loadCanvasFromStore = async (canvas, imageUrl, storeAnnotation) => {
+    if (storeAnnotation[imageUrl]) {
+      try {
+        await canvas.loadFromJSON(storeAnnotation[imageUrl], () => {
+          canvas.getObjects().forEach((obj) => {
+            if (obj.type !== "image") {
+              obj.visible = !isAnnotationHidden;
+              obj.setCoords();
+            }
+          });
+          canvas.requestRenderAll();
+        });
+      } catch (error) {
+        console.error("Error loading canvas from store:", error);
+      }
+    }
+  };
   //set up canvas
   useEffect(() => {
-    const newCanvases = imageUrls.map((_, index) => {
+    const newCanvases = imageUrls.map((imageUrl, index) => {
       const canvasEl = canvasRef.current[index];
-      if (!canvasEl) return null;
+      if (!canvasEl || !canvasEl.getContext) return null;  
 
       // ตั้งค่าความละเอียดของ Canvas
       const scale = window.devicePixelRatio;
       canvasEl.width = canvasEl.offsetWidth * scale;
       canvasEl.height = canvasEl.offsetHeight * scale;
-
-      const canvas = new fabric.Canvas(canvasEl, { selection: false });
-
-      // ปิด anti-aliasing
-      const ctx = canvasEl.getContext("2d");
-      ctx.imageSmoothingEnabled = false;
+      const canvasContext = canvasEl.getContext("2d");
+      if (!canvasContext) return null;
+      canvasContext.imageSmoothingEnabled = false;
+  
+      const canvas = new fabric.Canvas(canvasEl, { 
+        selection: false,
+      });
 
       return canvas;
     });
+    setCanvases(newCanvases); 
+    return () => {
+    //save annotation ก่อน dispose
+    newCanvases.forEach((canvas, index) => {
+      if (canvas && imageUrls[index]) {
+        saveCanvasToStore(canvas, imageUrls[index]);
+        canvas.dispose();
+      }
+    });
+  };
 
-    setCanvases(newCanvases);
-
-    return () => newCanvases.forEach((canvas) => canvas && canvas.dispose());
   }, [imageUrls, canvasRef]);
-
+  //load canvas
+  useEffect(() => {
+    canvases.forEach((canvas, index) => {
+      if (!canvas) return;
+      const imageUrl = imageUrls[index];
+      loadCanvasFromStore(canvas, imageUrl, storeAnnotation);
+    });
+  }, [canvases, storeAnnotation, imageUrls]);
+  
   useEffect(() => {
     if (!selectedShape) return;
-    canvases.forEach((canvas) => {
-      if (!canvas) return;
+    canvases.forEach((canvas,index) => {
+      if (!canvas || canvas.isDisposed) return;
       canvas.on("object:added", () => saveState(canvas));
       canvas.on("object:modified", () => saveState(canvas));
       canvas.on("object:removed", () => saveState(canvas));
@@ -125,7 +164,7 @@ const useFabricCanvas = (canvasRef) => {
 
     return () => {
       canvases.forEach((canvas) => {
-        if (!canvas) return;
+        if (!canvas || canvas.isDisposed) return;
         canvas.off("mouse:down");
         canvas.off("mouse:move");
         canvas.off("mouse:up");
@@ -146,7 +185,7 @@ const useFabricCanvas = (canvasRef) => {
       });
       canvas.renderAll();
     });
-  }, [isAnnotationHidden]);
+  }, [isAnnotationHidden, canvases]);
   return { canvases, undo: () => handleUndo(canvases[0], undoStackRef, redoStackRef), redo: () => handleRedo(canvases[0], undoStackRef, redoStackRef)};
 };
 
