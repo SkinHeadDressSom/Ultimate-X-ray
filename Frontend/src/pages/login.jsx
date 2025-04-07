@@ -33,7 +33,7 @@ function Login() {
     try {
       // Fetch CSRF token before making the login request
       const csrfToken = await fetchCsrfToken();
-      console.log("CSRF Token:", csrfToken); // Debugging line
+      // console.log("CSRF Token:", csrfToken);
 
       const response = await axios.post(
         `${API_URL}/auth/api/login`,

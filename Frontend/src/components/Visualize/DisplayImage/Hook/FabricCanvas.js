@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef,useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, use } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -23,6 +23,8 @@ const useFabricCanvas = (canvasRef) => {
     isDrawMode,
     isAnnotationHidden,
     storeAnnotation,
+    scale,
+    position,
   } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
@@ -30,6 +32,7 @@ const useFabricCanvas = (canvasRef) => {
   //redo/undo
   const undoStackRef = useRef([]);
   const redoStackRef = useRef([]);
+  const fabricRef = useRef(null);
   //เก็บสถานะ
   const saveState = (canvas) => {
     const objects = canvas.getObjects();
@@ -88,12 +91,31 @@ const useFabricCanvas = (canvasRef) => {
       }
     }
   };
+
+  const syncCanvasStyles = () => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+
+    const lower = canvas.lowerCanvasEl;
+    const upper = canvas.upperCanvasEl;
+
+    if (!lower || !upper) return;
+
+    upper.style.width = lower.style.width;
+    upper.style.height = lower.style.height;
+
+    upper.style.transform = lower.style.transform;
+    upper.style.zIndex = '2';
+  };
+
   //set up canvas
   useEffect(() => {
     const newCanvases = imageUrls.map((imageUrl, index) => {
       const canvasEl = canvasRef.current[index];
       if (!canvasEl || !canvasEl.getContext) return null;  
 
+      canvasEl.width = imageUrl.width;
+      canvasEl.height = imageUrl.height;
       const canvasContext = canvasEl.getContext("2d");
       if (!canvasContext) return null;
 
@@ -107,21 +129,28 @@ const useFabricCanvas = (canvasRef) => {
         backgroundColor: "",
         isDrawingMode: true,
       });
+      
+      fabricRef.current = canvas;
+      canvas.renderAll();
 
       return canvas;
     });
     setCanvases(newCanvases); 
     return () => {
-    //save annotation ก่อน dispose
-    newCanvases.forEach((canvas, index) => {
-      if (canvas && imageUrls[index]) {
-        saveCanvasToStore(canvas, imageUrls[index]);
-        canvas.dispose();
-      }
-    });
-  };
-
+      //save annotation ก่อน dispose
+      newCanvases.forEach((canvas, index) => {
+        if (canvas && imageUrls[index]) {
+          saveCanvasToStore(canvas, imageUrls[index]);
+          canvas.dispose();
+        }
+      });
+    };
   }, [imageUrls, canvasRef]);
+
+  useEffect(() => {
+    syncCanvasStyles();
+  }, [scale, position]);
+
   //load canvas
   useEffect(() => {
     canvases.forEach((canvas, index) => {
@@ -148,14 +177,14 @@ const useFabricCanvas = (canvasRef) => {
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
       canvas.on("mouse:down", (event) => {
         if (selectedShape === "measurement") {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
           handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
         }
       });
       canvas.on("mouse:move", (event) => {
         if (selectedShape === "measurement" && isDrawingRef.current) {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
           handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
         }

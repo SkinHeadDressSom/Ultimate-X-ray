@@ -12,6 +12,7 @@ import {
   setIsDragMode,
   setIsDrawMode,
   setIsAIMode,
+  setIsZoomMode,
 } from "../../../../redux/visualize";
 
 const Annotation = () => {
@@ -53,6 +54,7 @@ const Annotation = () => {
     dispatch(setOnPointerClick(false));
     dispatch(setIsDragMode(false));
     dispatch(setIsAIMode(false));
+    dispatch(setIsZoomMode(false));
 
     if (id === "hide") {
       dispatch(setIsAnnotationHidden(!isAnnotationHidden));

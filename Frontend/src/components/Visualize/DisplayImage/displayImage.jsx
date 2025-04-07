@@ -201,6 +201,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                           maxWidth: "100%",
                           maxHeight: "100%",
                           cursor: isDragMode ? "grab" : "default",
+                          pointerEvents: 'none',
                         }}
                         onLoad={(e) => handleImageLoad(e, index)}
                       />
