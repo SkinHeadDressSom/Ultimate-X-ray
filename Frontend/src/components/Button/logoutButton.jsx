@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout, purgeStore } from "../../redux/auth";
+import { logout } from "../../redux/auth";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 const LogoutButton = () => {
@@ -41,8 +41,6 @@ const LogoutButton = () => {
       console.log("Logout successful:", response.data);
 
       dispatch(logout());
-
-      dispatch(purgeStore());
 
       navigate("/");
     } catch (error) {

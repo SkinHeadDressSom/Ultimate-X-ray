@@ -24,11 +24,4 @@ const authSlice = createSlice({
 
 export const { loginSuccess, logout } = authSlice.actions;
 
-// Special action to purge the persisted state
-export const purgeStore = () => ({
-  type: PURGE,
-  key: "root", // This should match the key used in persistConfig
-  result: () => null,
-});
-
 export default authSlice.reducer;

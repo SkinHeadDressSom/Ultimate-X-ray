@@ -7,25 +7,32 @@ import visualizeReducer from "./visualize";
 import selectedCasesReducer from "./selectedCase"
 import selectedImageReducer from "./selectedImage";
 
-const persistConfig = {
-  key: "root",
+const authPersistConfig = {
+  key: "auth",
   storage,
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
-const persistedPatientReducer = persistReducer(persistConfig, patientReducer);
-const persistedCasesReducer = persistReducer(persistConfig, selectedCasesReducer)
+const patientPersistConfig = {
+  key: "patient",
+  storage,
+};
+
+const selectedCasesPersistConfig = {
+  key: "selectedCases",
+  storage,
+};
 
 const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer,
-    patient: persistedPatientReducer,
-    selectedCases: persistedCasesReducer,
+    auth: persistReducer(authPersistConfig, authReducer),
+    patient: persistReducer(patientPersistConfig, patientReducer),
+    selectedCases: persistReducer(selectedCasesPersistConfig, selectedCasesReducer),
     visualize: visualizeReducer,
     selectedImage: selectedImageReducer,
   },
 });
 
-export const persistor = persistStore(store);
 
-export default store;
+const persistor = persistStore(store);
+
+export {store, persistor};
