@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import "./display.css";
-import { setSelectedPosition } from "../../../redux/visualize";
+import {
+  setSelectedPosition,
+  setPosition,
+  setBoxColors,
+} from "../../../redux/visualize";
 import useDragAndDrop from "../../../hooks/useDragAndDrop.js";
 
 const DisplayImage = ({ caseData, canvasRef }) => {
@@ -18,6 +22,8 @@ const DisplayImage = ({ caseData, canvasRef }) => {
     isDragMode,
     detectionBoxes,
     showDetectionBoxes,
+    isLoading,
+    boxColors,
   } = useSelector((state) => state.visualize);
 
   const patient = useSelector((state) => state.patient?.data || null);
@@ -46,6 +52,28 @@ const DisplayImage = ({ caseData, canvasRef }) => {
   const calculateBrightness = (brightness) => {
     return brightness / 100; // ปรับค่า brightness โดยใช้สเกล 0-2
   };
+
+  const getRandomLightColor = () => {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = 70 + Math.random() * 30;
+    const lightness = 70 + Math.random() * 20;
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+  };
+  useEffect(() => {
+    const newColors = {};
+
+    detectionBoxes.forEach((box) => {
+      const className = box.class;
+      if (!boxColors[className]) {
+        newColors[className] = getRandomLightColor();
+      }
+    });
+
+    if (Object.keys(newColors).length > 0) {
+      dispatch(setBoxColors(newColors));
+    }
+  }, [detectionBoxes, boxColors, dispatch]);
+
   const getPatientInfoStyle = (layout, index) => {
     if (layout === "layout3") {
       return index === 0 ? "w-1/2 h-full" : "w-1/2 h-1/2";
@@ -105,11 +133,13 @@ const DisplayImage = ({ caseData, canvasRef }) => {
       stopDrag();
     }
   };
-
+  useEffect(() => {
+    // รีเซ็ตตำแหน่งทั้งหมดเมื่อ layout เปลี่ยน
+    dispatch(setPosition(imageUrls.map(() => ({ x: 0, y: 0 }))));
+  }, [layout, dispatch, imageUrls]);
   return (
     <div className={`grid ${gridStyles[layout]} relative w-full h-full`}>
       {imageUrls.map((image, index) => {
-
         const contrastValue = calculateContrast(contrast[image] || 0);
         const brightnessValue = calculateBrightness(brightness[image] || 0);
 
@@ -126,56 +156,101 @@ const DisplayImage = ({ caseData, canvasRef }) => {
             }`}
           >
             {image ? (
-              <div className={`w-full h-full ${getBorderClasses(index)}`}>
+              <div
+                className={`w-full h-full overflow-hidden ${getBorderClasses(
+                  index
+                )}`}
+                id={`container-${index}`}
+              >
                 <div className="w-full h-full flex justify-center items-center">
                   <div
-                    className={`w-fit h-full overflow-hidden relative`}
+                    className="w-fit h-full relative select-none"
                     onMouseDown={(e) => handleMouseDown(e, index)}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                   >
-                    <canvas ref={(el) => (canvasRef.current[index] = el)} />
-                    <img
-                      src={image}
-                      alt={`x-ray-${index}`}
-                      className="w-full h-full object-contain rounded-none"
+                    <canvas
+                      key={index}
+                      ref={(el) => (canvasRef.current[index] = el)}
                       style={{
-                        filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
-                        zIndex: 0,
+                        zIndex: 1,
                         transform: `translate(${position[index]?.x || 0}px, ${
                           position[index]?.y || 0
                         }px) scale(${scale[index] || 1})`,
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                        cursor: isDragMode ? "grab" : "default",
+                        width: "100%",
+                        height: "100%",
                       }}
-                      onLoad={(e) => handleImageLoad(e, index)}
                     />
-                    {showDetectionBoxes &&
-                      detectionBoxes.map((box, i) => (
-                        <div
-                          key={i}
-                          className="absolute border-2 border-yellow-400"
-                          style={{
-                            left: `${(box.xmin / imageWidth) * 100}%`,
-                            top: `${(box.ymin / imageHeight) * 100}%`,
-                            width: `${((box.xmax - box.xmin) / imageWidth) * 100}%`,
-                            height: `${((box.ymax - box.ymin) / imageHeight) * 100}%`,
-                          }}
-                        >
-                          <span
-                            className="absolute top-0 left-0 bg-yellow-400 text-black text-xs px-1 whitespace-nowrap"
-                            style={{
-                              top: '-1.5em',
-                              left: '-2px',
-                              zIndex: 1,
-                            }}
-                          >
-                            {box.class} {box.confidence}
-                          </span>
-                        </div>
-                      ))}
+                    <div
+                      className="w-full h-full"
+                      style={{
+                        transform: `translate(${position[index]?.x || 0}px, ${
+                          position[index]?.y || 0
+                        }px) scale(${scale[index] || 1})`,
+                      }}
+                    >
+                      <img
+                        src={image}
+                        alt={`x-ray-${index}`}
+                        className="w-22 h-full object-contain rounded-none"
+                        id="image-container"
+                        style={{
+                          filter: `contrast(${contrastValue}) brightness(${brightnessValue})`,
+                          zIndex: 0,
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                          cursor: isDragMode ? "grab" : "default",
+                          pointerEvents: 'none',
+                        }}
+                        onLoad={(e) => handleImageLoad(e, index)}
+                      />
+                      {showDetectionBoxes &&
+                        !isLoading &&
+                        detectionBoxes.map((box, i) => {
+                          //คำนวณขนาดของกรอบ
+                          const boxLeft = (box.xmin / imageWidth) * 100;
+                          const boxWidth =
+                            ((box.xmax - box.xmin) / imageWidth) * 100;
+                          //label styles
+                          const labelStyle = {
+                            backgroundColor: boxColors[box.class],
+                            top: "-1.5em",
+                            zIndex: 1,
+                            whiteSpace: "nowrap",
+                          };
+
+                          //ถ้าlabelออกนอกภาพให้ align ขวา
+                          if (boxLeft + boxWidth > 90) {
+                            labelStyle.right = "0px"; //ชิดขวา
+                          } else {
+                            labelStyle.left = "-2px"; //ชิดซ้าย
+                          }
+
+                          return (
+                            <div
+                              key={i}
+                              className="absolute border-2"
+                              style={{
+                                borderColor: boxColors[box.class],
+                                left: `${boxLeft}%`,
+                                top: `${(box.ymin / imageHeight) * 100}%`,
+                                width: `${boxWidth}%`,
+                                height: `${
+                                  ((box.ymax - box.ymin) / imageHeight) * 100
+                                }%`,
+                              }}
+                            >
+                              <span
+                                className="absolute top-0 text-black text-xs px-1"
+                                style={labelStyle}
+                              >
+                                {box.class} {box.confidence}
+                              </span>
+                            </div>
+                          );
+                        })}
+                    </div>
                   </div>
                   <div
                     className={`patient-info flex flex-col justify-between text-wheat text-sm 2xl:text-base absolute py-2 px-4 ${getPatientInfoStyle(

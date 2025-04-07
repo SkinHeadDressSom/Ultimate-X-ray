@@ -25,20 +25,53 @@ const useDragAndDrop = (isDragMode) => {
       const deltaX = e.clientX - start.x;
       const deltaY = e.clientY - start.y;
 
-      const newPositions = [...positions];
-
+      //clone positions
+      const newPositions = positions.map((pos, index) =>
+        index === draggingIndex ? { ...pos } : pos
+      );
+  
       if (!newPositions[draggingIndex]) {
         newPositions[draggingIndex] = { x: 0, y: 0 };
       }
+      //จำกัดแค่ขอบของ container
+      const container = e.currentTarget.closest('[id^="container-"]');
+      const image = document.getElementById("image-container");
 
-      newPositions[draggingIndex] = {
-        x: newPositions[draggingIndex].x + deltaX,
-        y: newPositions[draggingIndex].y + deltaY,
-      };
+      if (container && image) {
+        const containerRect = container.getBoundingClientRect();
+        const imageRect = image.getBoundingClientRect();
+  
+        let newX = newPositions[draggingIndex].x + deltaX;
+        let newY = newPositions[draggingIndex].y + deltaY;
 
-      dispatch(setPosition(newPositions));
-
-      setStart({ x: e.clientX, y: e.clientY });
+        const isImageWiderThanContainer = imageRect.width > containerRect.width;
+        const isImageTallerThanContainer = imageRect.height > containerRect.height;
+  
+        //ถ้าภาพกว้างกว่าขอบให้เลื่อนซ้าย-ขวาได้อยู่
+        if (isImageWiderThanContainer) {
+          if (imageRect.left + deltaX <= containerRect.left && imageRect.right + deltaX >= containerRect.right) {
+            newPositions[draggingIndex] = { ...newPositions[draggingIndex], x: newX };
+          }
+        } else {
+          if (imageRect.left + deltaX >= containerRect.left && imageRect.right + deltaX <= containerRect.right) {
+            newPositions[draggingIndex] = { ...newPositions[draggingIndex], x: newX };
+          }
+        }
+  
+        //ถ้าภาพสูงกว่าขอบให้เลื่อนขึ้น-ลงได้อยู่
+        if (isImageTallerThanContainer) {
+          if (imageRect.top + deltaY <= containerRect.top && imageRect.bottom + deltaY >= containerRect.bottom) {
+            newPositions[draggingIndex] = { ...newPositions[draggingIndex], y: newY };
+          }
+        } else {
+          if (imageRect.top + deltaY >= containerRect.top && imageRect.bottom + deltaY <= containerRect.bottom) {
+            newPositions[draggingIndex] = { ...newPositions[draggingIndex], y: newY };
+          }
+        }
+  
+        dispatch(setPosition(newPositions));
+        setStart({ x: e.clientX, y: e.clientY });
+      }
     },
     [dragging, draggingIndex, start, dispatch]
   );

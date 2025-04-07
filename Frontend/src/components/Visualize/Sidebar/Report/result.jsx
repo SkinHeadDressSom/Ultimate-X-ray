@@ -41,7 +41,7 @@ const CheckboxImage = ({ image, index, isAnnotation = false }) => {
       <label htmlFor={checkboxId} className="cursor-pointer">
         <img
           src={image.file_path}
-          alt={`Attached Image ${index + 1}`}
+          alt={`Attached ${index + 1}`}
           className="w-28 h-28 object-cover rounded-md bg-black transition-all"
           onError={() => setIsValid(false)}
         />
@@ -74,9 +74,9 @@ const CheckboxImage = ({ image, index, isAnnotation = false }) => {
 };
 
 const Result = ({ sectionValues, handleChange }) => {
-  const selectedCases = useSelector(
-    (state) => state.selectedCases.selectedCases[0]
-  );
+  const selectedAN = useSelector((state) => state.selectedCases.selectedAN);
+  const storedCases = JSON.parse(localStorage.getItem("caseList")) || [];
+  const selectedCases = storedCases.find((c) => c.an === selectedAN) || {};
 
   const CommonTextareaStyles =
     "border border-light-gray rounded-md p-2 text-sm focus:border-none focus:ring-1 focus:ring-vivid-blue [appearance:textfield] outline-none";

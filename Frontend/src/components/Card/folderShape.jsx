@@ -35,7 +35,7 @@ const FolderShape = ({ patient }) => {
   }, [patient]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col py-5 px-10">
       <div className="inline-flex">
         <div className="bg-wheat w-38 h-12 lg:w-40 lg:h-12 2xl:h-14 rounded-tl-lg shadow-xl inline-flex items-center justify-start px-5 gap-2 text-vivid-blue">
           <svg

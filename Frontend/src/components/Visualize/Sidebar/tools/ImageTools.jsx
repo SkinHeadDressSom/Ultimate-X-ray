@@ -1,5 +1,23 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import ButtonWithIcon from "../ButtonWithIcon";
+import ContrastPopup from "../Popup/contrastpop";
+import Colorpopup from "../Popup/colorpop";
+import {
+  setIsDragMode,
+  setSelectedShape,
+  setIsTextMode,
+  setIsZoomMode,
+  setIsContrastMode,
+  setOnPointerClick,
+  setIsDrawMode,
+  setSelectedColor,
+  setContrast,
+  setBrightness,
+  setScale,
+  setIsAnnotationHidden,
+  setPosition,
+} from "../../../../redux/visualize";
 import {
   UndoBtn,
   RedoBtn,
@@ -8,114 +26,129 @@ import {
   Zoomin,
   Zoomout,
   ContrastBtn,
-  Highlight,
+  Hide,
 } from "../toolsdata";
-import ContrastPopup from "../Popup/contrastpop";
-import Colorpopup from "../Popup/colorpop";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  setIsDragMode,
-  setSelectedShape,
-  setIsTextMode,
-  setOnPointerClick,
-  setIsDrawMode,
-  setSelectedColor,
-  setContrast,
-  setBrightness,
-  setScale,
-} from "../../../../redux/visualize";
 
 const ImageTools = ({ undo, redo }) => {
   const dispatch = useDispatch();
-  const { imageUrls, isDragMode, selectedColor, scale, selectedPosition } =
+
+  const { selectedShape, imageUrls, isDragMode, selectedColor, scale, position, selectedPosition,isAnnotationHidden,isAIMode } =
     useSelector((state) => state.visualize);
   const [activeId, setActiveId] = useState("pointer");
   const [showContrastPopup, setShowContrastPopup] = useState(false);
   const [showColorPopup, setShowColorPopup] = useState(false);
 
   const buttons = [
-    { id: "undobtn", icon: UndoBtn },
-    { id: "redobtn", icon: RedoBtn },
+    { id: "undobtn", icon: UndoBtn, action: undo },
+    { id: "redobtn", icon: RedoBtn, action: redo },
     { id: "pointer", icon: Pointer },
     { id: "drag", icon: Drag },
-    { id: "zoomin", icon: Zoomin },
-    { id: "zoomout", icon: Zoomout },
-    { id: "contrastbtn", icon: ContrastBtn },
-    { id: "highlight", icon: Highlight },
+    { id: "zoomin", icon: Zoomin, action: () => handleZoom(1.1) },
+    { id: "zoomout", icon: Zoomout, action: () => handleZoom(0.9) },
+    {
+      id: "contrastbtn",
+      icon: ContrastBtn,
+      action: () => {
+        setShowContrastPopup((prev) => !prev);
+        dispatch(setIsContrastMode(true));
+      },
+    },
+
+    { id: "hide", icon: Hide },
   ];
 
-  const handleButtonClick = (id) => {
-    if (id === "pointer") {
-      dispatch(setOnPointerClick(true));
-      setActiveId("pointer");
-      dispatch(setIsDragMode(false));
-      setShowContrastPopup(false);
-      setShowColorPopup(false);
-      dispatch(setSelectedShape(null));
-      dispatch(setIsTextMode(false));
-      dispatch(setIsDrawMode(false));
-    } else if (id === "zoomin" || id === "zoomout") {
-      // Handle zoom in/zoom out
-      const zoomFactor = id === "zoomin" ? 1.1 : 0.9; // Increase or decrease scale by 10%
+  const handleZoom = useCallback(
+    (zoomFactor) => {
       const newScale = [...scale];
+      const newPosition = [...position];
       if (selectedPosition !== null) {
-        newScale[selectedPosition] = newScale[selectedPosition]
-          ? newScale[selectedPosition] * zoomFactor
-          : zoomFactor;
+        const currentScale = newScale[selectedPosition] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[selectedPosition] = Math.max(updatedScale, 1);
       } else {
-        newScale[0] = newScale[0] ? newScale[0] * zoomFactor : zoomFactor;
+        const currentScale = newScale[0] || 1;
+        const updatedScale = currentScale * zoomFactor;
+        newScale[0] = Math.max(updatedScale, 1);
       }
       dispatch(setScale(newScale));
-    } else if (id === "undobtn") {
-      undo();
-    } else if (id === "redobtn") {
-      redo();
-    } else {
-      if (id === "contrastbtn") {
-        setShowContrastPopup((prev) => !prev);
-      }
-      if (id === "drag") {
-        dispatch(setIsDragMode(!isDragMode));
-      }
-      if (id === "highlight") {
-        dispatch(setIsDrawMode(true));
-        dispatch(setSelectedShape(id));
-        setShowColorPopup(true);
-      }
-      setActiveId(id);
-      dispatch(setOnPointerClick(false));
+      dispatch(setIsZoomMode(true));
+    },
+    [scale, selectedPosition, dispatch]
+  );
+
+  const resetToolsState = useCallback(() => {
+    dispatch(setSelectedShape(null));
+    dispatch(setIsTextMode(false));
+    dispatch(setIsDrawMode(false));
+    dispatch(setIsZoomMode(false));
+    dispatch(setIsContrastMode(false));
+    setShowContrastPopup(false);
+    setShowColorPopup(false);
+  }, [dispatch]);
+  const resetIsDragMode = useCallback(() => {
+    dispatch(setIsDragMode(false));
+  }, [dispatch]);
+
+  const handleButtonClick = (id) => {
+    setActiveId(id);
+    dispatch(setOnPointerClick(id === "pointer"));
+    resetIsDragMode();
+    const button = buttons.find((btn) => btn.id === id);
+    if (button?.action) {
+      button.action();
+      return;
+    }
+    if (id === "drag") {
+      dispatch(setIsDragMode(true));
+    } else if (id === "pointer") {
+      resetToolsState();
+    } else if (id === "hide") {
+      dispatch(setIsAnnotationHidden(!isAnnotationHidden));
+      resetToolsState();
+      setActiveId(isAnnotationHidden ? null : "hide");
     }
   };
+
+  useEffect(() => {
+    if (isDragMode) {
+      resetToolsState();
+    } else if (selectedShape || isAIMode) {
+      setActiveId(null);
+    }
+  }, [isDragMode, selectedShape, resetToolsState]);
 
   return (
     <div className="flex flex-col items-center justify-center bg-light-blue rounded-lg gap-y-2 p-2 w-full">
       <h1 className="text-dark-blue text-sm">Image tools</h1>
-      <div className="grid grid-cols-2 gap-2 items-center justify-between">
-        {buttons.map((button) => (
+      <div className="grid grid-cols-2 gap-2">
+        {buttons.map(({ id, icon }) => (
           <ButtonWithIcon
-            key={button.id}
-            icon={button.icon}
+            key={id}
+            icon={icon}
             isActive={
-              activeId === button.id ||
-              (button.id === "contrast" && showContrastPopup)
+              activeId === id || (id === "contrastbtn" && showContrastPopup)
             }
-            onClick={() => handleButtonClick(button.id)}
+            onClick={() => handleButtonClick(id)}
           />
         ))}
       </div>
+
       {showContrastPopup && (
         <ContrastPopup
           onClose={() => setShowContrastPopup(false)}
-          onContrastChange={(value) => {
-            const selectedImageUrl = imageUrls[selectedPosition];
-            dispatch(setContrast({ imageUrl: selectedImageUrl, value }));
-          }}
-          onBrightnessChange={(value) => {
-            const selectedImageUrl = imageUrls[selectedPosition];
-            dispatch(setBrightness({ imageUrl: selectedImageUrl, value }));
-          }}
+          onContrastChange={(value) =>
+            dispatch(
+              setContrast({ imageUrl: imageUrls[selectedPosition], value })
+            )
+          }
+          onBrightnessChange={(value) =>
+            dispatch(
+              setBrightness({ imageUrl: imageUrls[selectedPosition], value })
+            )
+          }
         />
       )}
+
       {showColorPopup && (
         <Colorpopup
           onClose={() => setShowColorPopup(false)}

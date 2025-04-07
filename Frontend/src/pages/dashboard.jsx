@@ -15,7 +15,7 @@ const Dashboard = () => {
   return (
     <>
       <Navbar onPatientDataFetched={handlePatientDataFetched} />
-      <main className="bg-lightest-blue w-screen h-screen py-5 px-10">
+      <main className="bg-lightest-blue w-screen h-full min-h-screen">
         {patient ? (
           <FolderShape patient={patient} />
         ) : (

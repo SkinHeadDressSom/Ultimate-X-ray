@@ -5,15 +5,26 @@ import Toolbar from "../components/Visualize/Sidebar/ToolBar";
 import DisplayImage from "../components/Visualize/DisplayImage/displayImage";
 import { useLocation } from "react-router-dom";
 import { getLayoutImages } from "../utils/layoutUtils";
-import { setImageUrls, setLayout } from "../redux/visualize";
 import useFabricCanvas from "../components/Visualize/DisplayImage/Hook/FabricCanvas";
-import { setSelectedCases } from "../redux/selectedCase";
-import { resetContrast, resetBrightness } from "../redux/visualize";
+import { setSelectedCases, resetSelectedAN } from "../redux/selectedCase";
 import { setSelectedImageId } from "../redux/selectedImage";
 import useAnnotationImages from "../hooks/useAnnotationImages";
+import {
+  setImageUrls,
+  setLayout,
+  resetContrast,
+  resetBrightness,
+  setAnnotationMap,
+  setStoreAnnotation,
+  setSelectedShape,
+  setIsTextMode,
+} from "../redux/visualize";
+import CircularProgress from "@mui/material/CircularProgress";
+import Backdrop from "@mui/material/Backdrop";
+
 const Visualize = () => {
   const dispatch = useDispatch();
-  const { imageUrls, selectedPosition } = useSelector(
+  const { imageUrls, selectedPosition, annotationMap, isLoading } = useSelector(
     (state) => state.visualize
   );
 
@@ -21,6 +32,7 @@ const Visualize = () => {
   const caseData = location.state?.caseData || []; //เลือกเคสเดียว
   const allCases = location.state?.allCases || [];
   const selectedCases = location.state?.selectedCases || []; //เลือกหลายเคส
+
   useEffect(() => {
     if (selectedCases.length > 0) {
       dispatch(setSelectedCases(selectedCases));
@@ -37,7 +49,13 @@ const Visualize = () => {
       ),
     [casesToDisplay]
   );
-  const annotationMap = useAnnotationImages(xnValues);
+
+  const annotations = useAnnotationImages(xnValues);
+
+  useEffect(() => {
+    dispatch(setAnnotationMap(annotations));
+  }, [xnValues, annotations, dispatch]);
+
   // Create a ref for canvases
   const canvasRef = useRef([]);
   const { canvases, undo, redo } = useFabricCanvas(canvasRef);
@@ -78,17 +96,33 @@ const Visualize = () => {
       dispatch(resetContrast());
       dispatch(resetBrightness());
       dispatch(setSelectedImageId(null));
+      dispatch(resetSelectedAN());
+      dispatch(setStoreAnnotation({}));
+      dispatch(setSelectedShape(null));
+      dispatch(setIsTextMode(false));
     };
   }, [location]);
 
   return (
     <div className="w-screen max-h-lvh h-full">
+      {/* Backdrop with CircularProgress */}
+      {isLoading && (
+        <Backdrop
+          open={true}
+          style={{
+            zIndex: 1000,
+            color: "#fff",
+          }}
+        >
+          <CircularProgress />
+        </Backdrop>
+      )}
+
       <div className="z-50 relative">
         <Topbar
           onImageSelect={handleImageSelect}
           caseData={casesToDisplay}
           allCases={allCases}
-          annotationMap={annotationMap}
         />
       </div>
       <div className="flex flex-row" style={{ height: "calc(100vh - 7rem)" }}>
