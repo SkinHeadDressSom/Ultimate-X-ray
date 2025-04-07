@@ -39,13 +39,13 @@ export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
       canvas.freeDrawingBrush.color = highlightColorWithOpacity;
       canvas.freeDrawingBrush.width = 100;
 
-      const onPathCreated = (e) =>{
-        e.path.selectable = false;
-        e.path.evented = false;
+      canvas.on('path:created', function(e) {
+        const path = e.path;
+        path.set({
+          selectable: false,
+        });
         canvas.renderAll();
-      }
-      canvas.off("path:created");
-      canvas.on("path:created", onPathCreated);
+      });
     } else {
       canvas.isDrawingMode = false;
       canvas.off("path:created");
@@ -203,7 +203,6 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
         selectable: false,
         hasControls: false,
         hasBorders: false,
-        hoverCursor: "move",
     });
     return arrow;
 };
