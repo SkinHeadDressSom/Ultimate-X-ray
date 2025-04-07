@@ -188,7 +188,7 @@ NULL),
 'Mockup findings', 'Mockup findings', 'Mockup findings', 'Mockup findings',
 'Scheduled',
 '2023-10-01 01:10:01',
-'2023-10-11 02:01:12'),
+'2023-10-11 02:01:12');
 
 -- Insert Images
 INSERT INTO Images (XN, record_id, file_path, uploaded_at, processed_at, result) VALUES
