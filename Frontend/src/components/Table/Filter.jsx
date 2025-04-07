@@ -3,10 +3,9 @@ import StatusComplete from "./statusComplete";
 import StatusSchedule from "./statusSchedule";
 import { ReactComponent as ExpandUD } from "../../assets/expandUpDown.svg";
 
-const Filter = () => {
+const Filter = ({ onStatusFilterChange }) => {
   const [isOpen, setIsOpen] = useState(false); // สร้าง state สำหรับเปิดปิด dropdown
-  const [isCheckedComplete, setIsCheckedComplete] = useState(false); // examine checkbox
-  const [isCheckedSchedule, setIsCheckedSchedule] = useState(false); // schedule checkbox
+  const [selectedStatuses, setSelectedStatuses] = useState([]); //เก็บ status
   const dropdownRef = useRef(null); // ref ของ dropdown
   const buttonRef = useRef(null); // ref ของ button
 
@@ -16,9 +15,6 @@ const Filter = () => {
     "peer h-4 w-4 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2";
   const commonCheckBoxContainerStyles =
     "inline-flex w-full items-center px-2 py-2 gap-2 rounded-md hover:bg-light-blue hover:cursor-pointer";
-
-  // เปิดปิด dropdown
-  const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   // ปิด dropdown ตอนคลิกข้างนอก
   useEffect(() => {
@@ -37,28 +33,29 @@ const Filter = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ใช้เช็คว่า checkbox ถูกคลิกหรือยัง
-  const handleCheck = (setter) => (event) => setter(event.target.checked);
+  const toggleStatus = (status) => {
+    setSelectedStatuses((prev) => {
+      const newStatuses = prev.includes(status)
+        ? prev.filter((s) => s !== status)
+        : [...prev, status];
+      onStatusFilterChange(newStatuses);
+      return newStatuses;
+    });
+  };
 
-  const renderCheckbox = (
-    id,
-    checked,
-    onChange,
-    Component,
-    onComponentClick
-  ) => (
-    <div className={commonCheckBoxContainerStyles} onClick={onComponentClick}>
+  const renderCheckbox = (status, Component) => (
+    <div className={commonCheckBoxContainerStyles}>
       <div className="flex items-center justify-center">
         <label
-          htmlFor={id}
-          className="flex items-center cursor-pointer relative"
+          htmlFor={`status-${status}`}
+          className="flex items-center cursor-pointer relative w-full"
         >
           <input
             type="checkbox"
+            id={`status-${status}`}
             className={commonInputStyles}
-            id={id}
-            checked={checked}
-            onChange={onChange}
+            checked={selectedStatuses.includes(status)}
+            onChange={() => toggleStatus(status)}
           />
           <span className={commonCheckBoxStyles}>
             <svg
@@ -78,8 +75,13 @@ const Filter = () => {
           </span>
         </label>
       </div>
-      <div role="menuitem" tabIndex="-1">
-        <Component onClick={onComponentClick} />
+      <div
+        className="w-full"
+        onClick={() => {
+          document.getElementById(`status-${status}`)?.click();
+        }}
+      >
+        <Component />
       </div>
     </div>
   );
@@ -89,7 +91,7 @@ const Filter = () => {
       Status
       <button
         className="rounded-sm hover:bg-light-gray"
-        onClick={toggleDropdown}
+        onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}
       >
         <ExpandUD />
@@ -102,21 +104,8 @@ const Filter = () => {
           tabIndex="-1"
         >
           <div className="py-1 px-2 font-normal text-darkest-blue">
-            {renderCheckbox(
-              "check-complete",
-              isCheckedComplete,
-              handleCheck(setIsCheckedComplete, "Complete"),
-              StatusComplete,
-              () => setIsCheckedComplete((prev) => !prev)
-            )}
-
-            {renderCheckbox(
-              "check-schedule",
-              isCheckedSchedule,
-              handleCheck(setIsCheckedSchedule, "Schedule"),
-              StatusSchedule,
-              () => setIsCheckedSchedule((prev) => !prev)
-            )}
+            {renderCheckbox("Completed", StatusComplete)}
+            {renderCheckbox("Scheduled", StatusSchedule)}
           </div>
         </div>
       )}

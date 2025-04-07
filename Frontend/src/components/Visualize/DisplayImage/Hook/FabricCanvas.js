@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback, use } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -11,7 +11,7 @@ import {
   handleUndo,
   handleHighlight
 } from "../Event/CanvasEvent.js";
-import { setIsTextMode } from "../../../../redux/visualize";
+import { setIsTextMode,setStoreAnnotation } from "../../../../redux/visualize";
 
 const useFabricCanvas = (canvasRef) => {
   const dispatch = useDispatch();
@@ -22,6 +22,9 @@ const useFabricCanvas = (canvasRef) => {
     isTextMode,
     isDrawMode,
     isAnnotationHidden,
+    storeAnnotation,
+    scale,
+    position,
   } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
@@ -29,6 +32,7 @@ const useFabricCanvas = (canvasRef) => {
   //redo/undo
   const undoStackRef = useRef([]);
   const redoStackRef = useRef([]);
+  const fabricRef = useRef(null);
   //เก็บสถานะ
   const saveState = (canvas) => {
     const objects = canvas.getObjects();
@@ -37,7 +41,6 @@ const useFabricCanvas = (canvasRef) => {
     if (undoStackRef.current.length === 0 || undoStackRef.current[undoStackRef.current.length - 1] !== lastObject) {
       undoStackRef.current.push(lastObject);
       redoStackRef.current = [];
-      console.log("Undo Stack Size:", undoStackRef.current.length);
     }
   };
   //delete redo undo
@@ -65,35 +68,102 @@ const useFabricCanvas = (canvasRef) => {
       document.removeEventListener("keydown", handleKeyDownEvent);
     };
   }, [canvases]);
+  //save obj ในแคนวาสเข้า redux
+  const saveCanvasToStore = (canvas, imageUrl) => {
+    const json = canvas.toJSON();
+    dispatch(setStoreAnnotation({ imageUrl, value: json }));
+  };
+  //load obj ในแคนวาสจาก redux
+  const loadCanvasFromStore = async (canvas, imageUrl, storeAnnotation) => {
+    if (storeAnnotation[imageUrl]) {
+      try {
+        await canvas.loadFromJSON(storeAnnotation[imageUrl], () => {
+          canvas.getObjects().forEach((obj) => {
+            if (obj.type !== "image") {
+              obj.visible = !isAnnotationHidden;
+              obj.setCoords();
+            }
+          });
+          canvas.requestRenderAll();
+        });
+      } catch (error) {
+        console.error("Error loading canvas from store:", error);
+      }
+    }
+  };
+
+  const syncCanvasStyles = () => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+
+    const lower = canvas.lowerCanvasEl;
+    const upper = canvas.upperCanvasEl;
+
+    if (!lower || !upper) return;
+
+    upper.style.width = lower.style.width;
+    upper.style.height = lower.style.height;
+
+    upper.style.transform = lower.style.transform;
+    upper.style.zIndex = '2';
+  };
+
   //set up canvas
   useEffect(() => {
-    const newCanvases = imageUrls.map((_, index) => {
+    const newCanvases = imageUrls.map((imageUrl, index) => {
       const canvasEl = canvasRef.current[index];
-      if (!canvasEl) return null;
+      if (!canvasEl || !canvasEl.getContext) return null;  
 
-      // ตั้งค่าความละเอียดของ Canvas
-      const scale = window.devicePixelRatio;
-      canvasEl.width = canvasEl.offsetWidth * scale;
-      canvasEl.height = canvasEl.offsetHeight * scale;
+      canvasEl.width = imageUrl.width;
+      canvasEl.height = imageUrl.height;
+      const canvasContext = canvasEl.getContext("2d");
+      if (!canvasContext) return null;
 
-      const canvas = new fabric.Canvas(canvasEl, { selection: false });
-
-      // ปิด anti-aliasing
-      const ctx = canvasEl.getContext("2d");
-      ctx.imageSmoothingEnabled = false;
+      canvasContext.imageSmoothingEnabled = false;
+      const img = new Image();
+      img.src = imageUrl;
+      const canvas = new fabric.Canvas(canvasEl, { 
+        selection: false,
+        width: img.width,
+        height: img.height,
+        backgroundColor: "",
+        isDrawingMode: true,
+      });
+      
+      fabricRef.current = canvas;
+      canvas.renderAll();
 
       return canvas;
     });
-
-    setCanvases(newCanvases);
-
-    return () => newCanvases.forEach((canvas) => canvas && canvas.dispose());
+    setCanvases(newCanvases); 
+    return () => {
+      //save annotation ก่อน dispose
+      newCanvases.forEach((canvas, index) => {
+        if (canvas && imageUrls[index]) {
+          saveCanvasToStore(canvas, imageUrls[index]);
+          canvas.dispose();
+        }
+      });
+    };
   }, [imageUrls, canvasRef]);
 
   useEffect(() => {
-    if (!selectedShape) return;
-    canvases.forEach((canvas) => {
+    syncCanvasStyles();
+  }, [scale, position]);
+
+  //load canvas
+  useEffect(() => {
+    canvases.forEach((canvas, index) => {
       if (!canvas) return;
+      const imageUrl = imageUrls[index];
+      loadCanvasFromStore(canvas, imageUrl, storeAnnotation);
+    });
+  }, [canvases, storeAnnotation, imageUrls]);
+  
+  useEffect(() => {
+    if (!selectedShape) return;
+    canvases.forEach((canvas,index) => {
+      if (!canvas || canvas.isDisposed) return;
       canvas.on("object:added", () => saveState(canvas));
       canvas.on("object:modified", () => saveState(canvas));
       canvas.on("object:removed", () => saveState(canvas));
@@ -107,14 +177,14 @@ const useFabricCanvas = (canvasRef) => {
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
       canvas.on("mouse:down", (event) => {
         if (selectedShape === "measurement") {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
           handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
         }
       });
       canvas.on("mouse:move", (event) => {
         if (selectedShape === "measurement" && isDrawingRef.current) {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
           handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
         }
@@ -125,7 +195,7 @@ const useFabricCanvas = (canvasRef) => {
 
     return () => {
       canvases.forEach((canvas) => {
-        if (!canvas) return;
+        if (!canvas || canvas.isDisposed) return;
         canvas.off("mouse:down");
         canvas.off("mouse:move");
         canvas.off("mouse:up");
@@ -146,7 +216,7 @@ const useFabricCanvas = (canvasRef) => {
       });
       canvas.renderAll();
     });
-  }, [isAnnotationHidden]);
+  }, [isAnnotationHidden, canvases]);
   return { canvases, undo: () => handleUndo(canvases[0], undoStackRef, redoStackRef), redo: () => handleRedo(canvases[0], undoStackRef, redoStackRef)};
 };
 

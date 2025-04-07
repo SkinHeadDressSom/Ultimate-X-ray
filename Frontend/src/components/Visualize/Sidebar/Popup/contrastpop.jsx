@@ -1,33 +1,52 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Box } from "@mui/material";
 
 const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
+  const dispatch = useDispatch();
   const selectedPosition = useSelector(
     (state) => state.visualize.selectedPosition
   );
+  const imageUrls = useSelector((state) => state.visualize.imageUrls);
+  const currentImageUrl = imageUrls[selectedPosition] || null;
+
   const contrastFromRedux = useSelector(
-    (state) => state.visualize.contrast[selectedPosition] || 0
+    (state) => state.visualize.contrast?.[currentImageUrl] ?? 0
   );
+  const brightnessFromRedux = useSelector(
+    (state) => state.visualize.brightness?.[currentImageUrl] ?? 100
+  );
+
   const [contrast, setContrast] = useState(contrastFromRedux);
-  const [brightness, setBrightness] = useState(100); // เพิ่มสถานะสำหรับ brightness
+  const [brightness, setBrightness] = useState(brightnessFromRedux);
   const popupRef = useRef(null);
 
   useEffect(() => {
     setContrast(contrastFromRedux);
-  }, [contrastFromRedux, selectedPosition]);
+    setBrightness(brightnessFromRedux);
+  }, [contrastFromRedux, brightnessFromRedux, selectedPosition]);
 
   // ฟังก์ชันเปลี่ยนค่า contrast จาก input number
-  const handleInputChange = (e) => {
+  const handleContrastChange = (e) => {
     let value = e.target.value === "" ? "" : parseFloat(e.target.value);
+    value = Math.max(-100, Math.min(100, value));
 
-    if (value !== "" && (value < -100 || value > 100)) {
-      value = Math.max(-100, Math.min(100, value)); // จำกัดค่าระหว่าง -100 ถึง 100
-    }
     setContrast(value);
-    onContrastChange(value);
-    onBrightnessChange(value);
+    if (currentImageUrl) {
+      dispatch(setContrast({ imageUrl: currentImageUrl, value }));
+    }
   };
+
+  const handleBrightnessChange = (e) => {
+    let value = e.target.value === "" ? "" : parseFloat(e.target.value);
+    value = Math.max(0, Math.min(200, value));
+
+    setBrightness(value);
+    if (currentImageUrl) {
+      dispatch(setBrightness({ imageUrl: currentImageUrl, value }));
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -52,7 +71,7 @@ const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
           min="-100"
           max="100"
           value={contrast}
-          onChange={handleInputChange}
+          onChange={handleContrastChange}
           className="border-[1px] border-light-gray w-14 px-2 py-1 rounded-md text-sm text-center outline-none bg-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
       </div>
@@ -76,7 +95,7 @@ const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
           min="-100"
           max="100"
           value={brightness}
-          onChange={handleInputChange}
+          onChange={handleBrightnessChange}
           className="border-[1px] border-light-gray w-14 px-2 py-1 rounded-md text-sm text-center outline-none bg-transparent [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
         />
       </div>

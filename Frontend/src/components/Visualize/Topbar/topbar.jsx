@@ -5,12 +5,14 @@ import Addfile from "./addfile";
 import DeleteFile from "./deleteFile"; //ปุ่มถังขยะ
 import DeleteItem from "./deleteItem"; //ปุ่มลบเคสในวันที่ที่เลือก
 import { setSelectedImageId } from "../../../redux/selectedImage";
+import { setSelectedAN, resetSelectedAN } from "../../../redux/selectedCase";
 
 const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
   const dispatch = useDispatch();
   const selectedImageId = useSelector(
     (state) => state.selectedImage.selectedImageId
   ); //ดึงselectedImageId
+  const selectedAN = useSelector((state) => state.selectedCases.selectedAN); // ดึง selectedCase จาก Redux
 
   const [caseList, setCaseList] = useState(() => {
     const savedCases = localStorage.getItem("caseList");
@@ -23,38 +25,27 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
   useEffect(() => {
     localStorage.setItem("caseList", JSON.stringify(caseList));
   }, [caseList]);
+  //ถ้ายังไม่มี selectedAN ให้เลือกเคสแรกสุด
+  useEffect(() => {
+    if (!selectedAN && caseList.length > 0) {
+      dispatch(setSelectedAN(caseList[0].an));
+    }
+  }, [caseList, selectedAN, dispatch]);
 
   //ภาพแรกสุดของเคสล่าสุดให้เปิดรอไว้
   useEffect(() => {
-    const storedSelectedImageId = localStorage.getItem("selectedImageId");
-    if (caseList.length > 0) {
-      let latestCase;
-      if (storedSelectedImageId) {
-        latestCase = caseList.find((caseItem) =>
-          caseItem.case_images.some((img) => img.xn === storedSelectedImageId)
-        );
-      }
-      if (!latestCase) {
-        latestCase =
-          caseList.length === 1
-            ? caseList[0]
-            : [...caseList].sort((a, b) => b.an - a.an)[0];
-      }
-      if (latestCase?.case_images?.length > 0) {
-        const firstImage = storedSelectedImageId
-          ? latestCase.case_images.find(
-              (img) => img.xn === storedSelectedImageId
-            ) || latestCase.case_images[0]
-          : latestCase.case_images[0];
-
-        dispatch(setSelectedImageId(firstImage.xn)); //update selectedImageId
-        onImageSelect(firstImage.file_path);
-      }
+    if (caseList.length === 0) return;
+    const latestCase = [...caseList].sort((a, b) => b.an - a.an)[0];
+    if (latestCase?.case_images?.length > 0) {
+      const firstImage = latestCase.case_images[0];
+      dispatch(setSelectedImageId(firstImage.xn));
+      onImageSelect(firstImage.file_path);
     }
   }, [caseList, dispatch]);
 
   //กดเลือกดูเคสให้แสดงที่ thumbnail
-  const handleCheckbox = (item) => {
+  const handleCheckbox = (event, item) => {
+    event.stopPropagation(); // หยุดการ bubbling ของเหตุการณ์
     if (selectedItems.some((selected) => selected.an === item.an)) {
       setSelectedItems(
         selectedItems.filter((selected) => selected.an !== item.an)
@@ -92,6 +83,16 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
   // sort thumbnail ตามเลข an
   const sortedSelectedItems = [...selectedItems].sort((a, b) => b.an - a.an);
 
+  // function สำหรับการคลิกที่เคส
+  const handleCaseClick = (event, an) => {
+    event.stopPropagation();
+    if (selectedAN === an) {
+      dispatch(resetSelectedAN());
+    } else {
+      dispatch(setSelectedAN(an));
+    }
+  };
+
   return (
     <div className="flex flex-row bg-wheat h-28 w-fit border-b-[1px] border-b-light-gray items-start">
       <div className="w-56 min-w-56 h-full border border-light-gray">
@@ -106,25 +107,42 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
             <DeleteFile onClickDelete={() => setIsDelete((prev) => !prev)} />
           </div>
         </div>
-        <div className="flex flex-col px-2 py-1 h-20 overflow-y-scroll">
+        <div className="flex flex-col h-20 overflow-y-scroll">
           {caseList.map((item, index) => (
-            <div key={index} className="flex gap-2 items-center text-sm">
+            <div
+              key={index}
+              className={`flex gap-2 items-center text-sm cursor-pointer transition-colors duration-200 px-2 py-0.5 ${
+                selectedAN === item.an ? "bg-vivid-blue text-wheat" : ""
+              }`}
+              onClick={(event) => handleCaseClick(event, item.an)}
+            >
               {/* ถ้ากดปุ่มถังขยะให้เปลี่ยนจาก checkbox เป็นปุ่มลบเคส */}
               {isDelete ? (
                 //ปุ่มลบเคส
                 <DeleteItem onDelete={() => handleDeleteItem(item)} />
               ) : (
-                <label className="flex items-center cursor-pointer relative">
+                <label
+                  className="flex items-center cursor-pointer relative"
+                  onClick={(event) => event.stopPropagation()} // หยุดการ bubbling ของเหตุการณ์ใน label
+                >
                   {/* checkbox ของ case */}
                   <input
                     type="checkbox"
-                    className="peer h-3.5 w-3.5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border border-vivid-blue checked:border-2"
-                    onChange={() => handleCheckbox(item)}
+                    className={`peer h-3.5 w-3.5 cursor-pointer transition-all appearance-none rounded shadow hover:shadow-md border ${
+                      selectedAN === item.an
+                        ? "border-wheat"
+                        : "border-vivid-blue"
+                    } checked:border-2 transition-colors duration-200`}
+                    onChange={(event) => handleCheckbox(event, item)}
                     checked={selectedItems.some(
                       (selected) => selected.an === item.an
                     )}
                   />
-                  <span className="absolute text-vivid-blue opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                  <span
+                    className={`absolute ${
+                      selectedAN === item.an ? "text-wheat" : "text-vivid-blue"
+                    } opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-colors duration-500`}
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       className="h-3 w-3"
@@ -142,8 +160,8 @@ const Topbar = ({ onImageSelect, caseData, allCases, annotationMap }) => {
                   </span>
                 </label>
               )}
-              <span className="text-darkest-blue">{item.study_date}</span>
-              <span className="text-darkest-blue">{item.time}</span>
+              <span>{item.study_date}</span>
+              <span>{item.time}</span>
             </div>
           ))}
         </div>

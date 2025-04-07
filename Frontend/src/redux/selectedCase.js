@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   selectedCases: [],
+  selectedAN: [],
 };
 
 const selectedCasesSlice = createSlice({
@@ -19,8 +20,14 @@ const selectedCasesSlice = createSlice({
     setSelectedCases: (state, action) => {
       state.selectedCases = action.payload.map((caseItem) => caseItem);
     },
+    setSelectedAN: (state, action) => {
+      state.selectedAN = action.payload;
+    },
+    resetSelectedAN: (state) => {
+      state.selectedAN = null;
+    }
   },
 });
 
-export const { toggleCaseSelection, setSelectedCases } = selectedCasesSlice.actions;
+export const { toggleCaseSelection, setSelectedCases,setSelectedAN,resetSelectedAN } = selectedCasesSlice.actions;
 export default selectedCasesSlice.reducer;
