@@ -67,11 +67,11 @@ CREATE TABLE Annotations (
 -- Insert Users
 INSERT INTO Users ( name, username, password_hash, role) VALUES
 ('Thomas Shelby', 'test', '$2a$10$JJsQTNUQyWnp89rdvkAXgOTSdfTKN9pq1L277KW/.wMqwiW234jvm', 'General Practitioner'),
-('Test User 1', 'usability_test_01', '$2a$10$ycZ1rQkZ8eBohTXAGj2P4eP4aBrZXaRCWZBNKU25jwFTnmCrWOhvS', 'General Practitioner'),
-('Test User 2', 'usability_test_02', '$2a$10$m7D2OwKCyHhK96ROy8L1zeCZC8MrEZZ7Q38kaA4b/YvHeqLNyM5VO', 'General Practitioner'),
-('Test User 3', 'usability_test_03', '$2a$10$Z9V2R8N3ntGLRoQAw1gXzOaRqtHqHdSxT6.3C3ozZoHTyG9FAHyra', 'General Practitioner'),
-('Test User 4', 'usability_test_04', '$2a$10$twZTffGzFxW/9H9hWrV/Oetm8jKPSFi7YTeoeE10pn82FNVIFDZDa', 'General Practitioner'),
-('Test User 5', 'usability_test_05', '$2a$10$dc4AuwRPTZ9n9U3cSGfMTurcD5PuBguqlx1jwCrPp1StvzhMP/Afq', 'General Practitioner');
+('Test User 1', 'usability_test_01', '$2y$10$lWztjc8LRA4BruPvP1lsiuSAngIE8QTuTsNtuziPjMjmKf4ohJ/XW', 'General Practitioner'),
+('Test User 2', 'usability_test_02', '$2y$10$Luzjyk9GEwd.uM/1F54SYeLdGOUhlR1kin231QkAN4681hs8HSJ.G', 'General Practitioner'),
+('Test User 3', 'usability_test_03', '$2y$10$SjSsFKkTn6a5403kj.IoE.QXyVIZfisvqiN4OeJ3Pel8WkFuhuAou', 'General Practitioner'),
+('Test User 4', 'usability_test_04', '$2y$10$3Lb37LzYP1PWJx3bModJru3K12WqwgRD5/ipNKluc9zo9RCC99Bne', 'General Practitioner'),
+('Test User 5', 'usability_test_05', '$2y$10$awyWTF0EhaAz7IqI0DZUPOLsfpyHW04Dka/fZxiwD90urA0SxB5qu', 'General Practitioner');
 
 
 -- Insert Patients

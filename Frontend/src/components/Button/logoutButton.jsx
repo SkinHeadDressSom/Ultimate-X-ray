@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { logout, purgeStore } from "../../redux/auth";
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
@@ -10,12 +10,33 @@ const LogoutButton = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Fetch CSRF token from the server
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/auth/api/csrf-token`, {
+        withCredentials: true,
+      });
+      return response.data.csrfToken;
+    } catch (error) {
+      console.error("Failed to fetch CSRF token:", error);
+      throw new Error("CSRF token fetch failed");
+    }
+  };
+
   const postLogout = async () => {
     try {
+      // Fetch CSRF token before making the login request
+      const csrfToken = await fetchCsrfToken();
+
       const response = await axios.post(
         `${API_URL}/auth/api/logout`,
         {},
-        { withCredentials: true }
+        {
+          headers: {
+            "X-CSRF-Token": csrfToken, // Include CSRF token in headers
+          },
+          withCredentials: true,
+        }
       );
       console.log("Logout successful:", response.data);
 
