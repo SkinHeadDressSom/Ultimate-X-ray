@@ -52,7 +52,7 @@ export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
     }
   };
 //คลิ๊กที่ canvas แล้วเพิ่มข้อความ
-export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor) => {
+export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setIsTextMode, selectedColor, scale, position) => {
     if (selectedShape !== "text" || !isTextMode) return;
     if (event.target && event.target.type === "textbox") {
       event.target.enterEditing();
@@ -61,15 +61,15 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
     }
     const pointer = canvas.getPointer(event.e);
     const text = new fabric.Textbox("Enter text", {
-      left: pointer.x,
-      top: pointer.y,
-      fontSize: 40,
-      fill:selectedColor,
+      left: pointer.x / scale,
+      top: pointer.y / scale,
+      fontSize: 30,
+      fill: selectedColor,
       backgroundColor: "",
       editable: true,
       borderColor: "blue",
       cornerColor: "red",
-      cornerSize: 10,
+      cornerSize: 5,
       hasBorders: false,
       hasControls: false,
       hoverCursor: "move",
@@ -83,15 +83,23 @@ export const handleCanvasClick = (event, canvas, selectedShape, isTextMode, setI
     setIsTextMode(false); //เพิ่มข้อความได้ครั้งเดียว
 };
 //คลิ๊กแล้วเริ่มวาด
-export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape) => {
+export const handleMouseDown = (event, isDrawingRef, setStartPoint, selectedShape, selectedColor, scale, position) => {
     if (event.target || !event.pointer || isDrawingRef.current) return;
     isDrawingRef.current = true;
-    setStartPoint({ x: event.pointer.x, y: event.pointer.y });
+    // console.log(event.pointer.x, event.pointer.y)
+    // console.log(position, scale)
+    const canvasX = (event.pointer.x) / scale;
+    const canvasY = (event.pointer.y) / scale;
+    // console.log(canvasX, canvasY)
+    setStartPoint({ x: canvasX, y: canvasY });
 };
 //เลื่อนเมาส์
-export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor) => {
+export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale, position) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
-    const { x, y } = event.pointer;
+    const pointer = canvas.getPointer(event.e, true);
+    const x = (pointer.x) / scale;
+    const y = (pointer.y) / scale;
+    // const { x, y } = event.pointer;
     canvas.clearContext(canvas.contextTop);
     let shape;
 
@@ -102,7 +110,7 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
         radius: Math.hypot(x - startPoint.x, y - startPoint.y),
         fill: "transparent",
         stroke: selectedColor,
-        strokeWidth: 4,
+        strokeWidth: 4 ,
         evented: false,
         selectable: false,
         });
@@ -133,9 +141,11 @@ export const handleMouseMove = (event, isDrawingRef, startPoint, canvas, selecte
 };
 
 //ปล่อยเมาส์แล้วสร้าง shape
-export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedShape,selectedColor) => {
+export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale, position) => {
     if (!isDrawingRef.current || !startPoint || !event.pointer) return;
-    const { x, y } = event.pointer;
+    const x = (event.pointer.x) / scale;
+    const y = (event.pointer.y) / scale;
+    // const { x, y } = event.pointer;
     let shape;
     if (selectedShape === "circle") {
         const radius = Math.hypot(x - startPoint.x, y - startPoint.y);
@@ -208,11 +218,11 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
     return arrow;
 };
 //measurement
-export const handleMeasurementLine = (event, canvas, selectedShape, selectedColor) => {
+export const handleMeasurementLine = (event, canvas, selectedShape, selectedColor, scale) => {
     if (selectedShape !== "measurement") return;
 
     const pointer = canvas.getPointer(event.e);
-    const startPoint = { x: pointer.x, y: pointer.y };
+    const startPoint = { x: pointer.x / scale, y: pointer.y / scale };
 
     //เส้นหลัก
     const line = new fabric.Line([startPoint.x, startPoint.y, startPoint.x, startPoint.y], {
@@ -263,18 +273,20 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
 
     const updateMeasurement = (moveEvent) => {
         const pointer = canvas.getPointer(moveEvent.e);
-        line.set({ x2: pointer.x, y2: pointer.y });
+        const x = pointer.x / scale;
+        const y = pointer.y / scale;
+        line.set({ x2: x, y2: y });
 
         //ขีดที่ปลายเส้น
-        endTick.set({ x1: pointer.x, y1: pointer.y - 10, x2: pointer.x, y2: pointer.y + 10 });
+        endTick.set({ x1: x, y1: y - 10, x2: x, y2: y + 10 });
 
         //ขีดกลางเส้น
-        const midX = (startPoint.x + pointer.x) / 2;
-        const midY = (startPoint.y + pointer.y) / 2;
+        const midX = (startPoint.x + x) / 2;
+        const midY = (startPoint.y + y) / 2;
         tickMark.set({ x1: midX, y1: midY - 5, x2: midX, y2: midY + 5 });
 
         //คำนวณระยะทาง
-        const distance = Math.hypot(pointer.x - startPoint.x, pointer.y - startPoint.y);
+        const distance = Math.hypot(x - startPoint.x, y - startPoint.y);
         const distanceInMM = (distance / 10).toFixed(2); // สมมติ 1px = 0.1mm
         text.set({ text: `${distanceInMM} mm`, left: midX, top: midY + 15 });
 

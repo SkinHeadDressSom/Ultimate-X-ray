@@ -13,7 +13,7 @@ const initialState = {
   brightness: {},
   selectedColor: "white",
   isAnnotationHidden: false,
-  scale: [],
+  scale: [1],
   position: [{ x: 0, y: 0 }],
   isDragMode: false,
   onPointerClick: true,

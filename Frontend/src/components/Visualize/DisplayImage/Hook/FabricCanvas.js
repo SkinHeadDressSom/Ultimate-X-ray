@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef,useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -23,6 +23,8 @@ const useFabricCanvas = (canvasRef) => {
     isDrawMode,
     isAnnotationHidden,
     storeAnnotation,
+    scale,
+    position,
   } = useSelector((state) => state.visualize);
   const [canvases, setCanvases] = useState([]);
   const isDrawingRef = useRef(false);
@@ -95,9 +97,10 @@ const useFabricCanvas = (canvasRef) => {
       if (!canvasEl || !canvasEl.getContext) return null;  
 
       // ตั้งค่าความละเอียดของ Canvas
-      const scale = window.devicePixelRatio;
-      canvasEl.width = canvasEl.offsetWidth * scale;
-      canvasEl.height = canvasEl.offsetHeight * scale;
+      const windowScale = window.devicePixelRatio;
+      canvasEl.width = canvasEl.offsetWidth * windowScale;
+      canvasEl.height = canvasEl.offsetHeight * windowScale;
+      console.log(canvasEl.width, canvasEl.height);
       const canvasContext = canvasEl.getContext("2d");
       if (!canvasContext) return null;
       canvasContext.imageSmoothingEnabled = false;
@@ -105,21 +108,22 @@ const useFabricCanvas = (canvasRef) => {
       const canvas = new fabric.Canvas(canvasEl, { 
         selection: false,
       });
+      
+      canvas.renderAll();
 
       return canvas;
     });
     setCanvases(newCanvases); 
     return () => {
-    //save annotation ก่อน dispose
-    newCanvases.forEach((canvas, index) => {
-      if (canvas && imageUrls[index]) {
-        saveCanvasToStore(canvas, imageUrls[index]);
-        canvas.dispose();
-      }
-    });
-  };
-
-  }, [imageUrls, canvasRef]);
+      //save annotation ก่อน dispose
+      newCanvases.forEach((canvas, index) => {
+        if (canvas && imageUrls[index]) {
+          saveCanvasToStore(canvas, imageUrls[index]);
+          canvas.dispose();
+        }
+      });
+    };
+  }, [imageUrls, canvasRef, scale]);
   //load canvas
   useEffect(() => {
     canvases.forEach((canvas, index) => {
@@ -146,20 +150,20 @@ const useFabricCanvas = (canvasRef) => {
       canvas.on("selection:updated", (event) => (canvas.selectedObject = event.selected[0]));
       canvas.on("mouse:down", (event) => {
         if (selectedShape === "measurement") {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
-          handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
+          handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor, scale[0], position[0]);
         }
       });
       canvas.on("mouse:move", (event) => {
         if (selectedShape === "measurement" && isDrawingRef.current) {
-          handleMeasurementLine(event, canvas, selectedShape, selectedColor);
+          handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
-          handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
+          handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale[0], position[0]);
         }
       });
-      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
-      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor));
+      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale[0], position[0]));
+      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor, scale[0], position[0]));
     });
 
     return () => {
