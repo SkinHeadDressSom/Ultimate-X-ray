@@ -149,9 +149,6 @@ const useFabricCanvas = (canvasRef) => {
 
   useEffect(() => {
     syncCanvasStyles();
-
-    const canvas = fabricRef.current;
-    canvas.renderAll();
   }, [scale, position]);
 
   //load canvas
