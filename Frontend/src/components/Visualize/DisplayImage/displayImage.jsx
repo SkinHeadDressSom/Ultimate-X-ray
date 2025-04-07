@@ -284,8 +284,8 @@ const DisplayImage = ({ caseData, canvasRef }) => {
                         Zoom:{" "}
                         {scale[index] ? (scale[index] * 100).toFixed(0) : 100}%
                       </p>
-                      <p>WL: 2244</p>
-                      <p>WW: 4400</p>
+                      <p>WL: {imageDimension.naturalHeight}</p>
+                      <p>WW: {imageDimension.naturalWidth}</p>
                     </div>
                   </div>
                 </div>
