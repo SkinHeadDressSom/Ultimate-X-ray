@@ -4,7 +4,7 @@ const PrintButton = ({ onClick }) => {
   return (
     <button
       onClick={onClick}
-      className="print-btn flex items-center justify-center border-2 border-vivid-blue rounded-full 2xl:px-6 px-4 py-1 bg-vivid-blue text-wheat font-medium hover:bg-dark-blue hover:border-dark-blue hover:cursor-pointer duration-200 w-28"
+      className="print-btn flex items-center justify-center border-2 border-vivid-blue rounded-full 2xl:px-6 px-4 py-1 bg-wheat text-vivid-blue font-medium hover:bg-vivid-blue hover:border-vivid-blue hover:text-wheat hover:cursor-pointer duration-200 w-28"
     >
       <label className="inline-flex w-full space-x-2 items-cente justify-center">
         <svg
