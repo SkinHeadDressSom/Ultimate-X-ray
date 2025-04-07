@@ -120,7 +120,7 @@ const SystemTools = ({ canvasRef }) => {
 
             const fontSize = 50; //ขนาดฟอนต์
             const padding = 35; //padding
-            tempCtx.font = `${fontSize}px Arial`;
+            tempCtx.font = `${fontSize}px Roboto`;
             const x = box.xmin;
             const y = box.ymin;
             const width = box.xmax - box.xmin;

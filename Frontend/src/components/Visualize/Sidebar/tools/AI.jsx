@@ -27,10 +27,10 @@ const AIButton = () => {
 
   const buttons = [{ id: "AI", icon: AI }];
 
-  const detectBbox = async (url) => {
+  const detectBbox = async (imageUrls) => {
     try {
       const formData = new FormData();
-      formData.append("url", url);
+      formData.append("url", imageUrls);
 
       const response = await axios.post(
         `${API_URL}/detect`,
