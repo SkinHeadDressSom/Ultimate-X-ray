@@ -94,16 +94,18 @@ const useFabricCanvas = (canvasRef) => {
       const canvasEl = canvasRef.current[index];
       if (!canvasEl || !canvasEl.getContext) return null;  
 
-      // ตั้งค่าความละเอียดของ Canvas
-      const scale = window.devicePixelRatio;
-      canvasEl.width = canvasEl.offsetWidth * scale;
-      canvasEl.height = canvasEl.offsetHeight * scale;
       const canvasContext = canvasEl.getContext("2d");
       if (!canvasContext) return null;
+
       canvasContext.imageSmoothingEnabled = false;
-  
+      const img = new Image();
+      img.src = imageUrl;
       const canvas = new fabric.Canvas(canvasEl, { 
         selection: false,
+        width: img.width,
+        height: img.height,
+        backgroundColor: "",
+        isDrawingMode: true,
       });
 
       return canvas;

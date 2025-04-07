@@ -11,6 +11,7 @@ import {
   setOnPointerClick,
   setIsDragMode,
   setIsDrawMode,
+  setIsAIMode,
 } from "../../../../redux/visualize";
 
 const Annotation = () => {
@@ -51,6 +52,7 @@ const Annotation = () => {
   const handleButtonClick = (id) => {
     dispatch(setOnPointerClick(false));
     dispatch(setIsDragMode(false));
+    dispatch(setIsAIMode(false));
 
     if (id === "hide") {
       dispatch(setIsAnnotationHidden(!isAnnotationHidden));
