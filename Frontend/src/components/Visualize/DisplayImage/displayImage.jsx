@@ -164,7 +164,7 @@ const DisplayImage = ({ caseData, canvasRef }) => {
               >
                 <div className="w-full h-full flex justify-center items-center">
                   <div
-                    className="w-fit h-full relative"
+                    className="w-fit h-full relative select-none"
                     onMouseDown={(e) => handleMouseDown(e, index)}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}

@@ -37,7 +37,7 @@ export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
       canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
       const highlightColorWithOpacity = `rgba(${hexToRgb(selectedColor)}, 0.4)`;
       canvas.freeDrawingBrush.color = highlightColorWithOpacity;
-      canvas.freeDrawingBrush.width = 50;
+      canvas.freeDrawingBrush.width = 100;
 
       const onPathCreated = (e) =>{
         e.path.selectable = false;
