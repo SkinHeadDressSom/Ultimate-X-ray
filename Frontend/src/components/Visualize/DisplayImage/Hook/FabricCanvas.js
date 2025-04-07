@@ -96,6 +96,8 @@ const useFabricCanvas = (canvasRef) => {
       const canvasEl = canvasRef.current[index];
       if (!canvasEl || !canvasEl.getContext) return null;  
 
+      canvasEl.width = imageUrl.width;
+      canvasEl.height = imageUrl.height;
       const canvasContext = canvasEl.getContext("2d");
       if (!canvasContext) return null;
 
@@ -124,7 +126,7 @@ const useFabricCanvas = (canvasRef) => {
         }
       });
     };
-  }, [imageUrls, canvasRef, scale]);
+  }, [imageUrls, canvasRef]);
   //load canvas
   useEffect(() => {
     canvases.forEach((canvas, index) => {
