@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, use } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as fabric from "fabric";
 import {
@@ -32,6 +32,7 @@ const useFabricCanvas = (canvasRef) => {
   //redo/undo
   const undoStackRef = useRef([]);
   const redoStackRef = useRef([]);
+  const fabricRef = useRef(null);
   //เก็บสถานะ
   const saveState = (canvas) => {
     const objects = canvas.getObjects();
@@ -90,6 +91,23 @@ const useFabricCanvas = (canvasRef) => {
       }
     }
   };
+
+  const syncCanvasStyles = () => {
+    const canvas = fabricRef.current;
+    if (!canvas) return;
+
+    const lower = canvas.lowerCanvasEl;
+    const upper = canvas.upperCanvasEl;
+
+    if (!lower || !upper) return;
+
+    upper.style.width = lower.style.width;
+    upper.style.height = lower.style.height;
+
+    upper.style.transform = lower.style.transform;
+    upper.style.zIndex = '2';
+  };
+
   //set up canvas
   useEffect(() => {
     const newCanvases = imageUrls.map((imageUrl, index) => {
@@ -112,6 +130,7 @@ const useFabricCanvas = (canvasRef) => {
         isDrawingMode: true,
       });
       
+      fabricRef.current = canvas;
       canvas.renderAll();
 
       return canvas;
@@ -127,6 +146,14 @@ const useFabricCanvas = (canvasRef) => {
       });
     };
   }, [imageUrls, canvasRef]);
+
+  useEffect(() => {
+    syncCanvasStyles();
+
+    const canvas = fabricRef.current;
+    canvas.renderAll();
+  }, [scale, position]);
+
   //load canvas
   useEffect(() => {
     canvases.forEach((canvas, index) => {
@@ -155,18 +182,18 @@ const useFabricCanvas = (canvasRef) => {
         if (selectedShape === "measurement") {
           handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
-          handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor, scale[0], position[0]);
+          handleMouseDown(event, isDrawingRef, setStartPoint, selectedShape, selectedColor);
         }
       });
       canvas.on("mouse:move", (event) => {
         if (selectedShape === "measurement" && isDrawingRef.current) {
           handleMeasurementLine(event, canvas, selectedShape, selectedColor, scale);
         } else {
-          handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale[0], position[0]);
+          handleMouseMove(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor);
         }
       });
-      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor, scale[0], position[0]));
-      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor, scale[0], position[0]));
+      canvas.on("mouse:up", (event) => handleMouseUp(event, isDrawingRef, startPoint, canvas, selectedShape, selectedColor));
+      canvas.on("mouse:down", (event) => handleCanvasClick(event, canvas, selectedShape, isTextMode, () => dispatch(setIsTextMode(false)), selectedColor));
     });
 
     return () => {
