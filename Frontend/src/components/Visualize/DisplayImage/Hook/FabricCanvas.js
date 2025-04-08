@@ -105,7 +105,7 @@ const useFabricCanvas = (canvasRef) => {
     upper.style.height = lower.style.height;
 
     upper.style.transform = lower.style.transform;
-    upper.style.zIndex = '2';
+    // upper.style.zIndex = '2';
   };
 
   //set up canvas

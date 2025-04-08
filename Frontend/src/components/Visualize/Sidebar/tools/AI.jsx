@@ -55,6 +55,10 @@ const AIButton = () => {
       dispatch(setShowDetectionBoxes(true));
       dispatch(setIsLoading(true));
       const detections = await detectBbox(imageUrls[0]);
+      detections.forEach((detection) => {
+        const confidence = detection.confidence * 100;
+        detection.confidence = `${confidence.toFixed(0)}%`;
+      });
       dispatch(setDetectionBoxes(detections));
       dispatch(setIsLoading(false));
     } else {
