@@ -156,7 +156,7 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
             fill: "transparent",
             stroke: selectedColor,
             strokeWidth: 10,
-            selectable: false,
+            selectable: true,
         });
     } else if (selectedShape === "square") {
         shape = new fabric.Rect({
@@ -167,7 +167,7 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
             fill: "transparent",
             stroke: selectedColor,
             strokeWidth: 10,
-            selectable: false,
+            selectable: true,
         });
     }else if (selectedShape === "arrow") {
         shape = createArrow(startPoint, { x, y }, selectedColor);
@@ -175,9 +175,9 @@ export const handleMouseUp = (event, isDrawingRef, startPoint, canvas, selectedS
 
     if (shape) {
         shape.set({
-            evented: false,
-            hasControls: false,
-            hasBorders: false,
+            evented: true,
+            hasControls: true,
+            hasBorders: true,
         });
         canvas.add(shape);
         canvas.renderAll();
