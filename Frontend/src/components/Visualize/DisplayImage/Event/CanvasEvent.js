@@ -42,7 +42,7 @@ export const handleHighlight = (canvas, selectedColor, isDrawMode) => {
       canvas.on('path:created', function(e) {
         const path = e.path;
         path.set({
-          selectable: false,
+          selectable: true,
         });
         canvas.renderAll();
       });
@@ -192,7 +192,7 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
     const line = new fabric.Line([startPoint.x, startPoint.y, endPoint.x, endPoint.y], {
         stroke: selectedColor,
         strokeWidth: 10,
-        selectable: false,
+        selectable: true,
         evented: false,
     });
     // คำนวณตำแหน่งหัวลูกศร
@@ -205,14 +205,14 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
         angle: angle + 90, //หมุนหัวลูกศร
         originX: "center",
         originY: "center",
-        selectable: false,
+        selectable: true,
         evented: false,
     });
     // รวมเส้นและหัวลูกศรเป็นกลุ่ม
     const arrow = new fabric.Group([line, arrowHead], {
-        selectable: false,
-        hasControls: false,
-        hasBorders: false,
+        selectable: true,
+        hasControls: true,
+        hasBorders: true,
     });
     return arrow;
 };
