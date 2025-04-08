@@ -192,7 +192,7 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
     const line = new fabric.Line([startPoint.x, startPoint.y, endPoint.x, endPoint.y], {
         stroke: selectedColor,
         strokeWidth: 10,
-        selectable: true,
+        selectable: false,
         evented: false,
     });
     // คำนวณตำแหน่งหัวลูกศร
@@ -205,7 +205,7 @@ export const createArrow = (startPoint, endPoint, selectedColor) => {
         angle: angle + 90, //หมุนหัวลูกศร
         originX: "center",
         originY: "center",
-        selectable: true,
+        selectable: false,
         evented: false,
     });
     // รวมเส้นและหัวลูกศรเป็นกลุ่ม
@@ -300,8 +300,8 @@ export const handleMeasurementLine = (event, canvas, selectedShape, selectedColo
         const measurementGroup = new fabric.Group([line, startTick, endTick, tickMark, text], {
             selectable: true,
             evented: false,
-            hasControls: false,
-            hasBorders: false,
+            hasControls: true,
+            hasBorders: true,
             hoverCursor: "move",
         });
 
