@@ -35,6 +35,7 @@ const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
     if (currentImageUrl) {
       dispatch(setContrast({ imageUrl: currentImageUrl, value }));
     }
+    onContrastChange(value);
   };
 
   const handleBrightnessChange = (e) => {
@@ -45,6 +46,7 @@ const ContrastPopup = ({ onClose, onContrastChange, onBrightnessChange }) => {
     if (currentImageUrl) {
       dispatch(setBrightness({ imageUrl: currentImageUrl, value }));
     }
+    onBrightnessChange(value);
   };
 
   useEffect(() => {
