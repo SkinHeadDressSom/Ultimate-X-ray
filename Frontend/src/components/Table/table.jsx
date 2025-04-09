@@ -167,7 +167,7 @@ const Table = ({ patientCases, loading, patient }) => {
         <div className="2xl:text-2xl text-xl text-vivid-blue">Studies</div>
         <ViewerButton onClick={handleMultipleClick} />
       </div>
-      <div className="relative overflow-auto shadow-md w-full rounded-md border-[1px] border-light-gray">
+      <div className="relative overflow-visible shadow-md w-full rounded-md border-[1px] border-light-gray">
         <table className="w-full text-left text-sm table-auto">
           <thead>
             <tr className="bg-light-blue 2xl:text-lg text-sm text-darkest-blue">

@@ -69,8 +69,8 @@ const Annotation = () => {
       } else if (["arrow", "circle", "square"].includes(id)) {
         setShowColorPopup(true);
       } else if (id === "highlight") {
-        setShowColorPopup(true);
         dispatch(setIsDrawMode(true));
+        setShowColorPopup(true);
       }
     }
   };
