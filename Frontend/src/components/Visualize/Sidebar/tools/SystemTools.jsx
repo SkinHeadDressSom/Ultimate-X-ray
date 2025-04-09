@@ -130,8 +130,7 @@ const SystemTools = ({ canvasRef }) => {
             tempCtx.strokeRect(x, y, width, height);
 
             //label
-            const confidence = `${box.confidence.toFixed(2) * 100}%`;
-            const label = `${box.class} ${confidence}`;
+            const label = `${box.class} ${box.confidence}`;
 
             //คำนวณขนาดข้อความ
             const textMetrics = tempCtx.measureText(label);
