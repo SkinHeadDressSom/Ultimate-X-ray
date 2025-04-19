@@ -71,11 +71,11 @@ INSERT INTO Users ( name, username, password_hash, role) VALUES
 ('Test User 2', 'usability_test_02', '$2y$10$Luzjyk9GEwd.uM/1F54SYeLdGOUhlR1kin231QkAN4681hs8HSJ.G', 'General Practitioner'),
 ('Test User 3', 'usability_test_03', '$2y$10$SjSsFKkTn6a5403kj.IoE.QXyVIZfisvqiN4OeJ3Pel8WkFuhuAou', 'General Practitioner'),
 ('Test User 4', 'usability_test_04', '$2y$10$3Lb37LzYP1PWJx3bModJru3K12WqwgRD5/ipNKluc9zo9RCC99Bne', 'General Practitioner'),
-('Test User 5', 'usability_test_05', '$2y$10$awyWTF0EhaAz7IqI0DZUPOLsfpyHW04Dka/fZxiwD90urA0SxB5qu', 'General Practitioner');
-('Test User 6', 'usability_test_06', '$2a$12$fHiqzc4yas9bEHpGMMZhh.lYCQIigOzQRhvW9a//FZfDFAKkT4Od2', 'General Practitioner');
-('Test User 7', 'usability_test_07', '$2a$12$g5RV17U//848VXYUEdkkguCGboKEGQOJ1TJZILXB4DqgZa3Ns4Hsq', 'General Practitioner');
-('Test User 8', 'usability_test_08', '$2a$12$waeDVnXLe/JHYIUST4N3geA64Krs8WxklaphKuefzzODgGSp8oCay', 'General Practitioner');
-('Test User 9', 'usability_test_09', '$2a$12$85o.rwW8yF8ujQQy0aVpduPkxogtdeVDsv/61QgPh91NvgcaG9Bwy', 'General Practitioner');
+('Test User 5', 'usability_test_05', '$2y$10$awyWTF0EhaAz7IqI0DZUPOLsfpyHW04Dka/fZxiwD90urA0SxB5qu', 'General Practitioner'),
+('Test User 6', 'usability_test_06', '$2a$12$fHiqzc4yas9bEHpGMMZhh.lYCQIigOzQRhvW9a//FZfDFAKkT4Od2', 'General Practitioner'),
+('Test User 7', 'usability_test_07', '$2a$12$g5RV17U//848VXYUEdkkguCGboKEGQOJ1TJZILXB4DqgZa3Ns4Hsq', 'General Practitioner'),
+('Test User 8', 'usability_test_08', '$2a$12$waeDVnXLe/JHYIUST4N3geA64Krs8WxklaphKuefzzODgGSp8oCay', 'General Practitioner'),
+('Test User 9', 'usability_test_09', '$2a$12$85o.rwW8yF8ujQQy0aVpduPkxogtdeVDsv/61QgPh91NvgcaG9Bwy', 'General Practitioner'),
 ('Test User 10', 'usability_test_10', '$2a$12$4cszqzt1vS7hRUF7RsFkZuPUpEw1GgObdgm93c1svr1vQ9zOhuXcK', 'General Practitioner');
 
 
